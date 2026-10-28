@@ -74,7 +74,7 @@ ACLED, contrôle approx., voisins, flèches, poussées probables, déplacés-loc
 | **Intensité du conflit — ACLED** | `acled` | choroplèthe ADM1 par événements/morts depuis la guerre (bascule), popup par type ; **22 387 événements / 57 057 morts** en tête ; **attribution ACLED + lien visible** (obligatoire) ; timeline **hebdomadaire** (184 sem.) remplace la frise mensuelle UCDP |
 | **Poussées probables / secteurs à surveiller** | `analysis.watch_zones` | cercles gradués par `score`, popup `drivers` ; caveat **« indicatif, dynamique récente, PAS une prévision »** ; activée par défaut |
 | **Ressources & richesses** | `resources.{gold,oil,dams,agriculture}` | marqueurs par type, popup (contrôle, lien guerre, source) ; **or → financement RSF** mis en avant |
-| **Soutiens étrangers** | `backers.saf/.rsf` | flèches de flux pays→acteur par camp, plein = multi-source / pointillé = allégué, popup source + « allégué/démenti » ; caveat « flux allégués, non une preuve » |
+| **Soutiens étrangers** | `backers.saf/.rsf` | **représentation principale = panneau 2 colonnes SAF / RSF** (pays, type, niveau `certainty`, « allégué/démenti ») ; carte secondaire : **flèches COURTES et courbées ancrées au point d'entrée** (`hub`, sinon un point près de la frontière — **plus de trait transcontinental**), plein = multi-source / pointillé = allégué, label au point d'entrée, dans une pane vive au-dessus ; quand la couche est active, le remplissage de contrôle est **atténué** et les flèches de mouvement masquées ; caveat « flux allégués, non une preuve ; démentis fréquents » |
 | **Groupes ethniques / Langues** | `ethnolang.groups/.languages` | polygones GeoEPR par statut + points de langues ; **décochées par défaut** ; avertissement TOUJOURS affiché « cadre EPR ; la guerre n'est pas ethnique ; simplification contestée » |
 | **Relief / Routes & infra** | `geo.{relief,roads,airports,ports,crossings}` | hillshade Esri (pane dédiée, axes `{z}/{y}/{x}`) ; routes, **Port-Soudan** et **passages vers le Tchad** mis en avant (spillover) |
 | **Oléoducs** (`layer_pipelines.js`) | `pipelines.{lines,terminals}` | lignes « pétrole » épaisses (GNPOC / Petrodar) + terminaux d'export à Port-Soudan ; popup (opérateur, longueur doc.+OSM, statut, contexte guerre — Heglig FSR déc. 2025, force majeure, transit) ; section **Société & économie**, **décochée par défaut** ; caveat « tracé réel OSM (ODbL) ; séparation GNPOC/Petrodar inférée (`geometry_quality`) » |
@@ -111,7 +111,20 @@ fiabilité** explicite. Toutes sont i18n FR/EN/AR (dates via `Intl`).
 - **Thème clair/sombre** via variables CSS (tokens sur `:root`, redéfinis en sombre pour l'OS **et**
   la bascule). Bascule mémorisée dans `localStorage["sdn-theme"]` ; langue dans `localStorage["sdn-lang"]`.
 - **SEO** : titre, description, Open Graph / Twitter, `theme-color`, favicon SVG générique
-  (`logo.svg`). **Responsive** : gouttière 16 px, **0 scroll horizontal à 390 px**.
+  (`logo.svg`). **Responsive** : gouttière 16 px, **0 scroll horizontal à 360 px et 390 px**.
+
+#### UX mobile (≤ 640 px — desktop inchangé via media queries)
+Sur téléphone, **la carte passe en grand** et le reste s'ouvre à la demande :
+- **Panneau des couches en tiroir off-canvas** : fermé par défaut, ouvert par un bouton **☰** ; il ne
+  recouvre pas toute la carte (≈ 86 vw, un fond semi-transparent reste cliquable pour fermer) et se
+  referme par un **× clair**, un tap sur le fond, ou `Échap`. Les 7 sections repliables restent,
+  compactes, cibles tactiles ≥ 44 px. En **arabe (RTL)** le tiroir et le ☰ sont **en miroir**.
+- **Bandeau humanitaire compact** (chiffres clés sur une ligne, source détaillée masquée — reprise
+  dans le caveat et la page méthode).
+- **Barre de replay tactile** (boutons ≥ 44 px, curseur épais) qui **remonte l'attribution Leaflet**
+  pour ne pas la masquer ; mois courant bien lisible.
+- **Légende repliable** (fermée par défaut, bouton « légende »), masquée pendant le replay.
+- **Popups** limités à ≈ 86 vw avec bouton de fermeture agrandi.
 
 ---
 

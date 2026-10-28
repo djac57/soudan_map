@@ -158,6 +158,7 @@
   var geo = (S.geo && typeof S.geo==="object") ? S.geo : null;
   var pipelines = (S.pipelines && (has(S.pipelines.lines)||has(S.pipelines.terminals))) ? S.pipelines : null;
   var replay = (S.replay && has(S.replay.periods) && S.replay.by_state) ? S.replay : null;
+  var backersAtten=false, _arrowsWasOn=false; // set when the backers layer is active (attenuate heavy fills)
   function fdate(s){ return window.SDN_FMTDATE ? window.SDN_FMTDATE(s) : String(s==null?"":s); }
   function pnum(n){ try{ return Number(n).toLocaleString(window.SDN_LANG==="ar"?"ar":(window.SDN_LANG||"fr")); }catch(e){ return String(n); } }
   function sideColor(k){
@@ -326,7 +327,7 @@
   function buildControlApprox(){ controlApproxLayer.clearLayers(); if(!ctrlApproxGeo)return;
     try{ L.geoJSON(ctrlApproxGeo,{
       style:function(f){ var a=(f.properties&&f.properties.actor); var c=sideColor(a);
-        return {color:c,weight:1,fillColor:c,fillOpacity:.32,opacity:.7}; },
+        return {color:c,weight:1,fillColor:c,fillOpacity:(backersAtten?.12:.32),opacity:backersAtten?.4:.7}; },
       onEachFeature:function(f,l){ var p=f.properties||{}; var a=String(p.actor||"other").toLowerCase();
         var alab=a==="saf"?T("actorSAF"):a==="rsf"?T("actorRSF"):(a==="contested"||a==="mixed")?T("actorContested"):T("actorOther");
         l.bindPopup("<b>"+esc(p.name||"?")+"</b> — "+esc(alab)+(p.date?" <span class='muted'>("+fdate(p.date)+")</span>":"")+
@@ -512,20 +513,34 @@
   }
   buildResources();
 
-  // ---- Foreign backers (flux arrows country → camp) ----
+  // ---- Foreign backers — SHORT curved flows anchored at the entry point (hub), vivid pane above ----
   var backersLayer = L.layerGroup();
-  var SAF_ANCHOR=[19.6,37.2], RSF_ANCHOR=[13.0,24.9]; // Port-Sudan (SAF) / Darfur (RSF) — visual anchors only
+  try{ map.createPane("backersPane"); map.getPane("backersPane").style.zIndex=462; }catch(e){}
+  var SAF_ANCHOR=[18.6,34.0], RSF_ANCHOR=[13.2,25.2]; // SAF (centre/est) / RSF (Darfour) — ancres visuelles
+  function entryPoint(b, anchor){ // entry near the Sudan periphery in the country's direction (never the far centroid)
+    if(b.hub && isFinite(b.hub.lat) && isFinite(b.hub.lon)) return [b.hub.lat, b.hub.lon];
+    if(!isFinite(b.lat)||!isFinite(b.lon)) return anchor;
+    var dLat=b.lat-anchor[0], dLon=b.lon-anchor[1], len=Math.sqrt(dLat*dLat+dLon*dLon)||1, out=3.4;
+    return [anchor[0]+dLat/len*out, anchor[1]+dLon/len*out];
+  }
+  function curvePts(a,b,bend){ var mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2, dx=b[0]-a[0], dy=b[1]-a[1];
+    var pl=Math.sqrt(dx*dx+dy*dy)||1, cx=mx+(-dy/pl)*bend, cy=my+(dx/pl)*bend, pts=[];
+    for(var t=0;t<=1.0001;t+=0.1){ var u=1-t; pts.push([u*u*a[0]+2*u*t*cx+t*t*b[0], u*u*a[1]+2*u*t*cy+t*t*b[1]]); }
+    return pts;
+  }
   function buildBackers(){ backersLayer.clearLayers(); if(!backers)return;
     [["saf",backers.saf,SAF_ANCHOR],["rsf",backers.rsf,RSF_ANCHOR]].forEach(function(p){
       var side=p[0], arr=p[1]||[], anchor=p[2], col=sideColor(side);
-      arr.forEach(function(b){ if(!isFinite(b.lat)||!isFinite(b.lon))return;
+      arr.forEach(function(b){
         var multi=(b.certainty==="multi-source"||b.certainty==="multi");
-        var pts=[[b.lat,b.lon]]; if(b.hub&&isFinite(b.hub.lat)) pts.push([b.hub.lat,b.hub.lon]); pts.push(anchor);
-        backersLayer.addLayer(L.polyline(pts,{color:col,weight:multi?2.6:1.8,opacity:.75,dashArray:multi?null:"5 4"}));
-        backersLayer.addLayer(arrowhead(anchor, bearing(pts[pts.length-2],anchor), col));
+        var entry=entryPoint(b,anchor);
+        var pts=curvePts(entry,anchor, side==="rsf"?0.7:-0.7); // short curved flow into the actor zone
+        backersLayer.addLayer(L.polyline(pts,{pane:"backersPane",color:col,weight:multi?3:2,opacity:.85,dashArray:multi?null:"4 4",lineCap:"round"}));
+        backersLayer.addLayer(L.marker(anchor,{pane:"backersPane",icon:L.divIcon({className:"arrowico",html:'<svg width="16" height="16" viewBox="0 0 16 16" style="transform:rotate('+bearing(pts[pts.length-2],anchor)+'deg)"><path d="M8 1 L12.5 13 L8 10 L3.5 13 Z" fill="'+col+'" stroke="var(--panel)" stroke-width="1"/></svg>',iconSize:[16,16],iconAnchor:[8,8]}),interactive:false,keyboard:false}));
         var cn=(window.SDN_LANG==="fr"&&b.country_fr)?b.country_fr:b.country;
         var st=(b.support_type||[]).map(esc).join(", ");
-        var m=L.circleMarker([b.lat,b.lon],{radius:6,color:col,weight:2,fillColor:col,fillOpacity:.3,opacity:.95});
+        var m=L.circleMarker(entry,{pane:"backersPane",radius:6,color:col,weight:2,fillColor:col,fillOpacity:.55,opacity:.95});
+        m.bindTooltip(esc(cn),{pane:"backersPane",permanent:true,direction:"top",className:"bklbl",offset:[0,-4]});
         m.bindPopup("<b>"+esc(cn)+"</b> → "+side.toUpperCase()+(b.denied?" <span class='tag'>"+T("backerDenied")+"</span>":"")+
           "<br><span class='muted'>"+(multi?T("certMulti"):T("certReported"))+(st?" · "+st:"")+"</span>"+
           (b.note?"<br><span class='muted' style='font-size:11px'>"+esc(b.note)+"</span>":""));
@@ -534,6 +549,17 @@
     });
   }
   buildBackers();
+
+  // Attenuate heavy fills + hide movement arrows while the backers layer is active (flows stand out)
+  function backersActive(){ return map.hasLayer(backersLayer); }
+  function applyBackersAtten(){
+    backersAtten = backersActive();
+    buildControlApprox(); // rebuild control fill at the (dimmed) opacity
+    if(map.hasLayer(controlApproxLayer)){ map.removeLayer(controlApproxLayer); controlApproxLayer.addTo(map); }
+    if(backersAtten){ if(map.hasLayer(arrowsLayer)){ _arrowsWasOn=true; map.removeLayer(arrowsLayer); } }
+    else if(_arrowsWasOn){ arrowsLayer.addTo(map); _arrowsWasOn=false; }
+    updateLegend();
+  }
 
   // ---- Ethno-linguistic (groups polygons + languages) — sensitive, off by default ----
   var ethnoGroupsLayer = L.layerGroup(), languagesLayer = L.layerGroup();
@@ -711,7 +737,7 @@
       }
       container.appendChild(sub);
     }
-    cb.addEventListener("change",function(){ if(cb.checked){ if(L0.lyr)L0.lyr.addTo(map);} else { if(L0.lyr)map.removeLayer(L0.lyr);} if(sub)sub.style.display=cb.checked?"block":"none"; updateLegend(); });
+    cb.addEventListener("change",function(){ if(cb.checked){ if(L0.lyr)L0.lyr.addTo(map);} else { if(L0.lyr)map.removeLayer(L0.lyr);} if(sub)sub.style.display=cb.checked?"block":"none"; if(L0.id==="backers") applyBackersAtten(); updateLegend(); });
     if(L0.on){ if(L0.lyr) L0.lyr.addTo(map); } else { if(L0.lyr) map.removeLayer(L0.lyr); }
   }
   var GROUP_ORDER=["secConflit","secHuma","secContexte","secGeo","secSociete","secSat","secOsintGrp"];
@@ -863,6 +889,24 @@
     sec.hidden=false;
   }
 
+  // Foreign-backers panel (PRIMARY reading: who supports whom and how) — 2 columns SAF / RSF
+  function fillBackers(){
+    var sec=document.getElementById("backersSection"); if(!sec)return;
+    if(!backers){ sec.hidden=true; return; }
+    function col(arr, side){ return (arr||[]).map(function(b){
+      var multi=(b.certainty==="multi-source"||b.certainty==="multi");
+      var cn=(window.SDN_LANG==="fr"&&b.country_fr)?b.country_fr:b.country;
+      var st=(b.support_type||[]).map(esc).join(", ");
+      return '<li><span class="bk-c" style="background:'+sideColor(side)+'"></span><b>'+esc(cn)+'</b>'+
+        (b.denied?' <span class="tag">'+T("backerDenied")+'</span>':'')+
+        '<div class="bk-t">'+(st?st+" · ":"")+(multi?T("certMulti"):T("certReported"))+'</div></li>';
+    }).join(""); }
+    var es=document.getElementById("backersSaf"), er=document.getElementById("backersRsf");
+    if(es) es.innerHTML=col(backers.saf,"saf");
+    if(er) er.innerHTML=col(backers.rsf,"rsf");
+    sec.hidden=false;
+  }
+
   // =====================================================================
   //  FIRES timeline frieze (all vs north) — two series, one axis, legend
   // =====================================================================
@@ -998,7 +1042,7 @@
     drawClashes(); updateLegend();
     try{ if(window.__replay && window.__replay.isOn()) window.__replay.frame(window.__replay.idx); }catch(e){}
   }
-  function renderAll(){ buildUI(); drawClashes(); fillStats(); fillHumHero(); fillRefugees(); buildChartToggle(); drawChart(); drawFiresChart(); fillControlSlot(); updateLegend(); }
+  function renderAll(){ buildUI(); drawClashes(); fillStats(); fillHumHero(); fillRefugees(); fillBackers(); buildChartToggle(); drawChart(); drawFiresChart(); fillControlSlot(); updateLegend(); }
 
   // =====================================================================
   //  REPLAY — animated backfill of the war (feature-detected; hidden if absent)
@@ -1052,8 +1096,9 @@
       var spd=parseFloat((document.getElementById("replaySpeed")||{}).value||"1")||1;
       timer=setInterval(function(){ if(idx>=periods.length-1){ stop(); return; } frame(idx+1); }, Math.max(140, 650/spd));
     }
-    function enter(){ map.addLayer(choro); map.addLayer(marks); frame(idx); bar.hidden=false; }
-    function leave(){ stop(); map.removeLayer(choro); map.removeLayer(marks); bar.hidden=true; }
+    var mainEl=mapEl.parentNode;
+    function enter(){ map.addLayer(choro); map.addLayer(marks); frame(idx); bar.hidden=false; if(mainEl)mainEl.classList.add("replay-open"); }
+    function leave(){ stop(); map.removeLayer(choro); map.removeLayer(marks); bar.hidden=true; if(mainEl)mainEl.classList.remove("replay-open"); }
 
     // slider
     var sl=document.getElementById("replaySlider"); if(sl){ sl.min=0; sl.max=periods.length-1; sl.value=0;
@@ -1067,8 +1112,25 @@
     window.__replay={frame:frame, play:play, stop:stop, enter:enter, leave:leave, isOn:function(){return on;}, get idx(){return idx;}, periods:periods}; // test hook
   }
 
+  // ---- off-canvas layers drawer (mobile) ----
+  function setupDrawer(){
+    var ctl=document.getElementById("ctl"), tgl=document.getElementById("ctlToggle"),
+        bd=document.getElementById("ctlBackdrop"), cl=document.getElementById("ctlClose");
+    if(!ctl||!tgl) return;
+    function open(){ ctl.classList.add("open"); if(bd)bd.hidden=false; tgl.setAttribute("aria-expanded","true"); }
+    function close(){ ctl.classList.remove("open"); if(bd)bd.hidden=true; tgl.setAttribute("aria-expanded","false"); }
+    tgl.addEventListener("click",function(){ if(ctl.classList.contains("open"))close(); else open(); });
+    if(cl) cl.addEventListener("click",close);
+    if(bd) bd.addEventListener("click",close);
+    document.addEventListener("keydown",function(e){ if(e.key==="Escape") close(); });
+    // collapsible legend (mobile): toggle shows/hides the legend body
+    var lt=document.getElementById("legendToggle"), lg=document.getElementById("legend");
+    if(lt&&lg) lt.addEventListener("click",function(){ var o=lg.classList.toggle("open"); lt.setAttribute("aria-expanded",String(o)); });
+    // if resized back to desktop, make sure drawer state is reset (CSS ignores .open on desktop anyway)
+  }
+
   // init
-  renderAll(); bindChartHover(); bindFiresHover(); refitAll(); setupReplay();
+  renderAll(); bindChartHover(); bindFiresHover(); refitAll(); setupReplay(); setupDrawer();
   map.on("overlayadd overlayremove", updateLegend);
   var rT; window.addEventListener("resize", function(){ clearTimeout(rT); rT=setTimeout(function(){ try{ map.invalidateSize(); }catch(e){} }, 200); });
   new MutationObserver(function(){ restyleMap(); }).observe(root,{attributes:true,attributeFilter:["data-theme"]});

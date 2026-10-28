@@ -49,7 +49,14 @@
   <div class="main">
     <div id="map"></div>
 
+    <button class="ctl-toggle" id="ctlToggle" type="button" aria-label="Couches" aria-expanded="false" aria-controls="ctl">☰</button>
+    <div class="ctl-backdrop" id="ctlBackdrop" hidden></div>
+
     <div class="ctl" id="ctl">
+      <div class="ctl-head">
+        <span class="ctl-head-t" data-t="hLayers">Couches</span>
+        <button class="ctl-close" id="ctlClose" type="button" aria-label="Fermer">×</button>
+      </div>
       <div class="grp replaytoggle" id="replayToggleWrap" hidden>
         <button class="btn btn-wide" id="replayToggle" type="button" aria-pressed="false">▶ <span data-t="replayToggle">Rejouer la guerre (2023→2026)</span></button>
       </div>
@@ -64,8 +71,8 @@
     </div>
 
     <div class="legend" id="legend">
-      <div class="legtitle" id="legTitle">—</div>
-      <div id="legBody"></div>
+      <button class="legend-toggle" id="legendToggle" type="button" aria-expanded="false" data-t="legendLabel">légende</button>
+      <div class="legwrap"><div class="legtitle" id="legTitle">—</div><div id="legBody"></div></div>
     </div>
 
     <!-- Replay temporel (révélé par le toggle ; masqué si window.SUDAN.replay absent) -->
@@ -120,6 +127,15 @@
       <h2 class="sec" data-t="secRefTitle">Réfugiés par pays d'accueil</h2>
       <p class="seclead" data-t="secRefLead">Stock de réfugiés soudanais (UNHCR), principaux pays d'accueil.</p>
       <div class="card"><div class="tablewrap"><table class="states" id="refCountryTable"></table></div></div>
+    </section>
+
+    <section id="backersSection" hidden>
+      <h2 class="sec" data-t="backersRecap">Soutiens étrangers rapportés</h2>
+      <p class="seclead" data-t="backersCaveat">…</p>
+      <div class="card bk-grid">
+        <div><h3 class="bk-h saf">SAF</h3><ul class="bk-list" id="backersSaf"></ul></div>
+        <div><h3 class="bk-h rsf">RSF</h3><ul class="bk-list" id="backersRsf"></ul></div>
+      </div>
     </section>
 
     <section>

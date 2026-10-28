@@ -116,7 +116,7 @@ window.SDN_I18N = {
     pipeCaveat:"Tracé réel OpenStreetMap (ODbL) ; la séparation GNPOC / Petrodar est une inférence documentée.",
     replayToggle:"Rejouer la guerre (2023→2026)", replaySpeed:"vitesse", replayPlay:"Lecture", replayPause:"Pause",
     replayCaveat:"Intensité ACLED par mois · prises revendiquées (non vérifiées).",
-    rdEvents:"événements", rdFatal:"morts", rdFires:"feux"
+    rdEvents:"événements", rdFatal:"morts", rdFires:"feux", legendLabel:"légende"
   },
   en: {
     dir:"ltr",
@@ -224,7 +224,7 @@ window.SDN_I18N = {
     pipeCaveat:"Real OpenStreetMap route (ODbL); the GNPOC / Petrodar split is a documented inference.",
     replayToggle:"Replay the war (2023→2026)", replaySpeed:"speed", replayPlay:"Play", replayPause:"Pause",
     replayCaveat:"Monthly ACLED intensity · claimed captures (unverified).",
-    rdEvents:"events", rdFatal:"fatalities", rdFires:"fires"
+    rdEvents:"events", rdFatal:"fatalities", rdFires:"fires", legendLabel:"legend"
   },
   ar: {
     dir:"rtl",
@@ -331,6 +331,6 @@ window.SDN_I18N = {
     pipeCaveat:"مسار حقيقي من OpenStreetMap (ODbL)؛ الفصل بين GNPOC و Petrodar استنتاج موثّق.",
     replayToggle:"إعادة تشغيل الحرب (2023→2026)", replaySpeed:"السرعة", replayPlay:"تشغيل", replayPause:"إيقاف",
     replayCaveat:"شدة ACLED شهريًا · سيطرات مُدّعاة (غير مُتحققة).",
-    rdEvents:"أحداث", rdFatal:"وفيات", rdFires:"حرائق"
+    rdEvents:"أحداث", rdFatal:"وفيات", rdFires:"حرائق", legendLabel:"مفتاح"
   }
 };
