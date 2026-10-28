@@ -45,6 +45,25 @@ Autonome, sans build, sans dépendance externe installée (Leaflet est **vendu**
   granularité fine au Darfour.
 - **Bandeau de garde-fou Darfour permanent** + caveats honnêtes (FIRMS = chaleur, pas conflit).
 
+#### Organisation du panneau (v3)
+Avec 20+ couches, le panneau est **regroupé en sections repliables** (`<details>`) : **Conflit**
+(intensité ACLED, affrontements UCDP, poussées probables, flèches, feux de conflit/densité),
+**Humanitaire** (déplacés localités / par État), **Contexte & contrôle** (contrôle approx.,
+revendications SAF/RSF, frontières, voisins), **Géographie** (relief, routes & infra, secteurs),
+**Société & économie** (ressources, soutiens étrangers, groupes ethniques, langues), **Satellite**
+(Sentinel-2 daté, S1 radar), **OSINT**. **Défauts raisonnables (pas tout activé)** : intensité
+ACLED, contrôle approx., voisins, flèches, poussées probables, déplacés-localités ; le reste décoché.
+
+#### Couches v3 (fichiers `data/layer_*.js`)
+| Couche | Source (`window.SUDAN.*`) | Étiquette de fiabilité |
+|---|---|---|
+| **Intensité du conflit — ACLED** | `acled` | choroplèthe ADM1 par événements/morts depuis la guerre (bascule), popup par type ; **22 387 événements / 57 057 morts** en tête ; **attribution ACLED + lien visible** (obligatoire) ; timeline **hebdomadaire** (184 sem.) remplace la frise mensuelle UCDP |
+| **Poussées probables / secteurs à surveiller** | `analysis.watch_zones` | cercles gradués par `score`, popup `drivers` ; caveat **« indicatif, dynamique récente, PAS une prévision »** ; activée par défaut |
+| **Ressources & richesses** | `resources.{gold,oil,dams,agriculture}` | marqueurs par type, popup (contrôle, lien guerre, source) ; **or → financement RSF** mis en avant |
+| **Soutiens étrangers** | `backers.saf/.rsf` | flèches de flux pays→acteur par camp, plein = multi-source / pointillé = allégué, popup source + « allégué/démenti » ; caveat « flux allégués, non une preuve » |
+| **Groupes ethniques / Langues** | `ethnolang.groups/.languages` | polygones GeoEPR par statut + points de langues ; **décochées par défaut** ; avertissement TOUJOURS affiché « cadre EPR ; la guerre n'est pas ethnique ; simplification contestée » |
+| **Relief / Routes & infra** | `geo.{relief,roads,airports,ports,crossings}` | hillshade Esri (pane dédiée, axes `{z}/{y}/{x}`) ; routes, **Port-Soudan** et **passages vers le Tchad** mis en avant (spillover) |
+
 #### Couches signaux additionnelles (fichiers `data/layer_*.js`, chargés après `bundle.js`)
 Chaque couche est **feature-detectée** (aucune erreur si le champ manque) et porte une **étiquette de
 fiabilité** explicite. Toutes sont i18n FR/EN/AR (dates via `Intl`).
@@ -153,13 +172,14 @@ mis à jour automatiquement.*
 ## Preuve headless (Chromium / Puppeteer)
 
 Vérifié en headless sur `index.html` **et** `methode.html`, en **FR, EN et AR** :
-- **0 erreur console / pageerror** sur les 5 chargements, **toutes les 16 couches activées
-  simultanément** (les tuiles externes OSM / EOX / Planetary Computer abandonnées en vol sont
+- **0 erreur console / pageerror** sur les 5 chargements, **toutes les 24 couches activées
+  simultanément** (les tuiles externes OSM / EOX / Planetary Computer / Esri abandonnées en vol sont
   ignorées, ce ne sont pas des erreurs de code) ;
-- bandeau humanitaire visible (**8 622 801** / **3 761 034**), panneau réfugiés (12 pays), frise de
-  feux (2 séries), **33 flèches** d'avancée dérivées des revendications, couches Sentinel daté /
-  S1 radar / choroplèthe déplacés / contrôle approx. / OSINT, filtre temporel, graphes et **thème**
-  exercés ; **AR** passe bien en `dir="rtl"` ;
+- chiffres clés **ACLED** (22 387 / 57 057) + attribution ACLED avec lien, bandeau humanitaire
+  (8 622 801 / 3 761 034), panneau réfugiés, **184 barres** de timeline hebdomadaire ACLED,
+  choroplèthe ACLED (bascule événements/morts), poussées probables, ressources, soutiens étrangers,
+  relief/infra, groupes ethniques + langues, panneau groupé en 7 sections repliables ;
+  **AR** passe bien en `dir="rtl"` ;
 - **0 scroll horizontal à 390 px** (`scrollWidth == clientWidth`) sur les deux pages ;
 - captures **clair / sombre / mobile** dans `screenshots/` (`light.png`, `dark.png`, `mobile.png`).
 

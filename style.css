@@ -86,6 +86,15 @@ header .spacer{flex:1}
   margin:0; padding:10px 12px 4px; display:flex; align-items:center; gap:6px}
 .ctl .grp{padding:4px 12px 10px; border-bottom:1px solid var(--line);}
 .ctl .grp:last-child{border-bottom:none}
+.lgroup{border-bottom:1px solid var(--line);}
+.lgroup>summary{cursor:pointer; padding:7px 12px; font-size:11px; text-transform:uppercase;
+  letter-spacing:.5px; color:var(--muted); list-style:none; display:flex; align-items:center; gap:6px;}
+.lgroup>summary::-webkit-details-marker{display:none}
+.lgroup>summary::before{content:"▸"; font-size:9px; color:var(--faint)}
+.lgroup[open]>summary::before{content:"▾"}
+.lgbox{padding:0 12px 8px;}
+.acledAttr{padding:6px 12px; font-size:11px; color:var(--muted); border-bottom:1px solid var(--line)}
+.acledAttr a{color:var(--accent)}
 .row{display:flex; align-items:center; gap:8px; padding:4px 0; cursor:pointer;}
 .row input{accent-color:var(--accent); margin:0; flex:0 0 auto}
 .sw{width:14px; height:14px; border-radius:50%; flex:0 0 auto; border:1px solid rgba(0,0,0,.2);}
@@ -103,8 +112,8 @@ header .spacer{flex:1}
 .chips{display:flex; flex-wrap:wrap; gap:10px; margin-top:10px}
 .chip-c{display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--muted)}
 .chip-c i{width:12px; height:12px; border-radius:3px; display:inline-block; flex:0 0 auto}
-.arrowico{background:none !important; border:0 !important}
-.arrowico svg{display:block}
+.arrowico,.xico{background:none !important; border:0 !important}
+.arrowico svg,.xico svg{display:block}
 
 /* ---- legend (gradient layers) ---- */
 .legend{position:absolute; bottom:12px; left:12px; z-index:1000; background:var(--panel);

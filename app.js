@@ -116,6 +116,11 @@
       if(!tm[m])tm[m]={month:m,events:0,deaths:0}; tm[m].events++; tm[m].deaths+=e.deaths||0; });
     timeline = Object.keys(tm).sort().map(function(k){return tm[k];});
   }
+  // v3: prefer ACLED weekly timeline (184 weeks, far finer than UCDP monthly)
+  var timelineWeekly = (S.acled && has(S.acled.timeline_weekly));
+  if(timelineWeekly){
+    timeline = S.acled.timeline_weekly.map(function(w){ return {month:w.week, events:+(w.events||0), deaths:+(w.fatalities||0)}; });
+  }
 
   // ---- meta / sources ----
   var meta = S.meta || {};
@@ -144,6 +149,13 @@
   var firesNote = meta.fires_note || "";
   var neighborsUrl = (S.boundaries && S.boundaries.neighbors) || "data/boundaries/sudan_neighbors.geojson";
   var viewBbox = (meta.bbox && meta.bbox.length===4) ? meta.bbox : null; // [w,s,e,n]
+  // v3 datasets (all additive, feature-detected)
+  var acled = (S.acled && has(S.acled.by_state)) ? S.acled : null;
+  var analysis = (S.analysis && has(S.analysis.watch_zones)) ? S.analysis : null;
+  var resources = (S.resources && typeof S.resources==="object") ? S.resources : null;
+  var backers = (S.backers && (has(S.backers.saf)||has(S.backers.rsf))) ? S.backers : null;
+  var ethnolang = (S.ethnolang && typeof S.ethnolang==="object") ? S.ethnolang : null;
+  var geo = (S.geo && typeof S.geo==="object") ? S.geo : null;
   function fdate(s){ return window.SDN_FMTDATE ? window.SDN_FMTDATE(s) : String(s==null?"":s); }
   function pnum(n){ try{ return Number(n).toLocaleString(window.SDN_LANG==="ar"?"ar":(window.SDN_LANG||"fr")); }catch(e){ return String(n); } }
   function sideColor(k){
@@ -438,25 +450,167 @@
   }
   buildArrows();
 
+  // =====================================================================
+  //  v3 LAYERS
+  // =====================================================================
+  function joinById(byId, byName, props){
+    var id=props.adm1_id||props.shapeISO||props.ADM1_PCODE;
+    if(id && byId[id]) return byId[id];
+    var nm=props.shapeName||props.name; if(nm && byName[String(nm).toLowerCase()]) return byName[String(nm).toLowerCase()];
+    return null;
+  }
+
+  // ---- ACLED conflict-intensity choropleth (toggle events/fatalities) ----
+  var acledLayer = L.layerGroup(); var acledMetric="events_since_war";
+  var acById={}, acByName={}, acMax={events_since_war:1,fatalities_since_war:1};
+  if(acled){ acled.by_state.forEach(function(d){ if(d.adm1_id)acById[d.adm1_id]=d; if(d.state)acByName[String(d.state).toLowerCase()]=d;
+    acMax.events_since_war=Math.max(acMax.events_since_war,d.events_since_war||0);
+    acMax.fatalities_since_war=Math.max(acMax.fatalities_since_war,d.fatalities_since_war||0); }); }
+  function acRamp(v,mx){ var t=Math.min(1, v>0?Math.log(1+v)/Math.log(1+mx):0); return mix2(hex("#fde0d9"),hex("#9a1e0e"),t); }
+  function buildAcled(){ acledLayer.clearLayers(); if(!acled||!adm1geo)return;
+    var mx=acMax[acledMetric]||1;
+    try{ L.geoJSON(adm1geo,{ style:function(f){ var d=joinById(acById,acByName,f.properties||{}); var v=d?(d[acledMetric]||0):0;
+        return {color:cssv("--line"),weight:.8,fill:true,fillColor:acRamp(v,mx),fillOpacity:v?.7:.06,opacity:.6}; },
+      onEachFeature:function(f,l){ var d=joinById(acById,acByName,f.properties||{}); var nm=(f.properties&&(f.properties.shapeName||f.properties.name))||"?";
+        var bt=d&&d.by_type?Object.keys(d.by_type).map(function(k){return esc(k)+" "+num(d.by_type[k]);}).join(" · "):"";
+        l.bindPopup("<b>"+esc(nm)+"</b><br>"+(d?num(d.events_since_war||0)+" "+T("acledEvents").toLowerCase()+" · "+num(d.fatalities_since_war||0)+" "+T("acledFatal").toLowerCase()+(bt?"<br><span class='muted' style='font-size:11px'>"+bt+"</span>":""):"<span class='muted'>—</span>")+"<br><span class='muted' style='font-size:10.5px'>ACLED · "+T("acledSince")+"</span>"); }
+    }).eachLayer(function(l){acledLayer.addLayer(l);}); }catch(e){}
+  }
+  buildAcled();
+
+  // ---- Likely pushes / watch zones (indicative) ----
+  var watchLayer = L.layerGroup();
+  var wMax = analysis ? analysis.watch_zones.reduce(function(m,z){return Math.max(m,z.score||0);},1) : 1;
+  function buildWatch(){ watchLayer.clearLayers(); if(!analysis)return;
+    analysis.watch_zones.forEach(function(z){ if(!isFinite(z.lat)||!isFinite(z.lon))return; var t=(z.score||0)/wMax, col=cssv("--accent");
+      var m=L.circleMarker([z.lat,z.lon],{radius:8+16*Math.sqrt(t),color:col,weight:1.6,fillColor:col,fillOpacity:.14+.2*t,opacity:.9,dashArray:"3 3"});
+      var drv=(z.drivers||[]).slice(0,5).map(function(d){return "• "+esc(d);}).join("<br>");
+      m.bindPopup("<b>"+esc(z.adm1||"?")+"</b> <span class='muted'>("+T("watchScore")+" "+num(z.score)+")</span>"+
+        "<br><span class='muted' style='font-size:11px'>"+esc(z.window||"")+"</span>"+(drv?"<br>"+drv:"")+
+        "<br><span class='muted' style='font-size:11px'>"+T("watchCaveat")+"</span>");
+      watchLayer.addLayer(m); });
+  }
+  buildWatch();
+
+  // ---- Resources & wealth (markers by kind) ----
+  var resLayer = L.layerGroup();
+  var RES_KIND={gold:{c:"#d4af37",t:"resGold"},oil:{c:"#2c2c2c",t:"resOil"},dams:{c:"#2d6f86",t:"resDam"},agriculture:{c:"#6f9134",t:"resAgri"}};
+  function buildResources(){ resLayer.clearLayers(); if(!resources)return;
+    Object.keys(RES_KIND).forEach(function(kind){ var arr=resources[kind]; if(!has(arr))return; var m=RES_KIND[kind];
+      arr.forEach(function(r){ if(!isFinite(r.lat)||!isFinite(r.lon))return; // skip non-point entries (e.g. pipelines)
+        var mk=L.circleMarker([r.lat,r.lon],{radius:kind==="gold"?7:6,color:m.c,weight:2,fillColor:m.c,fillOpacity:kind==="oil"?.85:.5,opacity:.95});
+        var nm=(window.SDN_LANG==="fr"&&r.name_fr)?r.name_fr:r.name;
+        mk.bindPopup("<b>"+esc(nm||"?")+"</b> <span class='tag'>"+T(m.t)+"</span>"+
+          (r.status?"<br><span class='muted' style='font-size:11px'>"+esc(r.status)+"</span>":"")+
+          (r.control?"<br><b style='font-size:11px'>"+T("resControl")+" :</b> <span class='muted' style='font-size:11px'>"+esc(r.control)+"</span>":"")+
+          (r.war_link?"<br><b style='font-size:11px'>"+T("resWarLink")+" :</b> <span class='muted' style='font-size:11px'>"+esc(r.war_link)+"</span>":"")+
+          (r.source?"<br><span class='muted' style='font-size:10px'>"+esc(r.source)+"</span>":""));
+        resLayer.addLayer(mk); });
+    });
+  }
+  buildResources();
+
+  // ---- Foreign backers (flux arrows country → camp) ----
+  var backersLayer = L.layerGroup();
+  var SAF_ANCHOR=[19.6,37.2], RSF_ANCHOR=[13.0,24.9]; // Port-Sudan (SAF) / Darfur (RSF) — visual anchors only
+  function buildBackers(){ backersLayer.clearLayers(); if(!backers)return;
+    [["saf",backers.saf,SAF_ANCHOR],["rsf",backers.rsf,RSF_ANCHOR]].forEach(function(p){
+      var side=p[0], arr=p[1]||[], anchor=p[2], col=sideColor(side);
+      arr.forEach(function(b){ if(!isFinite(b.lat)||!isFinite(b.lon))return;
+        var multi=(b.certainty==="multi-source"||b.certainty==="multi");
+        var pts=[[b.lat,b.lon]]; if(b.hub&&isFinite(b.hub.lat)) pts.push([b.hub.lat,b.hub.lon]); pts.push(anchor);
+        backersLayer.addLayer(L.polyline(pts,{color:col,weight:multi?2.6:1.8,opacity:.75,dashArray:multi?null:"5 4"}));
+        backersLayer.addLayer(arrowhead(anchor, bearing(pts[pts.length-2],anchor), col));
+        var cn=(window.SDN_LANG==="fr"&&b.country_fr)?b.country_fr:b.country;
+        var st=(b.support_type||[]).map(esc).join(", ");
+        var m=L.circleMarker([b.lat,b.lon],{radius:6,color:col,weight:2,fillColor:col,fillOpacity:.3,opacity:.95});
+        m.bindPopup("<b>"+esc(cn)+"</b> → "+side.toUpperCase()+(b.denied?" <span class='tag'>"+T("backerDenied")+"</span>":"")+
+          "<br><span class='muted'>"+(multi?T("certMulti"):T("certReported"))+(st?" · "+st:"")+"</span>"+
+          (b.note?"<br><span class='muted' style='font-size:11px'>"+esc(b.note)+"</span>":""));
+        backersLayer.addLayer(m);
+      });
+    });
+  }
+  buildBackers();
+
+  // ---- Ethno-linguistic (groups polygons + languages) — sensitive, off by default ----
+  var ethnoGroupsLayer = L.layerGroup(), languagesLayer = L.layerGroup();
+  function statusColor(s){ s=String(s||"").toUpperCase();
+    return /POWER|INCLUD|SENIOR|JUNIOR|DOMINANT|MONOPOLY/.test(s) ? cssv("--c-safoth") : cssv("--c-rsfoth"); }
+  function buildEthno(){ ethnoGroupsLayer.clearLayers(); languagesLayer.clearLayers(); if(!ethnolang)return;
+    (ethnolang.groups||[]).forEach(function(g){ if(!g.geometry)return;
+      try{ L.geoJSON({type:"Feature",geometry:g.geometry,properties:g},{ interactive:true,
+        style:function(){ var c=statusColor(g.status); return {color:c,weight:1,fillColor:c,fillOpacity:.18,opacity:.5}; },
+        onEachFeature:function(f,l){ var nm=(window.SDN_LANG==="fr"&&g.name_fr)?g.name_fr:g.name;
+          l.bindPopup("<b>"+esc(nm||"?")+"</b> <span class='tag'>"+esc((g.status_fr&&window.SDN_LANG==="fr")?g.status_fr:(g.power_access||g.status||""))+"</span>"+
+            "<br><span class='muted' style='font-size:11px'>"+T("ethnoWarn")+"</span>"+(g.source?"<br><span class='muted' style='font-size:10px'>"+esc(g.source)+"</span>":"")); }
+      }).eachLayer(function(l){ethnoGroupsLayer.addLayer(l);}); }catch(e){}
+    });
+    (ethnolang.languages||[]).forEach(function(la){ if(!isFinite(la.lat))return;
+      var maj=!!la.major, col=cssv("--muted");
+      languagesLayer.addLayer(L.circleMarker([la.lat,la.lon],{radius:maj?5:3,color:col,weight:maj?1.5:.8,fillColor:col,fillOpacity:maj?.5:.25,opacity:.8})
+        .bindTooltip(esc(la.name)+(la.family?" ("+esc(la.family)+")":""),{direction:"top"}));
+    });
+  }
+  buildEthno();
+
+  // ---- Relief (hillshade tiles, own pane) + Roads & infrastructure ----
+  try{ map.createPane("reliefPane"); map.getPane("reliefPane").style.zIndex=240; }catch(e){}
+  var reliefLayer=null;
+  if(geo && geo.relief && geo.relief.tiles && geo.relief.tiles.url){ var rt=geo.relief.tiles;
+    reliefLayer=L.tileLayer(rt.url,{attribution:rt.attribution||"",maxZoom:rt.maxZoom||13,maxNativeZoom:rt.maxNativeZoom||13,opacity:rt.opacity||0.5,pane:"reliefPane"}); }
+  var infraLayer=L.layerGroup();
+  function buildInfra(){ infraLayer.clearLayers(); if(!geo)return;
+    (geo.roads||[]).forEach(function(r){ if(!has(r.coords))return;
+      infraLayer.addLayer(L.polyline(r.coords.map(function(c){return [c[1],c[0]];}),{color:cssv("--faint"),weight:r.cls==="trunk"?1.6:1,opacity:.55})); });
+    (geo.ports||[]).forEach(function(p){ if(!isFinite(p.lat)||!isFinite(p.lon))return; var major=/port.?soudan|port sudan/i.test(p.name||"");
+      infraLayer.addLayer(L.circleMarker([p.lat,p.lon],{radius:major?8:5,color:cssv("--cool")||"#2d6f86",weight:2,fillColor:"#2d6f86",fillOpacity:major?.7:.4,opacity:.95})
+        .bindPopup("<b>"+esc(p.name||"?")+"</b> <span class='tag'>"+T("infraPort")+"</span>"+(p.note?"<br><span class='muted' style='font-size:11px'>"+esc(p.note)+"</span>":""))); });
+    (geo.airports||[]).forEach(function(a){ if(!a.major)return; if(!isFinite(a.lat)||!isFinite(a.lon))return; // only major airports
+      infraLayer.addLayer(L.circleMarker([a.lat,a.lon],{radius:4,color:cssv("--ink"),weight:1.2,fillColor:cssv("--panel"),fillOpacity:.9,opacity:.8})
+        .bindPopup("<b>"+esc(a.name||a.iata||"?")+"</b> <span class='tag'>"+T("infraAirport")+"</span>")); });
+    (geo.crossings||[]).forEach(function(cr){ if(!isFinite(cr.lat)||!isFinite(cr.lon))return; var chad=/tchad|chad/i.test(cr.country||"");
+      infraLayer.addLayer(L.marker([cr.lat,cr.lon],{icon:L.divIcon({className:"xico",html:'<svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1 L13 13 L1 13 Z" fill="'+(chad?cssv("--c-rsf"):cssv("--muted"))+'" stroke="var(--panel)" stroke-width="1"/></svg>',iconSize:[14,14],iconAnchor:[7,7]})})
+        .bindPopup("<b>"+esc(cr.name||"?")+"</b> <span class='tag'>"+T("infraCrossing")+"</span>"+(cr.country?" · "+esc(cr.country):"")+(cr.note?"<br><span class='muted' style='font-size:11px'>"+esc(cr.note)+"</span>":""))); });
+  }
+  buildInfra();
+
   // ---- layer registry (humanitarian & "who advances" foregrounded) ----
+  // group = collapsible section key; reasonable defaults (NOT everything on)
   var LAYERS = [
-    {id:"adm",       labelKey:"lyrAdm",          on:true,  lyr:admGroup,           sw:"line",     avail:!!(adm0geo||adm1geo)},
-    {id:"neighbors", labelKey:"lyrNeighbors",    on:true,  lyr:neighborsLayer,     sw:"nbr",      avail:true},
-    {id:"idpstate",  labelKey:"lyrIdpState",     on:false, lyr:idpStateLayer,      sw:"idpfill",  avail:!!(hum&&dispByState.length&&adm1geo)},
-    {id:"idpsites",  labelKey:"lyrIdpSites",     on:true,  lyr:idpSitesLayer,      sw:"idp",      avail:!!(hum&&idpSites.length)},
-    {id:"ctrlapx",   labelKey:"lyrControlApprox",on:false, lyr:controlApproxLayer, sw:"ctrlfill", avail:!!ctrlApprox},
-    {id:"clash",     labelKey:"lyrClash",        on:true,  lyr:clashLayer,         sw:"dot",      count:"clashCnt", avail:events.length>0},
-    {id:"arrows",    labelKey:"lyrArrows",       on:true,  lyr:arrowsLayer,        sw:"arrow",    avail:!!claims},
-    {id:"claimsaf",  labelKey:"lyrClaimsSaf",    on:false, lyr:claimsSafLayer,     sw:"saf",      avail:!!(claims&&has(claims.saf))},
-    {id:"claimrsf",  labelKey:"lyrClaimsRsf",    on:false, lyr:claimsRsfLayer,     sw:"rsf",      avail:!!(claims&&has(claims.rsf))},
-    {id:"firesC",    labelKey:"lyrFiresConflict",on:false, lyr:firesConflictLayer, sw:"firec",    avail:firesConflict.length>0},
-    {id:"firms",     labelKey:"lyrFiresDensity", on:false, lyr:firesLayer,         sw:"fire",     avail:fires.length>0},
-    {id:"osint",     labelKey:"lyrOsint",        on:false, lyr:osintLayer,         sw:"osint",    avail:!!osintData},
-    {id:"act",       labelKey:"lyrAct",          on:false, lyr:actLayer,           sw:"sq",       avail:activity.length>0},
-    {id:"sentinel",  labelKey:"lyrSentinel",     on:false, lyr:sentinelLayer,      sw:"sat",      avail:!!sentinel},
-    {id:"s1",        labelKey:"lyrS1",           on:false, lyr:s1Layer,            sw:"radar",    avail:!!radar},
-    {id:"sectors",   labelKey:"lyrSectors",      on:false, lyr:sectorLayer,        sw:"rect",     avail:focus.length>0},
-    {id:"control",   labelKey:"lyrControl",      on:false, lyr:controlLayer,       sw:"ctrl",     avail:hasControl}
+    // Conflit
+    {grp:"secConflit", id:"acled",   labelKey:"lyrAcled",        on:true,  lyr:acledLayer,        sw:"acled",    avail:!!(acled&&adm1geo)},
+    {grp:"secConflit", id:"clash",   labelKey:"lyrClash",        on:false, lyr:clashLayer,        sw:"dot",      count:"clashCnt", avail:events.length>0},
+    {grp:"secConflit", id:"watch",   labelKey:"lyrWatch",        on:true,  lyr:watchLayer,        sw:"watch",    avail:!!analysis},
+    {grp:"secConflit", id:"arrows",  labelKey:"lyrArrows",       on:true,  lyr:arrowsLayer,       sw:"arrow",    avail:!!claims},
+    {grp:"secConflit", id:"firesC",  labelKey:"lyrFiresConflict",on:false, lyr:firesConflictLayer,sw:"firec",    avail:firesConflict.length>0},
+    {grp:"secConflit", id:"firms",   labelKey:"lyrFiresDensity", on:false, lyr:firesLayer,        sw:"fire",     avail:fires.length>0},
+    {grp:"secConflit", id:"act",     labelKey:"lyrAct",          on:false, lyr:actLayer,          sw:"sq",       avail:activity.length>0},
+    // Humanitaire
+    {grp:"secHuma",    id:"idpsites", labelKey:"lyrIdpSites",    on:true,  lyr:idpSitesLayer,     sw:"idp",      avail:!!(hum&&idpSites.length)},
+    {grp:"secHuma",    id:"idpstate", labelKey:"lyrIdpState",    on:false, lyr:idpStateLayer,     sw:"idpfill",  avail:!!(hum&&dispByState.length&&adm1geo)},
+    // Contexte & contrôle
+    {grp:"secContexte",id:"ctrlapx", labelKey:"lyrControlApprox",on:true,  lyr:controlApproxLayer,sw:"ctrlfill", avail:!!ctrlApprox},
+    {grp:"secContexte",id:"claimsaf",labelKey:"lyrClaimsSaf",    on:false, lyr:claimsSafLayer,    sw:"saf",      avail:!!(claims&&has(claims.saf))},
+    {grp:"secContexte",id:"claimrsf",labelKey:"lyrClaimsRsf",    on:false, lyr:claimsRsfLayer,    sw:"rsf",      avail:!!(claims&&has(claims.rsf))},
+    {grp:"secContexte",id:"adm",     labelKey:"lyrAdm",          on:true,  lyr:admGroup,          sw:"line",     avail:!!(adm0geo||adm1geo)},
+    {grp:"secContexte",id:"neighbors",labelKey:"lyrNeighbors",   on:true,  lyr:neighborsLayer,    sw:"nbr",      avail:true},
+    // Géographie
+    {grp:"secGeo",     id:"relief",  labelKey:"lyrRelief",       on:false, lyr:reliefLayer,       sw:"relief",   avail:!!reliefLayer},
+    {grp:"secGeo",     id:"infra",   labelKey:"lyrInfra",        on:false, lyr:infraLayer,        sw:"infra",    avail:!!geo},
+    {grp:"secGeo",     id:"sectors", labelKey:"lyrSectors",      on:false, lyr:sectorLayer,       sw:"rect",     avail:focus.length>0},
+    // Société & économie
+    {grp:"secSociete", id:"resources",labelKey:"lyrResources",   on:false, lyr:resLayer,          sw:"res",      avail:!!resources},
+    {grp:"secSociete", id:"backers", labelKey:"lyrBackers",      on:false, lyr:backersLayer,      sw:"arrow",    avail:!!backers},
+    {grp:"secSociete", id:"ethno",   labelKey:"lyrEthnoGroups",  on:false, lyr:ethnoGroupsLayer,  sw:"ethno",    avail:!!(ethnolang&&has(ethnolang.groups))},
+    {grp:"secSociete", id:"langs",   labelKey:"lyrLanguages",    on:false, lyr:languagesLayer,    sw:"lang",     avail:!!(ethnolang&&has(ethnolang.languages))},
+    // Satellite
+    {grp:"secSat",     id:"sentinel",labelKey:"lyrSentinel",     on:false, lyr:sentinelLayer,     sw:"sat",      avail:!!sentinel},
+    {grp:"secSat",     id:"s1",      labelKey:"lyrS1",           on:false, lyr:s1Layer,           sw:"radar",    avail:!!radar},
+    // OSINT
+    {grp:"secOsintGrp",id:"osint",   labelKey:"lyrOsint",        on:false, lyr:osintLayer,        sw:"osint",    avail:!!osintData},
+    // (control sketch — legacy point field, usually absent)
+    {grp:"secContexte",id:"control", labelKey:"lyrControl",      on:false, lyr:controlLayer,      sw:"ctrl",     avail:hasControl}
   ];
 
   // =====================================================================
@@ -481,42 +635,71 @@
     else if(kind==="arrow"){ sw.style.background="linear-gradient(90deg,"+cssv("--c-saf")+" 50%,"+cssv("--c-rsf")+" 50%)"; }
     else if(kind==="firec"){ sw.style.background="#f0461f"; }
     else if(kind==="radar"){ sw.className="sw sq"; sw.style.background="linear-gradient(135deg,#222,#aaa)"; }
+    else if(kind==="acled"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,#fde0d9,#9a1e0e)"; }
+    else if(kind==="watch"){ sw.style.background="transparent"; sw.style.border="2px dashed "+cssv("--accent"); }
+    else if(kind==="res"){ sw.style.background="#d4af37"; }
+    else if(kind==="relief"){ sw.className="sw sq"; sw.style.background="linear-gradient(135deg,#d9d4c8,#8a8378)"; }
+    else if(kind==="infra"){ sw.style.background="transparent"; sw.style.border="2px solid "+cssv("--cool"); sw.style.height="3px"; sw.style.width="16px"; sw.style.borderRadius="1px"; }
+    else if(kind==="ethno"){ sw.className="sw sq"; sw.style.background=cssv("--c-safoth"); sw.style.opacity=".4"; }
+    else if(kind==="lang"){ sw.style.background=cssv("--muted"); }
   }
-  function buildUI(){
-    // layers
-    var lg=document.getElementById("layerGrp"); lg.innerHTML="";
-    LAYERS.forEach(function(L0){
-      if(!L0.avail) return;
-      var row=document.createElement("label"); row.className="row";
-      var cb=document.createElement("input"); cb.type="checkbox"; cb.checked=L0.on;
-      var sw=document.createElement("span"); sw.className="sw"; swStyle(sw,L0.sw);
-      var lab=document.createElement("span"); lab.className="lab";
-      lab.textContent=T(L0.labelKey)+(L0.id==="firms"?" · "+firesDays+" j":"");
-      var cnt=document.createElement("span"); cnt.className="cnt"; if(L0.count) cnt.id=L0.count;
-      row.appendChild(cb); row.appendChild(sw); row.appendChild(lab); row.appendChild(cnt);
-      lg.appendChild(row);
-      // Sentinel: annual-mosaic year selector + dated scene focus buttons (show the DATE)
-      var sub=null;
-      if(L0.id==="sentinel" && sentinel){
-        sub=document.createElement("div"); sub.className="subrow"; sub.style.display=L0.on?"block":"none";
-        if(composites.length){
-          var sel=document.createElement("select"); sel.setAttribute("aria-label",T("sentYear"));
-          composites.forEach(function(c){ var o=document.createElement("option"); o.value=c.year; o.textContent=c.label||c.year; if(c.year==sentYear)o.selected=true; sel.appendChild(o); });
-          sel.addEventListener("change",function(){ sentYear=sel.value; if(annualBase) annualBase.setUrl(annualUrl(sentYear)); });
-          sub.appendChild(sel);
-        }
-        if(scenesDated.length){
-          var sb=document.createElement("div"); sb.className="focusbtns"; sb.style.marginTop="4px";
-          scenesDated.forEach(function(sc){ var b=document.createElement("button"); b.className="btn"; b.type="button";
-            b.textContent=(sc.label||T("sentFocusPfx"))+(sc.date?" · "+fdate(sc.date):"");
-            b.addEventListener("click",function(){ var bb=sc.bbox?L.latLngBounds([[sc.bbox[1],sc.bbox[0]],[sc.bbox[3],sc.bbox[2]]]):null; if(bb)map.fitBounds(bb.pad(0.08)); });
-            sb.appendChild(b); });
-          sub.appendChild(sb);
-        }
-        lg.appendChild(sub);
+  function renderLayerRow(L0, container){
+    var row=document.createElement("label"); row.className="row";
+    var cb=document.createElement("input"); cb.type="checkbox"; cb.checked=L0.on;
+    var sw=document.createElement("span"); sw.className="sw"; swStyle(sw,L0.sw);
+    var lab=document.createElement("span"); lab.className="lab";
+    lab.textContent=T(L0.labelKey)+(L0.id==="firms"?" · "+firesDays+" j":"");
+    var cnt=document.createElement("span"); cnt.className="cnt"; if(L0.count) cnt.id=L0.count;
+    row.appendChild(cb); row.appendChild(sw); row.appendChild(lab); row.appendChild(cnt);
+    container.appendChild(row);
+    var sub=null;
+    // ACLED metric toggle (events / fatalities)
+    if(L0.id==="acled" && acled){
+      sub=document.createElement("div"); sub.className="subrow"; sub.style.display=L0.on?"block":"none";
+      var seg=document.createElement("div"); seg.className="focusbtns";
+      [["events_since_war","acledEvents"],["fatalities_since_war","acledFatal"]].forEach(function(o){
+        var b=document.createElement("button"); b.className="btn"; b.type="button"; b.textContent=T(o[1]);
+        b.setAttribute("aria-pressed",String(acledMetric===o[0]));
+        b.addEventListener("click",function(){ acledMetric=o[0]; buildAcled();
+          if(map.hasLayer(acledLayer)){ map.removeLayer(acledLayer); acledLayer.addTo(map); }
+          Array.prototype.forEach.call(seg.children,function(x){x.setAttribute("aria-pressed","false");}); b.setAttribute("aria-pressed","true"); updateLegend(); });
+        seg.appendChild(b); });
+      sub.appendChild(seg); container.appendChild(sub);
+    }
+    // Sentinel: annual-mosaic year selector + dated scene focus buttons (show the DATE)
+    if(L0.id==="sentinel" && sentinel){
+      sub=document.createElement("div"); sub.className="subrow"; sub.style.display=L0.on?"block":"none";
+      if(composites.length){
+        var sel=document.createElement("select"); sel.setAttribute("aria-label",T("sentYear"));
+        composites.forEach(function(c){ var o=document.createElement("option"); o.value=c.year; o.textContent=c.label||c.year; if(c.year==sentYear)o.selected=true; sel.appendChild(o); });
+        sel.addEventListener("change",function(){ sentYear=sel.value; if(annualBase) annualBase.setUrl(annualUrl(sentYear)); });
+        sub.appendChild(sel);
       }
-      cb.addEventListener("change",function(){ if(cb.checked)L0.lyr.addTo(map); else map.removeLayer(L0.lyr); if(sub)sub.style.display=cb.checked?"block":"none"; updateLegend(); });
-      if(L0.on){ if(L0.lyr) L0.lyr.addTo(map); } else { if(L0.lyr) map.removeLayer(L0.lyr); }
+      if(scenesDated.length){
+        var sb=document.createElement("div"); sb.className="focusbtns"; sb.style.marginTop="4px";
+        scenesDated.forEach(function(sc){ var b=document.createElement("button"); b.className="btn"; b.type="button";
+          b.textContent=(sc.label||T("sentFocusPfx"))+(sc.date?" · "+fdate(sc.date):"");
+          b.addEventListener("click",function(){ var bb=sc.bbox?L.latLngBounds([[sc.bbox[1],sc.bbox[0]],[sc.bbox[3],sc.bbox[2]]]):null; if(bb)map.fitBounds(bb.pad(0.08)); });
+          sb.appendChild(b); });
+        sub.appendChild(sb);
+      }
+      container.appendChild(sub);
+    }
+    cb.addEventListener("change",function(){ if(cb.checked){ if(L0.lyr)L0.lyr.addTo(map);} else { if(L0.lyr)map.removeLayer(L0.lyr);} if(sub)sub.style.display=cb.checked?"block":"none"; updateLegend(); });
+    if(L0.on){ if(L0.lyr) L0.lyr.addTo(map); } else { if(L0.lyr) map.removeLayer(L0.lyr); }
+  }
+  var GROUP_ORDER=["secConflit","secHuma","secContexte","secGeo","secSociete","secSat","secOsintGrp"];
+  function buildUI(){
+    // layers — collapsible sections (open: Conflit/Humanitaire/Contexte; collapsed: the rest)
+    var lg=document.getElementById("layerGrp"); lg.innerHTML="";
+    GROUP_ORDER.forEach(function(gk,gi){
+      var items=LAYERS.filter(function(L0){return L0.grp===gk && L0.avail;});
+      if(!items.length) return;
+      var det=document.createElement("details"); det.className="lgroup"; if(gi<3) det.open=true;
+      var sum=document.createElement("summary"); sum.textContent=T(gk); det.appendChild(sum);
+      var box=document.createElement("div"); box.className="lgbox"; det.appendChild(box);
+      items.forEach(function(L0){ renderLayerRow(L0, box); });
+      lg.appendChild(det);
     });
     // categories
     var cg=document.getElementById("catGrp"); cg.innerHTML="";
@@ -540,18 +723,23 @@
         Array.prototype.forEach.call(tb.children,function(x){x.setAttribute("aria-pressed","false");}); b.setAttribute("aria-pressed","true"); });
       tb.appendChild(b);
     });
-    // focus
+    // focus (+ spillover view that widens toward the neighbours / Chad)
     var fb=document.getElementById("focusBtns"); fb.innerHTML="";
-    focus.concat([{key:"all",labelKey:"fAll",bbox:null}]).forEach(function(f){
+    focus.concat([{key:"all",labelKey:"fAll",bbox:null},{key:"spill",labelKey:"fSpill",bbox:[13.0,7.0,41.0,23.6]}]).forEach(function(f){
       var b=document.createElement("button"); b.className="btn"; b.type="button";
       b.textContent=f.label||T(f.labelKey||f.key);
-      b.addEventListener("click",function(){ var bb=bboxBounds(f.bbox); if(bb) map.fitBounds(bb.pad(0.05)); else refitAll(); });
+      b.addEventListener("click",function(){ var bb=bboxBounds(f.bbox); if(bb) map.fitBounds(bb.pad(0.02)); else refitAll(); });
       fb.appendChild(b);
     });
   }
   function updateLegend(){
     var leg=document.getElementById("legend"); var t=document.getElementById("legTitle"), body=document.getElementById("legBody");
     var sec=[];
+    if(acled && map.hasLayer(acledLayer)){ var mlab=acledMetric==="fatalities_since_war"?T("acledFatal"):T("acledEvents");
+      sec.push('<div class="legtitle">ACLED · '+mlab+'</div>'+
+      '<span class="pill sq" style="background:#fde0d9"></span>'+T("legLo")+' &nbsp;<span class="pill sq" style="background:#9a1e0e"></span>'+T("legHi")); }
+    if(analysis && map.hasLayer(watchLayer)){ sec.push('<div class="legtitle">'+T("lyrWatch")+'</div>'+
+      '<span class="pill" style="background:'+cssv("--accent")+';opacity:.5"></span>'+T("watchScore")+'<div class="muted" style="margin-top:2px">'+T("watchCaveat")+'</div>'); }
     if(map.hasLayer(arrowsLayer)){ sec.push('<div class="legtitle">'+T("lyrArrows")+'</div>'+
       '<span class="pill" style="background:'+cssv("--c-saf")+'"></span>'+T("legArrowsSaf")+' &nbsp;'+
       '<span class="pill" style="background:'+cssv("--c-rsf")+'"></span>'+T("legArrowsRsf")+'<div class="muted" style="margin-top:2px">'+T("arrowsCaveat")+'</div>'); }
@@ -559,6 +747,11 @@
       '<span class="pill sq" style="background:#cde2fb"></span>'+T("legLo")+' &nbsp;<span class="pill sq" style="background:#104281"></span>'+T("legHi")); }
     if(map.hasLayer(firesConflictLayer)){ sec.push('<div class="legtitle">'+T("lyrFiresConflict")+'</div>'+
       '<span class="pill" style="background:#f0461f"></span>'+T("legFiresConflict")); }
+    if(backers && map.hasLayer(backersLayer)){ sec.push('<div class="legtitle">'+T("backersRecap")+'</div>'+
+      '<span class="pill" style="background:'+cssv("--c-saf")+'"></span>SAF &nbsp;<span class="pill" style="background:'+cssv("--c-rsf")+'"></span>RSF<div class="muted" style="margin-top:2px">'+T("backersCaveat")+'</div>'); }
+    if(ethnolang && (map.hasLayer(ethnoGroupsLayer)||map.hasLayer(languagesLayer))){ sec.push('<div class="legtitle">'+T("lyrEthnoGroups")+'</div><div class="muted">'+T("ethnoWarn")+'</div>'); }
+    if(resources && map.hasLayer(resLayer)){ sec.push('<div class="legtitle">'+T("lyrResources")+'</div>'+
+      '<span class="pill" style="background:#d4af37"></span>'+T("resGold")+' &nbsp;<span class="pill" style="background:#2c2c2c"></span>'+T("resOil")+' &nbsp;<span class="pill" style="background:#2d6f86"></span>'+T("resDam")+' &nbsp;<span class="pill" style="background:#6f9134"></span>'+T("resAgri")); }
     if(map.hasLayer(controlApproxLayer)){ sec.push('<div class="legtitle">'+T("legControlTitle")+'</div>'+
       '<span class="pill sq" style="background:'+cssv("--c-saf")+'"></span>'+T("actorSAF")+' &nbsp;'+
       '<span class="pill sq" style="background:'+cssv("--c-rsf")+'"></span>'+T("actorRSF")+' &nbsp;'+
@@ -582,13 +775,24 @@
   function fillStats(){
     var totDeaths=events.reduce(function(a,e){return a+(e.deaths||0);},0);
     var fig=document.getElementById("statFigs");
-    var cells=[
-      [num(events.length), T("kfClash")],
-      [num(totDeaths), T("kfDeaths")],
-      [num(states.length), T("kfStates")],
-      [num(nFireDet), T("kfFires")+" ("+firesDays+" j)"]
-    ];
+    var cells;
+    if(acled && acled.totals){ // ACLED is far more complete than UCDP — lead with it
+      cells=[
+        [num(acled.totals.events), T("kfAcledEv")],
+        [num(acled.totals.fatalities), T("kfAcledFat")],
+        [num(states.length), T("kfStates")],
+        [num(events.length), T("kfClash")]
+      ];
+    } else {
+      cells=[[num(events.length), T("kfClash")],[num(totDeaths), T("kfDeaths")],[num(states.length), T("kfStates")],[num(nFireDet), T("kfFires")+" ("+firesDays+" j)"]];
+    }
     fig.innerHTML=cells.map(function(c){return '<div class="stat"><b>'+c[0]+'</b><span>'+c[1]+'</span></div>';}).join("");
+    // ACLED attribution (required, visible link)
+    var aEl=document.getElementById("acledAttrib");
+    if(aEl){ if(acled){ var u=(acled.meta&&acled.meta.url)||"https://acleddata.com";
+      aEl.innerHTML=T("acledAttrib")+" · "+T("acledSince")+" — <a href=\""+esc(u)+"\" rel=\"noopener\">ACLED (acleddata.com)</a>"+
+        (acled.totals&&acled.totals.as_of?' <span class="muted">('+T("humAsOf")+" "+fdate(acled.totals.as_of)+')</span>':''); aEl.hidden=false; }
+      else aEl.hidden=true; }
     // header daterange (+ event source label)
     var evSrc=(events[0]&&events[0].source)?String(events[0].source).toUpperCase():"UCDP";
     var dr=document.getElementById("daterange");
@@ -760,6 +964,7 @@
     if(adm1Lyr) adm1Lyr.setStyle({color:cssv("--line"),fillColor:cssv("--muted")});
     buildFires(); buildAct(); buildSectors(); buildControl(); buildOsint(); buildClaims(); buildControlApprox();
     buildNeighbors(); buildIdpSites(); buildIdpState(); buildFiresConflict(); buildArrows();
+    buildAcled(); buildWatch(); buildResources(); buildBackers(); buildEthno(); buildInfra();
     // re-add layers that were on
     LAYERS.forEach(function(L0){ if(L0.lyr && map.hasLayer(L0.lyr)){ map.removeLayer(L0.lyr); L0.lyr.addTo(map);} });
     drawClashes(); updateLegend();

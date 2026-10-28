@@ -102,7 +102,16 @@ window.SDN_I18N = {
     secFiresTitle:"Feux : conflit ou agriculture ?", firesAll:"tous les feux", firesNorth:"feux au nord de 12°N",
     firesNoteShort:"Les feux de densité sont surtout du brûlage agricole saisonnier (au sud de 12°N). Seuls les « feux de conflit » (≤15 km d'un affrontement récent) sont un indice prudent — jamais une preuve.",
     legFiresConflict:"feux proches d'un affrontement (60 j)",
-    srcLabel:"source"
+    srcLabel:"source",
+    secConflit:"Conflit", secHuma:"Humanitaire", secContexte:"Contexte & contrôle", secGeo:"Géographie", secSociete:"Société & économie", secSat:"Satellite", secOsintGrp:"OSINT",
+    lyrAcled:"Intensité du conflit — ACLED", acledEvents:"Événements", acledFatal:"Morts", acledAttrib:"Données ACLED",
+    kfAcledEv:"événements (ACLED)", kfAcledFat:"morts (ACLED)", acledSince:"depuis avr. 2023",
+    lyrWatch:"Poussées probables / secteurs à surveiller", watchCaveat:"Indicatif — dynamique récente des données ouvertes, PAS une prévision.", watchScore:"score", watchDrivers:"facteurs",
+    lyrResources:"Ressources & richesses", resGold:"or", resOil:"pétrole", resDam:"barrage", resAgri:"agriculture", resControl:"contrôle", resWarLink:"lien avec la guerre",
+    lyrBackers:"Soutiens étrangers", backersCaveat:"Soutiens RAPPORTÉS, sujet sensible — souvent démentis. Flèches = flux allégués, non une preuve.", backersRecap:"Soutiens étrangers rapportés", certMulti:"multi-source", certReported:"rapporté / allégué", backerDenied:"démenti",
+    lyrEthnoGroups:"Groupes ethniques (GeoEPR)", lyrLanguages:"Langues", statusIncl:"au pouvoir / inclus", statusExcl:"exclu",
+    ethnoWarn:"Cadre académique (EPR, ETH Zurich). La guerre n'est PAS ethnique : une lecture ethnique est une simplification contestée. Couches décochées par défaut.",
+    lyrRelief:"Relief", lyrInfra:"Routes & infrastructures", infraPort:"port", infraAirport:"aéroport", infraCrossing:"passage frontalier", fSpill:"Voisins (spillover)"
   },
   en: {
     dir:"ltr",
@@ -196,7 +205,16 @@ window.SDN_I18N = {
     secFiresTitle:"Fires: conflict or farming?", firesAll:"all fires", firesNorth:"fires north of 12°N",
     firesNoteShort:"Density fires are mostly seasonal agricultural burning (south of 12°N). Only “conflict fires” (≤15 km from a recent clash) are a cautious hint — never proof.",
     legFiresConflict:"fires near a clash (60 d)",
-    srcLabel:"source"
+    srcLabel:"source",
+    secConflit:"Conflict", secHuma:"Humanitarian", secContexte:"Context & control", secGeo:"Geography", secSociete:"Society & economy", secSat:"Satellite", secOsintGrp:"OSINT",
+    lyrAcled:"Conflict intensity — ACLED", acledEvents:"Events", acledFatal:"Fatalities", acledAttrib:"ACLED data",
+    kfAcledEv:"events (ACLED)", kfAcledFat:"fatalities (ACLED)", acledSince:"since Apr. 2023",
+    lyrWatch:"Likely pushes / sectors to watch", watchCaveat:"Indicative — recent open-data dynamics, NOT a forecast.", watchScore:"score", watchDrivers:"drivers",
+    lyrResources:"Resources & wealth", resGold:"gold", resOil:"oil", resDam:"dam", resAgri:"agriculture", resControl:"control", resWarLink:"war link",
+    lyrBackers:"Foreign backers", backersCaveat:"REPORTED support, sensitive topic — often denied. Arrows = alleged flows, not proof.", backersRecap:"Reported foreign backers", certMulti:"multi-source", certReported:"reported / alleged", backerDenied:"denied",
+    lyrEthnoGroups:"Ethnic groups (GeoEPR)", lyrLanguages:"Languages", statusIncl:"in power / included", statusExcl:"excluded",
+    ethnoWarn:"Academic framing (EPR, ETH Zurich). The war is NOT ethnic: an ethnic reading is a contested oversimplification. Layers off by default.",
+    lyrRelief:"Relief", lyrInfra:"Roads & infrastructure", infraPort:"port", infraAirport:"airport", infraCrossing:"border crossing", fSpill:"Neighbours (spillover)"
   },
   ar: {
     dir:"rtl",
@@ -289,6 +307,15 @@ window.SDN_I18N = {
     secFiresTitle:"الحرائق: نزاع أم زراعة؟", firesAll:"كل الحرائق", firesNorth:"حرائق شمال 12°N",
     firesNoteShort:"حرائق الكثافة غالبًا حرق زراعي موسمي (جنوب 12°N). فقط «حرائق النزاع» (≤15 كم من اشتباك حديث) مؤشر حذر — لا دليل.",
     legFiresConflict:"حرائق قرب اشتباك (60 ي)",
-    srcLabel:"المصدر"
+    srcLabel:"المصدر",
+    secConflit:"النزاع", secHuma:"إنساني", secContexte:"السياق والسيطرة", secGeo:"الجغرافيا", secSociete:"المجتمع والاقتصاد", secSat:"الأقمار", secOsintGrp:"OSINT",
+    lyrAcled:"شدة النزاع — ACLED", acledEvents:"أحداث", acledFatal:"وفيات", acledAttrib:"بيانات ACLED",
+    kfAcledEv:"أحداث (ACLED)", kfAcledFat:"وفيات (ACLED)", acledSince:"منذ أبريل 2023",
+    lyrWatch:"تصعيدات محتملة / قطاعات للمراقبة", watchCaveat:"إرشادي — ديناميكية حديثة، ليس تنبؤًا.", watchScore:"درجة", watchDrivers:"عوامل",
+    lyrResources:"الموارد والثروات", resGold:"ذهب", resOil:"نفط", resDam:"سد", resAgri:"زراعة", resControl:"سيطرة", resWarLink:"صلة بالحرب",
+    lyrBackers:"داعمون أجانب", backersCaveat:"دعم مُبلّغ عنه، موضوع حساس — يُنكر غالبًا. الأسهم = تدفقات مزعومة لا دليل.", backersRecap:"داعمون أجانب مُبلّغ عنهم", certMulti:"متعدد المصادر", certReported:"مُبلّغ / مزعوم", backerDenied:"مُنكَر",
+    lyrEthnoGroups:"مجموعات عرقية (GeoEPR)", lyrLanguages:"اللغات", statusIncl:"في السلطة / مشمول", statusExcl:"مُقصى",
+    ethnoWarn:"إطار أكاديمي (EPR). الحرب ليست عرقية: القراءة العرقية تبسيط متنازع عليه. الطبقات غير مفعّلة افتراضيًا.",
+    lyrRelief:"التضاريس", lyrInfra:"طرق وبنية تحتية", infraPort:"ميناء", infraAirport:"مطار", infraCrossing:"معبر حدودي", fSpill:"الجوار (الامتداد)"
   }
 };
