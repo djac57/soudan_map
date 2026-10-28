@@ -272,6 +272,70 @@ def main(soudan_dir, out_json):
     fires_timeline = [{"month": ym, "all": v["all"], "north": v["north"]}
                       for ym, v in sorted(monthly.items())]
 
+    # ----- ROBUSTESSE daily : PRÉSERVER les couches dont la source brute est
+    #       absente d'un runner quotidien (le daily ne fetche QUE FIRMS NRT +
+    #       UCDP ; l'archive FIRMS SP et l'OSINT sont hebdo, gitignorés, donc
+    #       absents). Sans ce repli, chaque rebuild quotidien ÉCRASERAIT le cœur
+    #       committé avec des couches vides (fires_history, fires_timeline) ou
+    #       régressées (si un fetch échoue sous continue-on-error). On retombe
+    #       alors sur le dernier cœur COMMITTÉ (out_json). Le weekly (toutes
+    #       sources présentes) ne déclenche aucun de ces replis. -----
+    prev = None
+    try:
+        if os.path.exists(out_json):
+            prev = json.load(open(out_json, encoding="utf-8"))
+    except Exception as e:
+        print("warn: lecture du cœur committé impossible (pas de repli):", e, file=sys.stderr)
+    prev_meta = (prev or {}).get("meta", {})
+    prev_counts = prev_meta.get("counts", {})
+
+    def _win(meta, key):
+        v = meta.get(key) or [None, None]
+        return (v + [None, None])[:2]
+
+    # (a) UCDP events/states/timeline : une BAISSE vs le committé = fetch UCDP
+    #     cassé (ex. zip GED stable non téléchargé) -> garder l'historique de
+    #     guerre committé plutôt que régresser 2023-2024.
+    if prev and len(events) < len(prev.get("events", [])):
+        print("warn: events frais %d < committé %d -> events/states/timeline committés conservés"
+              % (len(events), len(prev["events"])), file=sys.stderr)
+        events = prev["events"]
+        states_list = prev.get("states", states_list)
+        timeline = prev.get("timeline", timeline)
+        if prev_meta.get("updated_through"):
+            dmax = prev_meta["updated_through"]
+
+    # (b) FIRMS NRT density : brut absent -> fires_density/conflict vides ici ;
+    #     garder la couche committée.
+    if not fires_density and prev and prev.get("fires_density"):
+        print("warn: FIRMS NRT absent -> fires_density/conflict committés conservés", file=sys.stderr)
+        fires_density = prev["fires_density"]
+        fires_conflict_recent = prev.get("fires_conflict_recent", [])
+        n_near = prev_counts.get("fires_near_conflict_cells", len(fires_conflict_recent))
+        fw = _win(prev_meta, "fires_window")
+        firms_meta = {"days": prev_meta.get("fires_days"), "n": prev_counts.get("fires_detections"),
+                      "date_min": fw[0], "date_max": fw[1]}
+
+    # (c) FIRMS SP archive (hebdo, gitignorée) : fires_history vient UNIQUEMENT
+    #     de cette archive -> absente en daily, on garde l'historique committé.
+    if not fires_history and prev and prev.get("fires_history"):
+        print("warn: archive FIRMS SP absente -> fires_history committé conservé", file=sys.stderr)
+        fires_history = prev["fires_history"]
+        hw = _win(prev_meta, "fires_history_window")
+        firms_hist_meta = {"start": hw[0], "end": hw[1],
+                           "n_detections": prev_counts.get("fires_history_detections")}
+
+    # (d) fires_timeline : fusionner l'historique committé (mois d'archive) avec
+    #     les mois NRT fraîchement recalculés (ceux-ci priment). Préserve la
+    #     profondeur historique tout en rafraîchissant les mois récents.
+    if prev and prev.get("fires_timeline"):
+        merged = {t["month"]: {"all": t.get("all", 0), "north": t.get("north", 0)}
+                  for t in prev["fires_timeline"]}
+        for ym, v in monthly.items():      # mois NRT frais -> priment
+            merged[ym] = {"all": v.get("all", 0), "north": v.get("north", 0)}
+        fires_timeline = [{"month": ym, "all": m["all"], "north": m["north"]}
+                          for ym, m in sorted(merged.items())]
+
     # ----- focus sectors (bbox = west, south, east, north) -----
     focus = [
         {"key": "kordofan", "label": "Kordofan - axe El-Obeid / Bara",

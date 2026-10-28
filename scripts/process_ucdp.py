@@ -131,6 +131,24 @@ def main(raw_dir, out_dir):
             },
         })
     clash_feats.sort(key=lambda f: f["properties"]["date"])
+
+    # ROBUSTESSE daily : si les clashes frais régressent sous le fichier COMMITTÉ
+    # (ex. zip GED stable non téléchargé sous continue-on-error -> seuls les
+    # candidats récents chargés, perte de l'historique 2023-2024), on GARDE les
+    # fichiers committés plutôt que publier un cœur amputé. Le weekly (toutes
+    # sources) a toujours >= le committé et regénère normalement.
+    ecp = os.path.join(out_dir, "events_clashes.geojson")
+    prev_clash = None
+    try:
+        if os.path.exists(ecp):
+            prev_clash = len(json.load(open(ecp, encoding="utf-8")).get("features", []))
+    except Exception:
+        prev_clash = None
+    if prev_clash and len(clash_feats) < prev_clash:
+        print("warn: clashes frais %d < committé %d -> events_clashes/civ/summary committés conservés"
+              % (len(clash_feats), prev_clash), file=sys.stderr)
+        return
+
     fc = {"type": "FeatureCollection",
           "meta": {"source": "UCDP GED v25.1 (stable) + Candidate v25/v26 (monthly)",
                    "note": "Armed clashes only (state-based + non-state). Civilian-targeted "
