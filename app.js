@@ -137,7 +137,15 @@
   var km = (S.known_maps && typeof S.known_maps==="object") ? S.known_maps : null;
   var ctrlApprox = (km && has(km.control_approx)) ? km.control_approx[0] : null; // state-level sketch descriptor
   var claims = (S.claims && (has(S.claims.saf)||has(S.claims.rsf))) ? S.claims : null;
+  // v2: humanitarian, conflict/agricultural fires, dated sentinel + radar, neighbours, extended bbox
+  var hum = (S.humanitarian && typeof S.humanitarian==="object") ? S.humanitarian : null;
+  var firesConflict = has(S.fires_conflict_recent) ? S.fires_conflict_recent : [];
+  var firesTimeline = has(S.fires_timeline) ? S.fires_timeline : [];
+  var firesNote = meta.fires_note || "";
+  var neighborsUrl = (S.boundaries && S.boundaries.neighbors) || "data/boundaries/sudan_neighbors.geojson";
+  var viewBbox = (meta.bbox && meta.bbox.length===4) ? meta.bbox : null; // [w,s,e,n]
   function fdate(s){ return window.SDN_FMTDATE ? window.SDN_FMTDATE(s) : String(s==null?"":s); }
+  function pnum(n){ try{ return Number(n).toLocaleString(window.SDN_LANG==="ar"?"ar":(window.SDN_LANG||"fr")); }catch(e){ return String(n); } }
   function sideColor(k){
     k=String(k||"").toLowerCase();
     if(k==="saf") return cssv("--c-saf");
@@ -250,21 +258,34 @@
   }
   buildControl();
 
-  // ---- Sentinel-2 imagery (EOX, keyless, CC BY 4.0) — own pane, immune to dark invert ----
-  try{ map.createPane("sentinelPane"); map.getPane("sentinelPane").style.zIndex=250; }catch(e){}
-  var sentYear = sentinel ? (sentinel.composites && sentinel.composites[0] ? sentinel.composites[0].year : "") : null;
-  var sentinelLayer = null;
-  function sentUrl(year){
-    if(sentinel.composites){ for(var i=0;i<sentinel.composites.length;i++){ if(sentinel.composites[i].year==year) return sentinel.composites[i].url; } }
-    return sentinel.tiles.url;
-  }
+  // ---- Sentinel-2 imagery — own panes, immune to dark invert ----
+  // Country-wide EOX annual mosaic (fallback) + DATED Planetary-Computer scene overlays on top.
+  try{ map.createPane("sentinelPane"); map.getPane("sentinelPane").style.zIndex=250;
+       map.createPane("sentinelDated"); map.getPane("sentinelDated").style.zIndex=260;
+       map.createPane("sentinelRadar"); map.getPane("sentinelRadar").style.zIndex=255; }catch(e){}
+  var fa = sentinel && sentinel.fallback_annual ? sentinel.fallback_annual : null;
+  var composites = (fa && fa.composites) || (sentinel && sentinel.composites) || [];
+  var sentYear = composites[0] ? composites[0].year : null;
+  function annualUrl(year){ for(var i=0;i<composites.length;i++){ if(composites[i].year==year) return composites[i].url; } return (fa&&fa.tiles&&fa.tiles.url)||(sentinel&&sentinel.tiles.url); }
+  var sentinelLayer = null, annualBase = null;
+  var scenesDated = (sentinel && has(sentinel.scenes_dated)) ? sentinel.scenes_dated : [];
   if(sentinel){
-    var tb=sentinel.tiles;
-    sentinelLayer = L.tileLayer(sentUrl(sentYear), {
-      attribution: tb.attribution, maxZoom: tb.maxZoom||16, maxNativeZoom: tb.maxNativeZoom||14,
-      minZoom: tb.minZoom||1, tileSize: tb.tileSize||256,
-      bounds: (tb.bounds ? L.latLngBounds(tb.bounds) : undefined), pane:"sentinelPane"
+    sentinelLayer = L.layerGroup();
+    var at=(fa&&fa.tiles&&fa.tiles.attribution)||sentinel.attribution_s2||"";
+    annualBase = L.tileLayer(annualUrl(sentYear), { attribution:at, maxZoom:16, maxNativeZoom:14, minZoom:1,
+      bounds: L.latLngBounds([[8.2,21.8],[22.3,39.1]]), pane:"sentinelPane" });
+    sentinelLayer.addLayer(annualBase);
+    // dated scene overlays (true-color, each bounded to its footprint, date shown)
+    scenesDated.forEach(function(sc){ if(!sc.tilesUrl||!sc.bbox)return;
+      var b=L.latLngBounds([[sc.bbox[1],sc.bbox[0]],[sc.bbox[3],sc.bbox[2]]]);
+      sentinelLayer.addLayer(L.tileLayer(sc.tilesUrl,{ attribution:sentinel.attribution_s2||"", maxZoom:18, maxNativeZoom:16, bounds:b, pane:"sentinelDated" }));
     });
+  }
+  // ---- Sentinel-1 radar (sees through cloud/dust) ----
+  var s1Layer = null; var radar = (sentinel && sentinel.radar && sentinel.radar.tilesUrl) ? sentinel.radar : null;
+  if(radar){
+    var rb = radar.bbox ? L.latLngBounds([[radar.bbox[1],radar.bbox[0]],[radar.bbox[3],radar.bbox[2]]]) : undefined;
+    s1Layer = L.tileLayer(radar.tilesUrl, { attribution:sentinel.attribution_s1||radar.source||"", maxZoom:18, maxNativeZoom:16, bounds:rb, pane:"sentinelRadar" });
   }
 
   // ---- OSINT / Telegram points (unverified, aggregated per place) ----
@@ -324,19 +345,118 @@
   function buildClaims(){ fillClaims(claimsSafLayer, claims&&claims.saf, "saf"); fillClaims(claimsRsfLayer, claims&&claims.rsf, "rsf"); }
   buildClaims();
 
-  // ---- layer registry ----
+  // ---- Neighbouring countries (context outline, incl. South Sudan) ----
+  var neighborsLayer = L.layerGroup(); var neighborsGeo=null;
+  function buildNeighbors(){ neighborsLayer.clearLayers(); if(!neighborsGeo)return;
+    try{ L.geoJSON(neighborsGeo,{ style:function(){return {color:cssv("--faint"),weight:1,fill:false,opacity:.55,dashArray:"3 3"};},
+      interactive:false }).eachLayer(function(l){neighborsLayer.addLayer(l);}); }catch(e){} }
+  try{ fetch(neighborsUrl).then(function(r){return r.json();}).then(function(g){ neighborsGeo=g; buildNeighbors(); }).catch(function(){}); }catch(e){}
+
+  // ---- Humanitarian: IDP localities (IOM DTM), radius ∝ population ----
+  var idpSitesLayer = L.layerGroup();
+  var idpSites = (hum && has(hum.idp_sites)) ? hum.idp_sites : [];
+  var idpPopMax = idpSites.reduce(function(m,s){return Math.max(m,s.population||0);},1);
+  function buildIdpSites(){ idpSitesLayer.clearLayers();
+    idpSites.forEach(function(s){ var t=Math.sqrt((s.population||0)/idpPopMax);
+      var col=cssv("--accent"), r=5+16*t;
+      var m=L.circleMarker([s.lat,s.lon],{radius:r,color:col,weight:1.2,fillColor:col,fillOpacity:.28,opacity:.9});
+      var nm=(window.SDN_LANG==="fr"&&s.state_fr)?s.state:s.name;
+      m.bindPopup("<b>"+esc(s.name||"?")+"</b>"+(s.state?"<br><span class='muted'>"+esc(s.state)+"</span>":"")+
+        "<br>"+pnum(s.population||0)+" "+T("idpPop")+(s.as_of?" <span class='muted'>("+T("humAsOf")+" "+fdate(s.as_of)+")</span>":"")+
+        (s.source?"<br><span class='muted' style='font-size:10.5px'>"+esc(s.source)+"</span>":""));
+      idpSitesLayer.addLayer(m);
+    });
+  }
+  buildIdpSites();
+
+  // ---- Humanitarian: displacement-by-state choropleth (ADM1 tinted by IDP) ----
+  var idpStateLayer = L.layerGroup();
+  var dispByState = (hum && has(hum.displacement_by_state)) ? hum.displacement_by_state : [];
+  var idpByName={}, idpById={}, idpStateMax=1;
+  dispByState.forEach(function(d){ idpStateMax=Math.max(idpStateMax,d.idp||0);
+    if(d.state) idpByName[String(d.state).toLowerCase()]=d; if(d.adm1_id) idpById[d.adm1_id]=d; });
+  function idpRamp(v){ var t=Math.min(1, v>0?(Math.log(1+v)/Math.log(1+idpStateMax)):0);
+    // single-hue sequential on the accent blue
+    var lo=hex("#cde2fb"), hi=hex("#104281"); return mix2(lo,hi,t); }
+  function mix2(A,B,t){ return "rgb("+Math.round(A[0]+(B[0]-A[0])*t)+","+Math.round(A[1]+(B[1]-A[1])*t)+","+Math.round(A[2]+(B[2]-A[2])*t)+")"; }
+  function dispFor(props){ var id=props.adm1_id||props.shapeISO||props.ADM1_PCODE;
+    if(id && idpById[id]) return idpById[id];
+    var nm=props.shapeName||props.name||props.ADM1_EN; if(nm && idpByName[String(nm).toLowerCase()]) return idpByName[String(nm).toLowerCase()];
+    return null; }
+  function buildIdpState(){ idpStateLayer.clearLayers(); if(!adm1geo || !dispByState.length)return;
+    try{ L.geoJSON(adm1geo,{ style:function(f){ var d=dispFor(f.properties||{}); var v=d?d.idp:0;
+        return {color:cssv("--line"), weight:.8, fill:true, fillColor:idpRamp(v), fillOpacity:v?.72:.08, opacity:.6}; },
+      onEachFeature:function(f,l){ var d=dispFor(f.properties||{}); var nm=(f.properties&&(f.properties.shapeName||f.properties.name))||"?";
+        l.bindPopup("<b>"+esc(nm)+"</b><br>"+(d?pnum(d.idp)+" "+T("idpPop")+(d.returnees?" · "+pnum(d.returnees)+" "+T("idpReturnees"):"")+(d.as_of?"<br><span class='muted'>"+T("humAsOf")+" "+fdate(d.as_of)+"</span>":""):"<span class='muted'>—</span>")); }
+    }).eachLayer(function(l){idpStateLayer.addLayer(l);}); }catch(e){}
+  }
+  buildIdpState();
+
+  // ---- Conflict fires (≤15 km of a recent clash) — distinct, foregrounded ----
+  var firesConflictLayer = L.layerGroup();
+  function buildFiresConflict(){ firesConflictLayer.clearLayers();
+    var col=cssv("--ember")||"#c8361a";
+    firesConflict.forEach(function(f){ var w=f.weight||f.n||1;
+      firesConflictLayer.addLayer(L.circleMarker([f.lat,f.lon],{radius:4+Math.min(6,Math.log(1+w)*1.6),color:"#d8381c",weight:1.1,fillColor:"#f0461f",fillOpacity:.6,opacity:.95})
+        .bindPopup("<b>"+T("lyrFiresConflict")+"</b><br><span class='muted' style='font-size:11px'>"+T("firesNoteShort")+"</span>")); });
+  }
+  buildFiresConflict();
+
+  // ---- Arrows: who is advancing (derived from dated claimed captures) ----
+  var arrowsLayer = L.layerGroup();
+  function haversine(a,b){ var R=6371, toR=Math.PI/180;
+    var dLat=(b[0]-a[0])*toR, dLon=(b[1]-a[1])*toR, la1=a[0]*toR, la2=b[0]*toR;
+    var h=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)*Math.sin(dLon/2);
+    return 2*R*Math.asin(Math.sqrt(h)); }
+  function bearing(a,b){ var toR=Math.PI/180, toD=180/Math.PI;
+    var y=Math.sin((b[1]-a[1])*toR)*Math.cos(b[0]*toR);
+    var x=Math.cos(a[0]*toR)*Math.sin(b[0]*toR)-Math.sin(a[0]*toR)*Math.cos(b[0]*toR)*Math.cos((b[1]-a[1])*toR);
+    return (Math.atan2(y,x)*toD+360)%360; }
+  function arrowhead(latlng, deg, col){
+    var html='<svg width="18" height="18" viewBox="0 0 18 18" style="transform:rotate('+deg+'deg)"><path d="M9 1 L14 15 L9 11 L4 15 Z" fill="'+col+'" stroke="var(--panel)" stroke-width="1"/></svg>';
+    return L.marker(latlng,{icon:L.divIcon({className:"arrowico",html:html,iconSize:[18,18],iconAnchor:[9,9]}),interactive:false,keyboard:false});
+  }
+  function buildArrows(){ arrowsLayer.clearLayers(); if(!claims)return;
+    [["saf",claims.saf],["rsf",claims.rsf]].forEach(function(pair){
+      var side=pair[0], arr=(pair[1]||[]).filter(function(c){return c.date&&isFinite(c.lat)&&isFinite(c.lon);})
+        .slice().sort(function(a,b){return a.date<b.date?-1:1;});
+      var col=sideColor(side);
+      for(var i=1;i<arr.length;i++){ var from=[arr[i-1].lat,arr[i-1].lon], to=[arr[i].lat,arr[i].lon];
+        var d=haversine(from,to); if(d<8 || d>260) continue; // local advance segments only
+        arrowsLayer.addLayer(L.polyline([from,to],{color:col,weight:2.4,opacity:.8}));
+        arrowsLayer.addLayer(arrowhead(to, bearing(from,to), col));
+      }
+      // contested localities get a ring + note (e.g. Bara, changed hands repeatedly)
+      arr.forEach(function(c){ if(!c.contested)return;
+        var m=L.circleMarker([c.lat,c.lon],{radius:7,color:cssv("--c-contested"),weight:2.4,fill:false,opacity:.95});
+        m.bindPopup("<b>"+esc(c.place||"?")+"</b> <span class='tag'>"+T("legContested")+"</span>"+
+          (c.date?"<br><span class='muted'>"+fdate(c.date)+"</span>":"")+
+          "<br><span class='muted' style='font-size:11px'>"+T("arrowsCaveat")+"</span>"+
+          (c.source?"<br><span class='muted' style='font-size:10.5px'>"+esc(c.source)+"</span>":""));
+        arrowsLayer.addLayer(m); });
+    });
+  }
+  buildArrows();
+
+  // ---- layer registry (humanitarian & "who advances" foregrounded) ----
   var LAYERS = [
-    {id:"adm",      labelKey:"lyrAdm",          on:true,  lyr:admGroup,           sw:"line", avail:!!(adm0geo||adm1geo)},
-    {id:"ctrlapx",  labelKey:"lyrControlApprox",on:false, lyr:controlApproxLayer, sw:"ctrlfill", avail:!!ctrlApprox},
-    {id:"clash",    labelKey:"lyrClash",        on:true,  lyr:clashLayer,         sw:"dot",  count:"clashCnt", avail:events.length>0},
-    {id:"claimsaf", labelKey:"lyrClaimsSaf",    on:false, lyr:claimsSafLayer,     sw:"saf",  avail:!!(claims&&has(claims.saf))},
-    {id:"claimrsf", labelKey:"lyrClaimsRsf",    on:false, lyr:claimsRsfLayer,     sw:"rsf",  avail:!!(claims&&has(claims.rsf))},
-    {id:"osint",    labelKey:"lyrOsint",        on:false, lyr:osintLayer,         sw:"osint",avail:!!osintData},
-    {id:"act",      labelKey:"lyrAct",          on:false, lyr:actLayer,           sw:"sq",   avail:activity.length>0},
-    {id:"firms",    labelKey:"lyrFirms",        on:false, lyr:firesLayer,         sw:"fire", avail:fires.length>0},
-    {id:"sentinel", labelKey:"lyrSentinel",     on:false, lyr:sentinelLayer,      sw:"sat",  avail:!!sentinel},
-    {id:"sectors",  labelKey:"lyrSectors",      on:false, lyr:sectorLayer,        sw:"rect", avail:focus.length>0},
-    {id:"control",  labelKey:"lyrControl",      on:false, lyr:controlLayer,       sw:"ctrl", avail:hasControl}
+    {id:"adm",       labelKey:"lyrAdm",          on:true,  lyr:admGroup,           sw:"line",     avail:!!(adm0geo||adm1geo)},
+    {id:"neighbors", labelKey:"lyrNeighbors",    on:true,  lyr:neighborsLayer,     sw:"nbr",      avail:true},
+    {id:"idpstate",  labelKey:"lyrIdpState",     on:false, lyr:idpStateLayer,      sw:"idpfill",  avail:!!(hum&&dispByState.length&&adm1geo)},
+    {id:"idpsites",  labelKey:"lyrIdpSites",     on:true,  lyr:idpSitesLayer,      sw:"idp",      avail:!!(hum&&idpSites.length)},
+    {id:"ctrlapx",   labelKey:"lyrControlApprox",on:false, lyr:controlApproxLayer, sw:"ctrlfill", avail:!!ctrlApprox},
+    {id:"clash",     labelKey:"lyrClash",        on:true,  lyr:clashLayer,         sw:"dot",      count:"clashCnt", avail:events.length>0},
+    {id:"arrows",    labelKey:"lyrArrows",       on:true,  lyr:arrowsLayer,        sw:"arrow",    avail:!!claims},
+    {id:"claimsaf",  labelKey:"lyrClaimsSaf",    on:false, lyr:claimsSafLayer,     sw:"saf",      avail:!!(claims&&has(claims.saf))},
+    {id:"claimrsf",  labelKey:"lyrClaimsRsf",    on:false, lyr:claimsRsfLayer,     sw:"rsf",      avail:!!(claims&&has(claims.rsf))},
+    {id:"firesC",    labelKey:"lyrFiresConflict",on:false, lyr:firesConflictLayer, sw:"firec",    avail:firesConflict.length>0},
+    {id:"firms",     labelKey:"lyrFiresDensity", on:false, lyr:firesLayer,         sw:"fire",     avail:fires.length>0},
+    {id:"osint",     labelKey:"lyrOsint",        on:false, lyr:osintLayer,         sw:"osint",    avail:!!osintData},
+    {id:"act",       labelKey:"lyrAct",          on:false, lyr:actLayer,           sw:"sq",       avail:activity.length>0},
+    {id:"sentinel",  labelKey:"lyrSentinel",     on:false, lyr:sentinelLayer,      sw:"sat",      avail:!!sentinel},
+    {id:"s1",        labelKey:"lyrS1",           on:false, lyr:s1Layer,            sw:"radar",    avail:!!radar},
+    {id:"sectors",   labelKey:"lyrSectors",      on:false, lyr:sectorLayer,        sw:"rect",     avail:focus.length>0},
+    {id:"control",   labelKey:"lyrControl",      on:false, lyr:controlLayer,       sw:"ctrl",     avail:hasControl}
   ];
 
   // =====================================================================
@@ -355,6 +475,12 @@
     else if(kind==="rsf"){ sw.style.background="transparent"; sw.style.border="2px solid "+cssv("--c-rsf"); }
     else if(kind==="osint"){ sw.style.background=cssv("--c-neutral"); }
     else if(kind==="sat"){ sw.className="sw sq"; sw.style.background="linear-gradient(135deg,#3b5a2a,#6b7f3a)"; }
+    else if(kind==="nbr"){ sw.style.background="transparent"; sw.style.border="1.5px dashed "+cssv("--faint"); sw.style.height="4px"; sw.style.borderRadius="2px"; sw.style.width="16px"; }
+    else if(kind==="idpfill"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,#cde2fb,#104281)"; }
+    else if(kind==="idp"){ sw.style.background=cssv("--accent"); sw.style.opacity=".5"; }
+    else if(kind==="arrow"){ sw.style.background="linear-gradient(90deg,"+cssv("--c-saf")+" 50%,"+cssv("--c-rsf")+" 50%)"; }
+    else if(kind==="firec"){ sw.style.background="#f0461f"; }
+    else if(kind==="radar"){ sw.className="sw sq"; sw.style.background="linear-gradient(135deg,#222,#aaa)"; }
   }
   function buildUI(){
     // layers
@@ -369,14 +495,25 @@
       var cnt=document.createElement("span"); cnt.className="cnt"; if(L0.count) cnt.id=L0.count;
       row.appendChild(cb); row.appendChild(sw); row.appendChild(lab); row.appendChild(cnt);
       lg.appendChild(row);
-      // Sentinel year selector (shown when the imagery layer is on)
+      // Sentinel: annual-mosaic year selector + dated scene focus buttons (show the DATE)
       var sub=null;
-      if(L0.id==="sentinel" && sentinel && sentinel.composites && sentinel.composites.length){
+      if(L0.id==="sentinel" && sentinel){
         sub=document.createElement("div"); sub.className="subrow"; sub.style.display=L0.on?"block":"none";
-        var sel=document.createElement("select"); sel.setAttribute("aria-label",T("sentYear"));
-        sentinel.composites.forEach(function(c){ var o=document.createElement("option"); o.value=c.year; o.textContent=c.label||c.year; if(c.year==sentYear)o.selected=true; sel.appendChild(o); });
-        sel.addEventListener("change",function(){ sentYear=sel.value; if(sentinelLayer) sentinelLayer.setUrl(sentUrl(sentYear)); });
-        sub.appendChild(sel); lg.appendChild(sub);
+        if(composites.length){
+          var sel=document.createElement("select"); sel.setAttribute("aria-label",T("sentYear"));
+          composites.forEach(function(c){ var o=document.createElement("option"); o.value=c.year; o.textContent=c.label||c.year; if(c.year==sentYear)o.selected=true; sel.appendChild(o); });
+          sel.addEventListener("change",function(){ sentYear=sel.value; if(annualBase) annualBase.setUrl(annualUrl(sentYear)); });
+          sub.appendChild(sel);
+        }
+        if(scenesDated.length){
+          var sb=document.createElement("div"); sb.className="focusbtns"; sb.style.marginTop="4px";
+          scenesDated.forEach(function(sc){ var b=document.createElement("button"); b.className="btn"; b.type="button";
+            b.textContent=(sc.label||T("sentFocusPfx"))+(sc.date?" · "+fdate(sc.date):"");
+            b.addEventListener("click",function(){ var bb=sc.bbox?L.latLngBounds([[sc.bbox[1],sc.bbox[0]],[sc.bbox[3],sc.bbox[2]]]):null; if(bb)map.fitBounds(bb.pad(0.08)); });
+            sb.appendChild(b); });
+          sub.appendChild(sb);
+        }
+        lg.appendChild(sub);
       }
       cb.addEventListener("change",function(){ if(cb.checked)L0.lyr.addTo(map); else map.removeLayer(L0.lyr); if(sub)sub.style.display=cb.checked?"block":"none"; updateLegend(); });
       if(L0.on){ if(L0.lyr) L0.lyr.addTo(map); } else { if(L0.lyr) map.removeLayer(L0.lyr); }
@@ -415,6 +552,13 @@
   function updateLegend(){
     var leg=document.getElementById("legend"); var t=document.getElementById("legTitle"), body=document.getElementById("legBody");
     var sec=[];
+    if(map.hasLayer(arrowsLayer)){ sec.push('<div class="legtitle">'+T("lyrArrows")+'</div>'+
+      '<span class="pill" style="background:'+cssv("--c-saf")+'"></span>'+T("legArrowsSaf")+' &nbsp;'+
+      '<span class="pill" style="background:'+cssv("--c-rsf")+'"></span>'+T("legArrowsRsf")+'<div class="muted" style="margin-top:2px">'+T("arrowsCaveat")+'</div>'); }
+    if(map.hasLayer(idpStateLayer)){ sec.push('<div class="legtitle">'+T("legIdpState")+'</div>'+
+      '<span class="pill sq" style="background:#cde2fb"></span>'+T("legLo")+' &nbsp;<span class="pill sq" style="background:#104281"></span>'+T("legHi")); }
+    if(map.hasLayer(firesConflictLayer)){ sec.push('<div class="legtitle">'+T("lyrFiresConflict")+'</div>'+
+      '<span class="pill" style="background:#f0461f"></span>'+T("legFiresConflict")); }
     if(map.hasLayer(controlApproxLayer)){ sec.push('<div class="legtitle">'+T("legControlTitle")+'</div>'+
       '<span class="pill sq" style="background:'+cssv("--c-saf")+'"></span>'+T("actorSAF")+' &nbsp;'+
       '<span class="pill sq" style="background:'+cssv("--c-rsf")+'"></span>'+T("actorRSF")+' &nbsp;'+
@@ -445,9 +589,10 @@
       [num(nFireDet), T("kfFires")+" ("+firesDays+" j)"]
     ];
     fig.innerHTML=cells.map(function(c){return '<div class="stat"><b>'+c[0]+'</b><span>'+c[1]+'</span></div>';}).join("");
-    // header daterange
+    // header daterange (+ event source label)
+    var evSrc=(events[0]&&events[0].source)?String(events[0].source).toUpperCase():"UCDP";
     var dr=document.getElementById("daterange");
-    if(dr) dr.textContent=(dateMin||"?")+" → "+(dateMax||"?")+" · "+num(events.length)+" "+T("kfClash");
+    if(dr) dr.textContent=(dateMin||"?")+" → "+(dateMax||"?")+" · "+num(events.length)+" "+T("kfClash")+" · "+T("srcLabel")+" "+evSrc;
     // state table
     var maxTot=states.reduce(function(m,s){return Math.max(m,s.events+s.civ);},1);
     var head="<tr><th>"+T("thState")+"</th><th>"+T("thClash")+"</th><th>"+T("thCdeaths")+"</th><th>"+T("thCiv")+"</th><th>"+T("thCivD")+"</th></tr>";
@@ -456,6 +601,76 @@
       return "<tr><td>"+esc(s.name)+' <span class="bar" style="width:'+w+'px"></span></td><td>'+num(s.events)+"</td><td>"+num(s.deaths)+"</td><td>"+num(s.civ)+"</td><td>"+num(s.civD)+"</td></tr>";
     }).join("");
     document.getElementById("stateTable").innerHTML=head+rows;
+  }
+
+  // =====================================================================
+  //  HUMANITARIAN hero banner + refugees-by-country panel
+  // =====================================================================
+  function fillHumHero(){
+    var box=document.getElementById("humHero"); if(!box)return;
+    if(!hum || !hum.totals){ box.hidden=true; return; }
+    var tt=hum.totals; var figs=document.getElementById("humFigs");
+    var parts='<div class="humhero-ttl">'+T("humTitle")+'</div>';
+    if(tt.idp!=null) parts+='<div class="humfig"><b>'+pnum(tt.idp)+'</b><span class="lab">'+T("humIdp")+'</span><span class="src">'+T("humAsOf")+' '+fdate(tt.idp_as_of)+(tt.idp_source?' · '+esc(tt.idp_source):'')+'</span></div>';
+    if(tt.refugees!=null) parts+='<div class="humfig"><b>'+pnum(tt.refugees)+'</b><span class="lab">'+T("humRefugees")+'</span><span class="src">'+T("humAsOf")+' '+fdate(tt.refugees_as_of)+(tt.refugees_source?' · '+esc(tt.refugees_source):'')+'</span></div>';
+    figs.innerHTML=parts;
+    var cav=document.getElementById("humCaveat"); if(cav) cav.textContent=T("humCaveat");
+    box.hidden=false;
+  }
+  function fillRefugees(){
+    var sec=document.getElementById("refSection"); if(!sec)return;
+    var rows=(hum && has(hum.refugees_by_country)) ? hum.refugees_by_country.slice() : [];
+    if(!rows.length){ sec.hidden=true; return; }
+    rows.sort(function(a,b){return (b.people||b.count||0)-(a.people||a.count||0);});
+    var top=rows.slice(0,12); var mx=top.reduce(function(m,r){return Math.max(m,r.people||r.count||0);},1);
+    var head="<tr><th>"+T("thCountry")+"</th><th>"+T("thRefugees")+"</th></tr>";
+    var body=top.map(function(r){ var v=r.people||r.count||0; var w=Math.round(120*v/mx);
+      var nb=r.neighbour?' ·':'';
+      return "<tr><td>"+esc(r.country)+nb+'</td><td>'+pnum(v)+' <span class="bar" style="width:'+w+'px"></span></td></tr>'; }).join("");
+    document.getElementById("refCountryTable").innerHTML=head+body;
+    sec.hidden=false;
+  }
+
+  // =====================================================================
+  //  FIRES timeline frieze (all vs north) — two series, one axis, legend
+  // =====================================================================
+  function drawFiresChart(){
+    var sec=document.getElementById("firesSection"); if(!sec)return;
+    if(!firesTimeline.length){ sec.hidden=true; return; }
+    sec.hidden=false;
+    var host=document.getElementById("firesChart"); if(!host)return;
+    var W=760,H=200,padL=46,padR=10,padT=10,padB=30, iw=W-padL-padR, ih=H-padT-padB;
+    var tl=firesTimeline; var n=tl.length;
+    var max=tl.reduce(function(m,d){return Math.max(m,d.all||0);},1);
+    function niceMax(m){ var p=Math.pow(10,Math.floor(Math.log10(m))); var r=m/p; var k=r<=1?1:r<=2?2:r<=5?5:10; return k*p; }
+    var ymax=niceMax(max);
+    var x=function(i){return padL+(n<=1?0:(i/(n-1))*iw);};
+    var y=function(v){return padT+ih-(v/ymax)*ih;};
+    function path(key){ var p=""; tl.forEach(function(d,i){ p+=(i?"L":"M")+x(i).toFixed(1)+" "+y(d[key]||0).toFixed(1)+" "; }); return p; }
+    var cAll=cssv("--accent"), cNorth=cssv("--ember")||"#c8361a";
+    var svg='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(T("secFiresTitle"))+'">';
+    [0,.5,1].forEach(function(f){ var yy=padT+ih-f*ih; svg+='<line class="grid" x1="'+padL+'" y1="'+yy+'" x2="'+(W-padR)+'" y2="'+yy+'"/>'+
+      '<text class="ax" x="'+(padL-5)+'" y="'+(yy+3)+'" text-anchor="end">'+num(Math.round(ymax*f))+'</text>'; });
+    svg+='<path d="'+path("all")+'" fill="none" stroke="'+cAll+'" stroke-width="2"/>';
+    svg+='<path d="'+path("north")+'" fill="none" stroke="'+cNorth+'" stroke-width="2" stroke-dasharray="4 3"/>';
+    var step=Math.ceil(n/8);
+    tl.forEach(function(d,i){ if(i%step!==0 && i!==n-1)return; svg+='<text class="ax" x="'+x(i).toFixed(1)+'" y="'+(H-12)+'" text-anchor="middle">'+esc(d.month)+'</text>'; });
+    // transparent hit columns for hover
+    var cw=iw/Math.max(1,n);
+    tl.forEach(function(d,i){ svg+='<rect class="hit" x="'+(x(i)-cw/2).toFixed(1)+'" y="'+padT+'" width="'+cw.toFixed(1)+'" height="'+ih+'" fill="transparent" data-m="'+esc(d.month)+'" data-a="'+(d.all||0)+'" data-n="'+(d.north||0)+'"/>'; });
+    svg+='<line class="base" x1="'+padL+'" y1="'+(padT+ih)+'" x2="'+(W-padR)+'" y2="'+(padT+ih)+'"/></svg>';
+    host.innerHTML=svg;
+    var lg=document.getElementById("firesLegend");
+    if(lg) lg.innerHTML='<span class="chip-c"><i style="background:'+cAll+'"></i>'+T("firesAll")+'</span><span class="chip-c"><i style="background:'+cNorth+'"></i>'+T("firesNorth")+'</span>';
+  }
+  function bindFiresHover(){
+    var host=document.getElementById("firesChart"), tip=document.getElementById("firesTip"); if(!host||!tip)return;
+    host.addEventListener("mousemove",function(ev){ var t=ev.target; if(t&&t.classList&&t.classList.contains("hit")){
+      tip.style.display="block";
+      tip.innerHTML="<b>"+esc(t.getAttribute("data-m"))+"</b><br>"+T("firesAll")+" : "+num(+t.getAttribute("data-a"))+"<br>"+T("firesNorth")+" : "+num(+t.getAttribute("data-n"));
+      var r=host.getBoundingClientRect(); tip.style.left=Math.min(r.width-120,(ev.clientX-r.left+10))+"px"; tip.style.top=(ev.clientY-r.top-10)+"px";
+    } else tip.style.display="none"; });
+    host.addEventListener("mouseleave",function(){ tip.style.display="none"; });
   }
 
   // =====================================================================
@@ -534,7 +749,9 @@
   // =====================================================================
   //  RENDER / THEME / LANG
   // =====================================================================
-  function refitAll(){ try{ if(adm0Lyr) map.fitBounds(adm0Lyr.getBounds().pad(0.04));
+  function refitAll(){ try{
+    if(viewBbox){ map.fitBounds(bboxBounds(viewBbox)); return; } // extended south + neighbours context
+    if(adm0Lyr) map.fitBounds(adm0Lyr.getBounds().pad(0.04));
     else if(adm1Lyr) map.fitBounds(adm1Lyr.getBounds().pad(0.04));
     else if(events.length){ map.fitBounds(L.latLngBounds(events.map(function(e){return [e.lat,e.lon];})).pad(0.05)); } }catch(e){} }
 
@@ -542,14 +759,15 @@
     if(adm0Lyr) adm0Lyr.setStyle({color:cssv("--muted")});
     if(adm1Lyr) adm1Lyr.setStyle({color:cssv("--line"),fillColor:cssv("--muted")});
     buildFires(); buildAct(); buildSectors(); buildControl(); buildOsint(); buildClaims(); buildControlApprox();
+    buildNeighbors(); buildIdpSites(); buildIdpState(); buildFiresConflict(); buildArrows();
     // re-add layers that were on
     LAYERS.forEach(function(L0){ if(L0.lyr && map.hasLayer(L0.lyr)){ map.removeLayer(L0.lyr); L0.lyr.addTo(map);} });
     drawClashes(); updateLegend();
   }
-  function renderAll(){ buildUI(); drawClashes(); fillStats(); buildChartToggle(); drawChart(); fillControlSlot(); updateLegend(); }
+  function renderAll(){ buildUI(); drawClashes(); fillStats(); fillHumHero(); fillRefugees(); buildChartToggle(); drawChart(); drawFiresChart(); fillControlSlot(); updateLegend(); }
 
   // init
-  renderAll(); bindChartHover(); refitAll();
+  renderAll(); bindChartHover(); bindFiresHover(); refitAll();
   map.on("overlayadd overlayremove", updateLegend);
   var rT; window.addEventListener("resize", function(){ clearTimeout(rT); rT=setTimeout(function(){ try{ map.invalidateSize(); }catch(e){} }, 200); });
   new MutationObserver(function(){ restyleMap(); }).observe(root,{attributes:true,attributeFilter:["data-theme"]});

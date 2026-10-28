@@ -1,13 +1,14 @@
 {
-  "_comment": "Balanced set of PUBLIC Telegram web-preview channels (https://t.me/s/<name>) tracking the Sudan war. lean = editorial side, NOT ground truth. Chosen for a balanced pro-SAF / pro-RSF / neutral mix. Scraped from public previews only (no API, no login). Leans sourced from IFRI 'Sudan Wartime Online Propaganda' (2026) and channel self-description.",
+  "_comment": "Balanced set of PUBLIC Telegram web-preview channels (https://t.me/s/<name>) tracking the Sudan war. lean = editorial side, NOT ground truth. Chosen for a balanced pro-SAF / pro-RSF / neutral mix, then verified: only channels whose /s/ web preview actually serves dated messages are kept (many Sudan-war handles disable the preview -> a 'Contact @x' page, or are stale/sold). Scraped from public previews only (no API, no login). Leans sourced from IFRI 'Sudan Wartime Online Propaganda' (2026), channel self-description and observed framing. NOTE: the pro-RSF public /s/ presence with geolocatable tactical content is structurally thin beyond the official account (most handles are preview-disabled or stale); the pro-SAF ecosystem lives mostly off Telegram (Facebook/X/YouTube/TV). SudanTribune was dropped in v2: its handle now reads 'username for sale' (abandoned).",
   "channels": [
-    { "name": "RSFSudan",      "lean": "rsf",     "url": "https://t.me/s/RSFSudan",      "label": "Rapid Support Forces (official)" },
-    { "name": "GeneralDagalo",  "lean": "rsf",     "url": "https://t.me/s/GeneralDagalo",  "label": "Mohamed Hamdan Daglo / Hemedti (RSF leader)" },
+    { "name": "RSFSudan",      "lean": "rsf",     "url": "https://t.me/s/RSFSudan",      "label": "Rapid Support Forces (official account)" },
+    { "name": "GeneralDagalo",  "lean": "rsf",     "url": "https://t.me/s/GeneralDagalo",  "label": "Mohamed Hamdan Daglo / Hemedti (RSF leader; mostly political statements, few geolocatable posts)" },
     { "name": "SudanBreaking",  "lean": "saf",     "url": "https://t.me/s/SudanBreaking",  "label": "Aajel Al-Sudan (pro-SAF breaking news; low activity since 2026-04)" },
-    { "name": "sudaaan",        "lean": "saf",     "url": "https://t.me/s/sudaaan",        "label": "Al-Sudan (active pro-government / pro-SAF-leaning general news)" },
-    { "name": "NewsfromSudan",  "lean": "neutral", "url": "https://t.me/s/NewsfromSudan",  "label": "News from Sudan (independent HR documentation)" },
-    { "name": "SudanTribune",   "lean": "neutral", "url": "https://t.me/s/SudanTribune",   "label": "Sudan Tribune (independent press)" },
-    { "name": "ourwarstoday",   "lean": "neutral", "url": "https://t.me/s/ourwarstoday",   "label": "Our Wars, Today (war OSINT aggregator)" },
-    { "name": "OSINTWarfare",   "lean": "neutral", "url": "https://t.me/s/OSINTWarfare",   "label": "OSINTWarfare (conflict OSINT aggregator)" }
+    { "name": "sudaaan",        "lean": "saf",     "url": "https://t.me/s/sudaaan",        "label": "Al-Sudan (active pro-government / pro-SAF-leaning general news; high volume, shallow time depth)" },
+    { "name": "sudanewsnow",    "lean": "saf",     "url": "https://t.me/s/sudanewsnow",    "label": "Akhbar al-Sudan / News Now (independent Sudanese news, anti-RSF / pro-army framing)" },
+    { "name": "NewsfromSudan",  "lean": "neutral", "url": "https://t.me/s/NewsfromSudan",  "label": "News from Sudan (independent human-rights documentation, since 2024)" },
+    { "name": "kordofan24",     "lean": "neutral", "url": "https://t.me/s/kordofan24",     "label": "Minassat Kordofan 24 (independent Kordofan-regional news platform)" },
+    { "name": "ourwarstoday",   "lean": "neutral", "url": "https://t.me/s/ourwarstoday",   "label": "Our Wars, Today (global war OSINT aggregator; some Sudan coverage)" },
+    { "name": "OSINTWarfare",   "lean": "neutral", "url": "https://t.me/s/OSINTWarfare",   "label": "OSINTWarfare (global conflict OSINT aggregator; some Sudan coverage)" }
   ]
 }

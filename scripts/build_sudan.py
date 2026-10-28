@@ -22,9 +22,10 @@ import csv, json, sys, os, glob, io, zipfile, math, datetime
 
 csv.field_size_limit(10_000_000)
 
-WINDOW_START = "2024-01-01"      # timeline covers 2024 -> 2026
+WINDOW_START = "2023-04-15"      # RSF-SAF war outbreak -> full war covered
 SUDAN_ID = "625"
-BBOX = [21.8, 8.6, 39.1, 22.2]   # lon_min, lat_min, lon_max, lat_max
+BBOX = [21.8, 8.2, 39.1, 22.3]   # lon_min, lat_min, lon_max, lat_max (extended S
+                                 # to the South Sudan border band where fires peak)
 FIRMS_STEP = 0.05                # ~5.5 km density cells
 NEAR_DAYS = 60                   # "fire near a recent clash" lookback
 NEAR_KM = 15.0                   # distance threshold
@@ -166,6 +167,7 @@ def main(soudan_dir, out_json):
             "pair": pair_label(row.get("side_a"), row.get("side_b"), tov),
             "deaths": best, "type": int(tov) if tov and tov.isdigit() else None,
             "state": state,
+            "source": "ucdp",   # forward-compat: ACLED events (if key added) -> "acled"
         })
     events.sort(key=lambda e: e["date"])
 
@@ -213,6 +215,63 @@ def main(soudan_dir, out_json):
 
     n_near = sum(1 for c in fires_density if c["near"])
 
+    # ----- conflict-fire subset: EXPLICIT, named layer kept apart from the
+    #       seasonal agricultural burning that dominates the far south. A cell
+    #       qualifies only if it is within NEAR_KM of a clash in the last
+    #       NEAR_DAYS (same test as `near`). This is the UI's "fires near recent
+    #       fighting" layer; `fires_density` alone is NOT a conflict signal. -----
+    fires_conflict_recent = [
+        {"lon": c["lon"], "lat": c["lat"], "weight": c["weight"]}
+        for c in fires_density if c["near"]
+    ]
+    fires_conflict_recent.sort(key=lambda c: c["weight"])
+
+    # ----- TIME-AWARE fire history (FIRMS VIIRS_SNPP_SP archive, aggregated by
+    #       scripts/fetch_firms_archive.py) + recent NRT months appended -----
+    MIN_HIST = 2                 # drop single-detection cells (archive noise)
+    fires_history = []
+    fires_timeline = []
+    firms_hist_meta = {}
+    sp_path = os.path.join(data_dir, "raw", "firms", "firms_sp_agg.json")
+    monthly = {}                 # ym -> {all, north12, frp}
+    try:
+        sp = json.load(open(sp_path, encoding="utf-8"))
+        firms_hist_meta = sp.get("meta", {})
+        for g in sp.get("grid", []):
+            if g.get("total", 0) < MIN_HIST:
+                continue
+            fires_history.append({"lon": g["lon"], "lat": g["lat"],
+                                  "y": g.get("y", {}), "total": g["total"],
+                                  "north": bool(g.get("north12"))})
+        fires_history.sort(key=lambda g: g["total"])
+        for ym, v in sp.get("monthly", {}).items():
+            monthly[ym] = {"all": v.get("all", 0), "north": v.get("north12", 0)}
+    except FileNotFoundError:
+        print("warn: firms_sp_agg.json not found; fires_history empty "
+              "(run scripts/fetch_firms_archive.py)", file=sys.stderr)
+    # append recent NRT months (period after the SP archive's end) from the 90d raw
+    try:
+        fr90 = json.load(open(firms_path, encoding="utf-8"))
+        sp_end = firms_hist_meta.get("end", "")
+        sp_end_ym = sp_end[:7] if sp_end else "9999-99"
+        nrt_m = {}
+        for f in fr90["features"]:
+            ad = (f["properties"].get("date") or "")
+            if len(ad) < 7 or ad[:7] <= sp_end_ym:
+                continue   # already covered by the archive
+            lat = f["geometry"]["coordinates"][1]
+            ym = ad[:7]
+            d = nrt_m.setdefault(ym, {"all": 0, "north": 0})
+            d["all"] += 1
+            if lat >= 12.0:
+                d["north"] += 1
+        for ym, d in nrt_m.items():
+            monthly[ym] = d
+    except Exception as e:
+        print("warn: NRT monthly append failed:", e, file=sys.stderr)
+    fires_timeline = [{"month": ym, "all": v["all"], "north": v["north"]}
+                      for ym, v in sorted(monthly.items())]
+
     # ----- focus sectors (bbox = west, south, east, north) -----
     focus = [
         {"key": "kordofan", "label": "Kordofan - axe El-Obeid / Bara",
@@ -234,22 +293,31 @@ def main(soudan_dir, out_json):
         "bbox": BBOX,
         "fires_days": firms_meta.get("days"),
         "fires_window": [firms_meta.get("date_min"), firms_meta.get("date_max")],
+        "fires_history_window": [firms_hist_meta.get("start"), firms_hist_meta.get("end")],
         "counts": {
             "events": len(events), "states": len(states_list),
             "fires_cells": len(fires_density), "fires_near_conflict_cells": n_near,
+            "fires_conflict_recent_cells": len(fires_conflict_recent),
             "fires_detections": firms_meta.get("n"),
+            "fires_history_cells": len(fires_history),
+            "fires_history_detections": firms_hist_meta.get("n_detections"),
+            "fires_timeline_months": len(fires_timeline),
             "timeline_months": len(timeline),
         },
         "guardrail": "UCDP type_of_violence 3 (civilian-targeted) excluded from `events` "
                      "points; aggregated only in states[].civ_violence / civ_deaths.",
+        "fires_note": "fires_density/fires_history are a HEAT proxy dominated by seasonal "
+                      "agricultural burning (mostly south of 12N, see `north` flag); only "
+                      "fires_conflict_recent (within 15 km of a clash in the last 60 days) "
+                      "is a tentative conflict-fire hint, never proof.",
         "sources": [
             {"name": "UCDP GED v25.1 (stable) + Candidate v25/v26 (monthly)",
              "license": "CC BY 4.0",
              "url": "https://ucdp.uu.se/downloads/", "date": dmax},
-            {"name": "NASA FIRMS VIIRS SNPP NRT (active fire)",
+            {"name": "NASA FIRMS VIIRS SNPP NRT + SP archive (active fire)",
              "license": "Public domain (NASA EOSDIS/LANCE; attribution requested)",
              "url": "https://firms.modaps.eosdis.nasa.gov/", "date": firms_meta.get("date_max")},
-            {"name": "geoBoundaries ADM0/ADM1 (Sudan)",
+            {"name": "geoBoundaries ADM0/ADM1 (Sudan) + ADM0 neighbours (context)",
              "license": "CC BY 4.0 (Open)",
              "url": "https://www.geoboundaries.org/", "date": "2023"},
         ],
@@ -260,11 +328,15 @@ def main(soudan_dir, out_json):
         "events": events,
         "states": states_list,
         "fires_density": fires_density,
+        "fires_conflict_recent": fires_conflict_recent,
+        "fires_history": fires_history,
+        "fires_timeline": fires_timeline,
         "timeline": timeline,
         "focus": focus,
         "boundaries_url": "data/boundaries/sudan_adm1.geojson",
         "boundaries": {"adm0": "data/boundaries/sudan_adm0.geojson",
-                       "adm1": "data/boundaries/sudan_adm1.geojson"},
+                       "adm1": "data/boundaries/sudan_adm1.geojson",
+                       "neighbors": "data/boundaries/sudan_neighbors.geojson"},
         "control": None,   # see SCHEMA.md: honest "no fabricated control line" default
     }
 
@@ -275,6 +347,11 @@ def main(soudan_dir, out_json):
         "events": len(events), "events_date_min": dmin, "events_date_max": dmax,
         "states": len(states_list), "timeline_months": len(timeline),
         "fires_cells": len(fires_density), "fires_near_conflict": n_near,
+        "fires_conflict_recent_cells": len(fires_conflict_recent),
+        "fires_history_cells": len(fires_history),
+        "fires_history_detections": firms_hist_meta.get("n_detections"),
+        "fires_timeline_months": len(fires_timeline),
+        "fires_history_window": [firms_hist_meta.get("start"), firms_hist_meta.get("end")],
         "fires_days": firms_meta.get("days"), "fires_detections": firms_meta.get("n"),
         "fires_window": [firms_meta.get("date_min"), firms_meta.get("date_max")],
         "out": out_json,

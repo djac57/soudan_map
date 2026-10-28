@@ -12,6 +12,7 @@ import json, os, sys
 LAYERS = [
     ("SD_ADM0", "boundaries/sudan_adm0.geojson"),
     ("SD_ADM1", "boundaries/sudan_adm1.geojson"),
+    ("SD_NEIGHBORS", "boundaries/sudan_neighbors.geojson"),
     ("SD_CLASHES", "events_clashes.geojson"),
     ("SD_FIRMS", "firms_grid.geojson"),
     ("SD_ACTIVITY", "activity_grid.geojson"),

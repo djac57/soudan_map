@@ -40,6 +40,12 @@
 
   <div class="warnbar"><b data-t="guardrail">Garde-fou Darfour : données agrégées uniquement — aucun suivi d'unités, aucune donnée nominative. Les violences visant des civils sont comptées au niveau de l'État, jamais affichées en points. Données historiques, non temps réel.</b></div>
 
+  <!-- Humanitaire : ampleur de la crise, en tête de page -->
+  <div class="humhero" id="humHero" hidden>
+    <div class="humhero-figs" id="humFigs"></div>
+    <p class="humhero-caveat" id="humCaveat" data-t="humCaveat"></p>
+  </div>
+
   <div class="main">
     <div id="map"></div>
 
@@ -84,6 +90,21 @@
       </div>
     </section>
 
+    <section id="firesSection" hidden>
+      <h2 class="sec" data-t="secFiresTitle">Feux : conflit ou agriculture ?</h2>
+      <p class="seclead" data-t="firesNoteShort">…</p>
+      <div class="card">
+        <div class="chtog" id="firesLegend"></div>
+        <div class="chartwrap chart"><div id="firesChart"></div><div class="chtip" id="firesTip"></div></div>
+      </div>
+    </section>
+
+    <section id="refSection" hidden>
+      <h2 class="sec" data-t="secRefTitle">Réfugiés par pays d'accueil</h2>
+      <p class="seclead" data-t="secRefLead">Stock de réfugiés soudanais (UNHCR), principaux pays d'accueil.</p>
+      <div class="card"><div class="tablewrap"><table class="states" id="refCountryTable"></table></div></div>
+    </section>
+
     <section>
       <h2 class="sec" data-t="secControlTitle">Ligne de contrôle &amp; prévision</h2>
       <div id="controlSlot" class="slot"></div>
@@ -104,6 +125,7 @@
 <script src="data/layer_sentinel.js"></script>
 <script src="data/layer_osint.js"></script>
 <script src="data/layer_maps.js"></script>
+<script src="data/layer_humanitarian.js"></script>
 <script src="chrome.js"></script>
 <script src="app.js"></script>
 </body>

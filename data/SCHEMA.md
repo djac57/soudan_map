@@ -10,10 +10,19 @@ Build date: 2026-10-27. Data window: UCDP 2024-01-01 → 2026-09-28, FIRMS last 
 
 ```
 window.SUDAN = {
-  meta, events, states, fires_density, timeline, focus,
-  boundaries_url, boundaries, control
+  meta, events, states,
+  fires_density, fires_conflict_recent, fires_history, fires_timeline,
+  timeline, focus, boundaries_url, boundaries, control
 }
 ```
+
+> **2026-10-28 enrichment (additive, retro-compatible):** data window now starts
+> at the **war outbreak 2023-04-15** (was 2024-01-01); `events` 1320→**1626**.
+> New fire fields: **`fires_conflict_recent`** (explicit conflict-fire subset),
+> **`fires_history`** (annual 0.1° grid, FIRMS SP archive), **`fires_timeline`**
+> (monthly totals + `north`≥12N subset). `boundaries.neighbors` added (7 ADM0
+> context outlines). `meta.bbox` extended south to `[21.8, 8.2, 39.1, 22.3]`.
+> Legacy fields unchanged. See `data/AUDIT.md`.
 
 ---
 
@@ -88,6 +97,30 @@ Array of ~5.5 km cells:
   preliminary. Never label a fire as a strike/burning of a village. Caveat must be
   shown on the map.
 
+## `fires_conflict_recent` — conflict-fire subset (EXPLICIT, named)
+Array of `{ lon, lat, weight }`: the cells of `fires_density` that lie within
+**15 km of a clash in the last 60 days**. This is the UI's "fires near recent
+fighting" layer, kept **apart** from the agricultural burning that dominates
+`fires_density`. A weak corroboration hint, **never** proof of a conflict-caused
+fire. See `meta.fires_note`.
+
+## `fires_history` — time-aware fire archive (FIRMS VIIRS_SNPP_SP)
+Array of 0.1° (~11 km) cells:
+```
+{ lon, lat, y:{ "2023":n, "2024":n, "2025":n, "2026":n }, total, north:<bool> }
+```
+- Built by `scripts/fetch_firms_archive.py` (SP archive 2023-04 → 2026-07) +
+  recent NRT months. `north:true` = centroid ≥12N, i.e. **outside** the far-south
+  seasonal agricultural-burning belt. Cells with <2 total detections dropped.
+- Lets the UI offer a yearly time-slider instead of a single 90-day snapshot.
+- Same caveat as all FIRMS: heat, not cause.
+
+## `fires_timeline` — monthly fire series (seasonality)
+Array `{ month:"YYYY-MM", all, north }`, 2023-04 → latest. `all` = all detections
+that month; `north` = subset ≥12N. The gap between `all` and `north` is the
+seasonal agricultural burning of the south — plotting both makes the distinction
+honest and visible.
+
 ## `timeline` — monthly series (for the trend chart)
 Array, chronological:
 ```
@@ -107,8 +140,11 @@ Use `bbox` to fit/zoom; `note` is a short French caption.
 
 ## `boundaries_url` / `boundaries`
 - `boundaries_url` = `"data/boundaries/sudan_adm1.geojson"` (back-compat single URL).
-- `boundaries` = `{ adm0, adm1 }` relative paths to geoBoundaries GeoJSON in `data/`.
-  Loaded at runtime (they are large; kept as files, not inlined in SUDAN).
+- `boundaries` = `{ adm0, adm1, neighbors }` relative paths to geoBoundaries
+  GeoJSON in `data/`. Loaded at runtime (large; files, not inlined in SUDAN).
+  `neighbors` = ADM0 context outlines of South Sudan, Chad, Egypt, Eritrea,
+  Ethiopia, CAR, Libya (geoBoundaries gbOpen CC BY 4.0, ~1 km simplified). Also
+  exposed as `window.SD_NEIGHBORS` for the file:// bundle.
 
 ## `control` — **`null`** (honest default)
 A SAF/RSF territorial-control layer is **not** provided: `control === null`.

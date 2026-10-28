@@ -1,82 +1,82 @@
 {
  "source": "UCDP GED v25.1 + Candidate",
- "window_start": "2024-10-01",
+ "window_start": "2023-04-15",
  "note": "One-sided violence against civilians, AGGREGATED to state level only (Darfur guardrail: no fine-grained point localisation).",
  "by_state": [
   {
-   "state": "North Darfur",
-   "events": 63,
-   "deaths_best": 4142
+   "state": "Gezira",
+   "events": 113,
+   "deaths_best": 787
   },
   {
-   "state": "Gezira",
-   "events": 42,
-   "deaths_best": 333
+   "state": "North Darfur",
+   "events": 83,
+   "deaths_best": 4269
   },
   {
    "state": "North Kordofan",
-   "events": 37,
-   "deaths_best": 1264
-  },
-  {
-   "state": "West Kordofan",
-   "events": 29,
-   "deaths_best": 507
+   "events": 55,
+   "deaths_best": 1458
   },
   {
    "state": "Khartoum",
-   "events": 18,
-   "deaths_best": 255
+   "events": 43,
+   "deaths_best": 298
   },
   {
    "state": "South Kordofan",
-   "events": 17,
-   "deaths_best": 101
+   "events": 39,
+   "deaths_best": 334
   },
   {
-   "state": "South Darfur",
-   "events": 16,
-   "deaths_best": 39
-  },
-  {
-   "state": "White Nile",
-   "events": 10,
-   "deaths_best": 277
-  },
-  {
-   "state": "Unknown",
-   "events": 8,
-   "deaths_best": 241
-  },
-  {
-   "state": "Sennar",
-   "events": 7,
-   "deaths_best": 512
-  },
-  {
-   "state": "Central Darfur",
-   "events": 7,
-   "deaths_best": 14
+   "state": "West Kordofan",
+   "events": 36,
+   "deaths_best": 537
   },
   {
    "state": "West Darfur",
-   "events": 4,
-   "deaths_best": 9
+   "events": 32,
+   "deaths_best": 1626
+  },
+  {
+   "state": "South Darfur",
+   "events": 24,
+   "deaths_best": 68
+  },
+  {
+   "state": "Sennar",
+   "events": 15,
+   "deaths_best": 665
+  },
+  {
+   "state": "Unknown",
+   "events": 13,
+   "deaths_best": 248
+  },
+  {
+   "state": "Central Darfur",
+   "events": 11,
+   "deaths_best": 43
+  },
+  {
+   "state": "White Nile",
+   "events": 11,
+   "deaths_best": 303
   },
   {
    "state": "East Darfur",
+   "events": 4,
+   "deaths_best": 5
+  },
+  {
+   "state": "Blue Nile",
    "events": 3,
-   "deaths_best": 2
+   "deaths_best": 124
   },
   {
    "state": "River Nile",
    "events": 2,
    "deaths_best": 5
-  },
-  {
-   "state": "Blue Nile",
-   "events": 2,
-   "deaths_best": 120
   },
   {
    "state": "Kassala",

@@ -18,7 +18,7 @@ import csv, json, sys, os, glob, io, zipfile
 
 csv.field_size_limit(10_000_000)
 
-WINDOW_START = "2024-10-01"   # ~24 months before the 2026-10 build date
+WINDOW_START = "2023-04-15"   # RSF-SAF war outbreak (full war covered)
 SUDAN_ID = "625"
 
 

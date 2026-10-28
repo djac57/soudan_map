@@ -28,7 +28,7 @@ GeoJSON FeatureCollection with slim properties, each polygon tagged
 import json
 import sys
 
-SNAPSHOT_DATE = "2026-10-27"
+SNAPSHOT_DATE = "2026-10-28"
 
 # Short source string embedded in every feature. Full reference list + licenses
 # live in data/layer_maps.js (window.SUDAN.known_maps.references).

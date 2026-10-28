@@ -9,8 +9,14 @@ existing file**.
 <script src="data/layer_maps.js"></script>
 ```
 
-Build/research snapshot: **2026-10-27**. Everything is sourced, dated and tagged
-`approximatif` / `revendique, non verifie`. **No control line is invented.**
+Build/research snapshot: **2026-10-27**, enriched **2026-10-28**. Everything is
+sourced, dated and tagged `approximatif` / `revendique, non verifie`. **No control
+line is invented.**
+
+> **Date caveat.** Several relaying outlets (notably Sudan Tribune) render a
+> crawl/view date rather than the article date. Where a date was ambiguous the most
+> defensible value is used and each item's `source` names the outlet so it can be
+> re-checked. **A claim is not control.**
 
 ---
 
@@ -29,9 +35,13 @@ equivalents), each with `name, author, url, date, license, reuse, note`.
 | Sudans Post | Proprietary "Terms of Use" | No |
 | EUAA country-guidance map (after PolGeoNow / van Linge) | EU reuse decision | Underlying map still PolGeoNow's |
 | ACLED (event data under several maps) | Free non-commercial + attribution | Conditional |
+| **Yale HRL** — Sudan Conflict Observatory (satellite analysis) | Reports public; maps under own terms | No |
+| Reuters / AFP / Al Jazeera situation graphics | All rights reserved (news agency) | No |
 
-**Only one source (Wikipedia, CC BY-SA 4.0) is freely reusable.** The others are
-**cited but not reproduced**.
+**10 references recensed.** Only one source (Wikipedia, CC BY-SA 4.0) is **freely
+reusable**; the others are **cited but not reproduced**. No permissively licensed,
+georeferenced source exists that would allow a sketch finer than state level, so
+the control layer stays at state level (below).
 
 ### `control_approx` — the approximate sketch (and why it is defensible)
 
@@ -72,21 +82,34 @@ Every item is **"revendique, non verifie"**.
 ```
 claims = {
   generated,
-  saf: [ { lon, lat, place, adm1, date, claim, geo, source }, ... ],  // 7
-  rsf: [ { ... }, ... ],                                              // 6
+  saf: [ { lon, lat, place, adm1, date, claim, geo, source, contested? }, ... ],  // 29
+  rsf: [ { ... }, ... ],                                                          // 32
   note
 }
 ```
 
-- `claim`: `"captured"` (fresh claim) or `"held"` (claims to hold / de facto).
+- `claim`: `"captured"` (fresh claim of taking) or `"held"` (claims to hold / de
+  facto control).
 - `geo`: `"gazetteer"` (reliable town coordinates) or `"approx"` (placed from a
   relative description / coarse gazetteer — to verify).
-- **SAF (7):** Khartoum, Omdurman, Wad Madani, Singa/Sennar, Bara, El-Obeid,
-  Umm Sumeima.
-- **RSF (6):** El Fasher, Babanusa, Nyala (held), Al-Malha, Umm Sumeima,
-  Al-Dibeibat.
-- **Umm Sumeima appears on BOTH lists** — genuinely contested, claimed by each
-  side; Bara changed hands. Shown deliberately, not deduplicated.
+- `contested`: `true` = locality double-claimed and/or changed hands; it then
+  appears on **both** lists on purpose (not deduplicated). App.js ignores the extra
+  key; it is metadata for honesty/auditing.
+- **SAF (29):** Khartoum state (palace, Bahri, Omdurman, Jebel Aulia); Gezira (Wad
+  Madani, Rufaa, Tamboul, Al Hilaliya); Sennar (Jebel Moya, Singa, Ad-Dali, Al
+  Mazmum); White Nile (Kosti, Rabak, Ed Dueim); North Kordofan (El-Obeid, Bara,
+  Umm Sayala, Jabra al-Sheikh, Umm Garfa, Al-Baraka, Al-Mazroub, Kazgeil, Um Dam
+  Haj Ahmed); Blue Nile (Ed Damazin, Bukuri, Uklili); Port Sudan; Heglig pocket.
+- **RSF (32):** Darfur (El Fasher, Nyala, Zalingei, Ed Daein, El Geneina, Kulbus,
+  Sirba, Mellit, Al-Malha, Um Keddada, Karnoi, Umm Baru); West Kordofan (El Fula,
+  Babanusa, Muglad, En Nahud, Lagawa, Meiram, El Khawi, Wad Banda); South Kordofan
+  (Al-Dibeibat, Kadugli, Dilling); Blue Nile (Kurmuk, Surkum); North Kordofan (Bara,
+  Umm Sumeima, Kazgeil, Um Dam Haj Ahmed, Hamrat El Sheikh, Sodari, Umm Badr).
+- **Contested / changed hands (on BOTH lists, deliberate):** Bara, Umm Sumeima,
+  Kazgeil, Um Dam Haj Ahmed (North Kordofan belt); Al-Dibeibat (South Kordofan);
+  Babanusa (West Kordofan); Kurmuk (Blue Nile); Heglig (SAF pocket in RSF state).
+  **Bara** is the clearest case: it has changed hands repeatedly
+  (SAF Sep 2025 → RSF Oct 2025 → ... → SAF Jul 2026 → RSF ~Oct 2026).
 
 ---
 

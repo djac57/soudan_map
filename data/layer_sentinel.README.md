@@ -1,64 +1,90 @@
 # Couche Sentinel — `data/layer_sentinel.js`
 
-Imagerie satellite vraies couleurs pour la carte Soudan. Fichier chargé **après**
-`data/bundle.js` par un `<script>` ; il ne modifie rien, il ajoute seulement
-`window.SUDAN.sentinel`.
+Imagerie satellite pour la carte Soudan. Fichier chargé **après** `data/bundle.js`
+par un `<script>` ; il ne modifie rien, il ajoute seulement `window.SUDAN.sentinel`.
+
+**`layer_sentinel.js` est GÉNÉRÉ** par `scripts/sentinel/fetch_dated.py` (ne pas
+éditer à la main) : il embarque des **acquisitions Sentinel-2 DATÉES** réelles et
+une **acquisition Sentinel-1 RADAR** datée, le tout **SANS AUCUN compte ni clé**.
+
+## Nouveauté : du daté, plus seulement de l'annuel
+
+Avant : mosaïque EOX « Sentinel-2 cloudless » **annuelle** uniquement (la « date »
+affichée était l'année du composite). Désormais la couche **« Sentinel-2 » par
+défaut pointe vers une acquisition RÉELLE DATÉE** quand disponible ; l'EOX annuel
+reste en **repli étiqueté** « composite annuel ».
+
+## Accès keyless (identique à l'Ukraine)
+
+- **STAC public Microsoft Planetary Computer** (`planetarycomputer.microsoft.com/api/stac/v1`),
+  collections `sentinel-2-l2a` et `sentinel-1-rtc` — recherche REST **sans clé**.
+- **Affichage** : le **tiler** Planetary Computer (`api/data/v1`) **signe chaque
+  tuile par item côté serveur** (jetons SAS anonymes) → URL XYZ Leaflet **keyless**,
+  par scène datée. Aperçus PNG bornés par secteur via `/item/bbox/.../{W}x{H}.png`.
+- **Aucune clé n'est lue ni écrite.** `key_required: false`. Le jeton **NASA
+  Earthdata** (`~/.config/earthdata/`) **n'est PAS utilisé** et **n'est JAMAIS
+  écrit** dans ce dépôt (voir « Radar — chemin ASF » plus bas).
 
 ## Ce qui est exposé
 
-`window.SUDAN.sentinel = { tiles, date, periode, key_required, source, license,
-composites[], scenes[], change_pairs[], note, generated }`
+`window.SUDAN.sentinel = { tiles, date, periode, key_required, source,
+scenes_dated[], radar, change_pairs[], fallback_annual, attribution_s2,
+attribution_s1, note, generated }`
 
-- **tiles** (Palier 1) — couche de tuiles Leaflet par défaut (mosaïque la plus
-  récente, 2025). `url` au format XYZ `{z}/{y}/{x}`, `attribution`, `maxZoom` 16,
-  `maxNativeZoom` 14, `bounds` Soudan.
-- **composites[]** — les 6 mosaïques annuelles disponibles (2020→2025) pour un
-  sélecteur / une comparaison temporelle.
-- **scenes[]** (Palier 2) — vues cadrées sur les focus **El-Fasher** et
-  **Kordofan** (mêmes tuiles keyless + `bbox`, `center`, `zoom`, et un aperçu JPEG
-  réel `preview` dans `data/raw/sentinel/`).
-- **change_pairs[]** (Palier 3, partiel) — comparatif visuel *avant/après*
-  (2023→2025) **indicatif** sur l'axe logistique du Kordofan uniquement.
+- **tiles** — couche Leaflet **par défaut**. `tiles.dated === true` et pointe vers
+  la scène datée la plus récente (XYZ `{z}/{x}/{y}`, `date`, `cloud`, `item`,
+  `attribution`). Si aucune scène datée n'est trouvée, repli automatique sur EOX
+  (`tiles.dated === false`).
+- **scenes_dated[]** — `{sector, label, date, bbox, center, cloud, item, tile,
+  tilesUrl, imageUrl, source}` : 1 scène **datée** S2 vraies couleurs par secteur
+  de focus (El-Fasher, Kordofan). `tilesUrl` = tuiles XYZ keyless ; `imageUrl` =
+  aperçu PNG borné (`data/raw/sentinel/`).
+- **radar** — `{sector, label, date, bbox, center, item, orbit, tilesUrl, imageUrl,
+  source, note}` : **Sentinel-1 RTC**, **backscatter VV** (gamma0 terrain-corrigé,
+  niveaux de gris, `rescale 0–0.4`) sur **El-Fasher** (le radar traverse
+  poussière/nuages). C'est une **mesure de rétrodiffusion**, pas une interprétation
+  de positions.
+- **change_pairs[]** — comparatif **avant/après de DEUX scènes DATÉES** (même tuile
+  MGRS = grille de pixels identique, même saison sèche), étiqueté **INDICATIF** :
+  simple bascule pour l'œil, **aucun indice NBR/NDVI n'est calculé**.
+- **fallback_annual** — mosaïque EOX annuelle (`tiles`, `composites[]` 2020→2025,
+  `license` CC BY 4.0) en **repli**, étiquetée « composite annuel ».
 
-## Source & licence
+## Honnêteté / limites
 
-- **Source** : EOX::Maps « Sentinel-2 cloudless » (`s2maps.eu`), service WMTS/WMS
-  public et **anonyme**.
-- **Licence** : **CC BY 4.0** — *contient des données Copernicus Sentinel
-  modifiées* par EOX IT Services GmbH. Attribution obligatoire (voir
-  `tiles.attribution`).
-- **Avec/sans clé** : **SANS clé**. `key_required: false`. Aucune clé n'est lue ni
-  écrite. (`~/.config/` ne contient qu'un identifiant **NASA Earthdata**, pas de
-  jeton Copernicus/SentinelHub — donc pas de scène datée réelle ici.)
+- La **date affichée est le vrai jour d'acquisition** (S2 : date + % nuages réels ;
+  S1 : date + orbite). Résolution S2 ~10 m/px (zoom natif max ~14).
+- **Radar S1 = backscatter VV**, pas une interprétation de positions/fortifications.
+- **Garde-fou Darfour** : aucun produit dérivé ne cible des camps de déplacés.
+- **EOX annuel** reste en repli, étiqueté « composite annuel » (dates mélangées).
 
-## Date / honnêteté
+## Radar — chemin ASF (documenté, NON utilisé ici)
 
-- Imagerie = **mosaïques ANNUELLES sans nuages** (composites), **pas** des
-  acquisitions datées uniques. La « date » affichée est l'**année du composite**.
-- Résolution ~**10 m/px**, zoom natif max ~14.
-- **Pas** d'analyse d'impacts/texture/fortifications. Le pipeline Ukraine
-  (détection par asymétrie) demande des mois et des scènes datées appariées :
-  hors périmètre.
-- **Garde-fou Darfour** : aucun produit dérivé ne cible des camps de déplacés ;
-  le before/after est limité au Kordofan (El-Obeid/Bara).
+L'alternative demandée (ASF + jeton NASA Earthdata `~/.config/earthdata/` → HyP3
+RTC) est **documentée mais non utilisée** : Planetary Computer fournit déjà des
+**Sentinel-1 RTC** keyless (gamma0 terrain-corrigé) prêts à afficher, sans jeton et
+sans attendre un job HyP3. Le jeton Earthdata **n'est jamais écrit dans `soudan/`**.
+Chemin ASF si besoin un jour : `api.daac.asf.alaska.edu/services/search/param`
+(recherche) puis HyP3 `RTC_GAMMA` (traitement), identifiants lus hors dépôt.
 
 ## Roadmap (non livré)
 
-- Scènes datées réelles → nécessitent un jeton **Copernicus Data Space /
-  SentinelHub** (absent).
-- Alternative keyless **NASA GIBS HLS** (S30 = Sentinel-2 daté) testée le
-  2026-10-27 : couverture trop lacunaire sur le Soudan (tuiles vides) pour une
-  couche statique fiable.
-- Proxy **NBR/NDVI-diff** « cicatrices de combat/brûlures » : à faire proprement
-  sur paires de scènes datées, étiqueté « indicatif ».
+- **Proxy d'impacts NBR/NDVI-diff** calculé sur paires datées (le vrai début du
+  pipeline Ukraine) : demande `rasterio` + lecture fenêtrée des COG, cf.
+  `~/Desktop/perso/ukraine-feux/scripts/impacts_v1/fetch.py`. Ici seul un
+  comparatif **visuel** daté (`change_pairs`) est fourni, étiqueté indicatif.
 
 ## Scripts & données
 
-- `scripts/sentinel/fetch_scenes.py` — télécharge les aperçus focus via EOX WMS
-  (`python -I`, chemins/paramètres en arguments, aucune clé).
-  Ex. : `python -I scripts/sentinel/fetch_scenes.py data/raw/sentinel s2cloudless-2025 el_fasher 24.6 12.9 26.1 14.3`
-- `data/raw/sentinel/` — aperçus JPEG réels (données externes non fiables) +
-  petits `.json` de métadonnées par scène.
+- `scripts/sentinel/fetch_dated.py` — **pipeline principal** (keyless, `python -I`,
+  chemins en arguments) : interroge les STAC publics, choisit les scènes datées
+  récentes peu nuageuses (S2) et une S1 RTC couvrant le secteur, construit les URL
+  de tuiles keyless, télécharge les aperçus PNG, écrit `dated_index.json` et
+  **régénère `data/layer_sentinel.js`**.
+  Ex. : `python -I scripts/sentinel/fetch_dated.py data/raw/sentinel data/layer_sentinel.js`
+- `scripts/sentinel/fetch_scenes.py` — (hérité) aperçus EOX annuels keyless via WMS.
+- `data/raw/sentinel/` — aperçus PNG réels (données externes) + `dated_index.json`
+  (métadonnées : items, dates, nébulosité, bbox, orbite).
 
 ## Intégration
 
@@ -67,10 +93,11 @@ composites[], scenes[], change_pairs[], note, generated }`
 <script src="data/layer_sentinel.js"></script>
 <script>
   var s = window.SUDAN.sentinel;
+  // Couche Sentinel-2 datée par défaut (repli EOX si s.tiles.dated === false)
   L.tileLayer(s.tiles.url, {
     attribution: s.tiles.attribution,
-    maxZoom: s.tiles.maxZoom,
-    maxNativeZoom: s.tiles.maxNativeZoom,
-  }); // .addTo(map)
+    maxZoom: s.tiles.maxZoom, maxNativeZoom: s.tiles.maxNativeZoom,
+  }); // .addTo(map)  — libellé : "Sentinel-2 " + s.tiles.date
+  // Radar : L.tileLayer(s.radar.tilesUrl, { attribution: s.attribution_s1 })
 </script>
 ```

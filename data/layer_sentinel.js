@@ -1,164 +1,244 @@
 /* ---------------------------------------------------------------------------
  * data/layer_sentinel.js  —  COUCHE SENTINEL (imagerie satellite) pour la carte Soudan
  *
- * Chargé APRÈS data/bundle.js. N'écrase rien : il ajoute window.SUDAN.sentinel.
+ * GENERE par scripts/sentinel/fetch_dated.py le 2026-10-28 — ne pas editer a la main.
+ * Charge APRES data/bundle.js. N'ecrase rien : il ajoute window.SUDAN.sentinel.
  *
- * Palier 1 (tuiles)   : mosaïque vraies-couleurs Sentinel-2 "cloudless" d'EOX,
- *                       SANS clé, licence claire (CC BY 4.0 / Copernicus Sentinel).
- * Palier 2 (scenes)   : vues focus El-Fasher et Kordofan (mêmes tuiles keyless +
- *                       aperçus JPEG réels téléchargés via WMS dans data/raw/sentinel/).
- * Palier 3 (proxy)    : PAS de détection d'impacts/brûlures calculée ici (voir note) ;
- *                       seul un comparatif visuel before/after de composites annuels
- *                       est fourni, étiqueté "indicatif", et UNIQUEMENT sur l'axe
- *                       logistique du Kordofan (jamais sur El-Fasher / camps — garde-fou).
+ * Sentinel-2 DATE (par defaut)  : acquisitions L2A reelles, peu nuageuses, DATEES, affichees
+ *   via le tiler keyless de Microsoft Planetary Computer (tuiles XYZ signees par item cote
+ *   serveur, jetons SAS anonymes). AUCUN compte, AUCUNE cle.
+ * Sentinel-1 RADAR (VV)         : acquisition RTC (gamma0 terrain-corrige) recente sur
+ *   El-Fasher — le radar traverse poussiere/nuages. Backscatter, pas une interpretation.
+ * EOX annuel (repli)            : mosaique "Sentinel-2 cloudless" d'EOX, SANS cle, gardee
+ *   en fond de repli etiquete "composite ANNUEL" (pas une date unique).
  *
- * Aucune clé n'est requise ni lue : EOX::Maps est un service anonyme public.
+ * Aucune cle n'est requise ni lue. Donnees : Copernicus Sentinel (ESA).
  * ------------------------------------------------------------------------- */
 (function () {
   "use strict";
-
   window.SUDAN = window.SUDAN || {};
 
-  // Modèle d'URL XYZ Leaflet pour une année de la mosaïque S2 cloudless d'EOX.
-  // Format WMTS/REST EOX : .../{layer}_3857/default/g/{z}/{y}/{x}.jpg  (ordre z/y/x)
+  // ---- Repli : mosaique annuelle EOX "Sentinel-2 cloudless" (keyless) -------
   function eoxUrl(year) {
-    return (
-      "https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-" +
-      year +
-      "_3857/default/g/{z}/{y}/{x}.jpg"
-    );
+    return ("https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-" + year +
+            "_3857/default/g/{z}/{y}/{x}.jpg");
   }
-
-  var ATTRIBUTION =
+  var EOX_ATTR =
     'Sentinel-2 cloudless (<a href="https://s2maps.eu">s2maps.eu</a>) par EOX IT Services GmbH — ' +
-    "contient des données Copernicus Sentinel modifiées — " +
+    "contient des donnees Copernicus Sentinel modifiees — " +
     '<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>';
+  var EOX_LATEST = 2025;
+  var EOX_YEARS = [2025, 2024, 2023, 2022, 2021, 2020];
 
-  var LICENSE =
-    "CC BY 4.0 — Sentinel-2 cloudless by EOX IT Services GmbH " +
-    "(contains modified Copernicus Sentinel data). Attribution obligatoire.";
-
-  var LATEST = 2025; // mosaïque annuelle la plus récente disponible chez EOX
-
-  // Années de mosaïque disponibles (vérifiées via WMTSCapabilities EOX, 2026-10-27).
-  var YEARS = [2025, 2024, 2023, 2022, 2021, 2020];
-
-  function composite(year) {
-    return {
-      year: year,
-      label: "S2 cloudless " + year,
-      url: eoxUrl(year),
-    };
+  // ---- Donnees DATEES (Planetary Computer, keyless) — injectees par le script
+  var SCENES_DATED = [
+  {
+    "sector": "el_fasher",
+    "label": "El-Fasher (Darfour Nord)",
+    "date": "2026-10-27",
+    "bbox": [
+      25.15,
+      13.48,
+      25.72,
+      13.92
+    ],
+    "center": [
+      25.35,
+      13.63
+    ],
+    "cloud": 0.0,
+    "item": "S2C_MSIL2A_20261027T084041_R064_T35PLR_20261027T135650",
+    "tile": "T35PLR",
+    "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2C_MSIL2A_20261027T084041_R064_T35PLR_20261027T135650&assets=visual&asset_bidx=visual%7C1,2,3&format=png",
+    "imageUrl": "data/raw/sentinel/s2_el_fasher_2026-10-27.png",
+    "source": "Copernicus Sentinel-2 L2A via Planetary Computer (keyless)"
+  },
+  {
+    "sector": "kordofan",
+    "label": "Kordofan — axe El-Obeid / Bara",
+    "date": "2026-10-26",
+    "bbox": [
+      29.92,
+      12.98,
+      30.56,
+      13.48
+    ],
+    "center": [
+      30.2,
+      13.18
+    ],
+    "cloud": 0.0,
+    "item": "S2B_MSIL2A_20261026T082029_R121_T35PRQ_20261026T135212",
+    "tile": "T35PRQ",
+    "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2B_MSIL2A_20261026T082029_R121_T35PRQ_20261026T135212&assets=visual&asset_bidx=visual%7C1,2,3&format=png",
+    "imageUrl": "data/raw/sentinel/s2_kordofan_2026-10-26.png",
+    "source": "Copernicus Sentinel-2 L2A via Planetary Computer (keyless)"
   }
-
-  // Centre [lon, lat] d'une bbox [minlon, minlat, maxlon, maxlat].
-  function centerOf(b) {
-    return [(b[0] + b[2]) / 2, (b[1] + b[3]) / 2];
+];
+  var CHANGE_PAIRS = [
+  {
+    "key": "el_fasher_dated",
+    "label": "El-Fasher (Darfour Nord) — 2025-12-11 -> 2026-10-27",
+    "sector": "el_fasher",
+    "bbox": [
+      25.15,
+      13.48,
+      25.72,
+      13.92
+    ],
+    "center": [
+      25.35,
+      13.63
+    ],
+    "before": {
+      "date": "2025-12-11",
+      "cloud": 0.2,
+      "item": "S2C_MSIL2A_20251211T084351_R064_T35PLR_20251211T122815",
+      "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2C_MSIL2A_20251211T084351_R064_T35PLR_20251211T122815&assets=visual&asset_bidx=visual%7C1,2,3&format=png",
+      "imageUrl": "data/raw/sentinel/s2_el_fasher_2025-12-11.png"
+    },
+    "after": {
+      "date": "2026-10-27",
+      "cloud": 0.0,
+      "item": "S2C_MSIL2A_20261027T084041_R064_T35PLR_20261027T135650",
+      "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2C_MSIL2A_20261027T084041_R064_T35PLR_20261027T135650&assets=visual&asset_bidx=visual%7C1,2,3&format=png",
+      "imageUrl": "data/raw/sentinel/s2_el_fasher_2026-10-27.png"
+    },
+    "note": "Comparatif visuel de DEUX acquisitions S2 DATEES et peu nuageuses, meme tuile MGRS T35PLR (grille de pixels identique), memes conditions saisonnieres (saison seche). INDICATIF : aucun indice (NBR/NDVI) n'est calcule ici — simple bascule avant/apres pour l'oeil."
+  },
+  {
+    "key": "kordofan_dated",
+    "label": "Kordofan — axe El-Obeid / Bara — 2025-12-10 -> 2026-10-26",
+    "sector": "kordofan",
+    "bbox": [
+      29.92,
+      12.98,
+      30.56,
+      13.48
+    ],
+    "center": [
+      30.2,
+      13.18
+    ],
+    "before": {
+      "date": "2025-12-10",
+      "cloud": 0.0,
+      "item": "S2B_MSIL2A_20251210T082239_R121_T35PRQ_20251212T112431",
+      "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2B_MSIL2A_20251210T082239_R121_T35PRQ_20251212T112431&assets=visual&asset_bidx=visual%7C1,2,3&format=png",
+      "imageUrl": "data/raw/sentinel/s2_kordofan_2025-12-10.png"
+    },
+    "after": {
+      "date": "2026-10-26",
+      "cloud": 0.0,
+      "item": "S2B_MSIL2A_20261026T082029_R121_T35PRQ_20261026T135212",
+      "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2B_MSIL2A_20261026T082029_R121_T35PRQ_20261026T135212&assets=visual&asset_bidx=visual%7C1,2,3&format=png",
+      "imageUrl": "data/raw/sentinel/s2_kordofan_2026-10-26.png"
+    },
+    "note": "Comparatif visuel de DEUX acquisitions S2 DATEES et peu nuageuses, meme tuile MGRS T35PRQ (grille de pixels identique), memes conditions saisonnieres (saison seche). INDICATIF : aucun indice (NBR/NDVI) n'est calcule ici — simple bascule avant/apres pour l'oeil."
   }
+];
+  var RADAR = {
+  "sector": "el_fasher",
+  "label": "El-Fasher (Darfour Nord) — Sentinel-1 RTC (VV)",
+  "date": "2026-10-20",
+  "bbox": [
+    25.15,
+    13.48,
+    25.72,
+    13.92
+  ],
+  "center": [
+    25.35,
+    13.63
+  ],
+  "item": "S1C_IW_GRDH_1SDV_20261020T040451_20261020T040516_009963_013DD2_rtc",
+  "orbit": "descending",
+  "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-1-rtc&item=S1C_IW_GRDH_1SDV_20261020T040451_20261020T040516_009963_013DD2_rtc&assets=vv&colormap_name=gray&rescale=0,0.4&format=png",
+  "imageUrl": "data/raw/sentinel/s1_el_fasher_2026-10-20.png",
+  "source": "Copernicus Sentinel-1 RTC (gamma0) via Planetary Computer (keyless)",
+  "note": "Backscatter radar VV (gamma0 terrain-corrige), niveaux de gris. Le radar traverse poussiere et nuages (cle a El-Fasher). C'est une mesure de retrodiffusion, PAS une interpretation de positions/fortifications. Chemin alternatif ASF/HyP3 (jeton NASA Earthdata) documente dans le README, NON utilise ici (keyless)."
+};
 
-  var BBOX_EL_FASHER = [24.6, 12.9, 26.1, 14.3]; // focus Darfour Nord
-  var BBOX_KORDOFAN = [29.4, 12.4, 31.4, 14.4]; // focus axe El-Obeid / Bara
+  var S2_ATTR = "Copernicus Sentinel-2 L2A (ESA) via Microsoft Planetary Computer — contains modified Copernicus Sentinel data";
+  var S1_ATTR = "Copernicus Sentinel-1 RTC (ESA, terrain-corrige gamma0) via Microsoft Planetary Computer — contains modified Copernicus Sentinel data";
+
+  // Scene datee par defaut = la plus recente parmi les secteurs.
+  var DEFAULT_S2 = SCENES_DATED.length
+    ? SCENES_DATED.slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; })[0]
+    : null;
 
   window.SUDAN.sentinel = {
-    // --- Palier 1 : couche de tuiles par défaut (la plus récente) -------------
-    tiles: {
-      url: eoxUrl(LATEST),
-      attribution: ATTRIBUTION,
-      maxZoom: 16, // Leaflet sur-échantillonne au-delà du natif
-      maxNativeZoom: 14, // ~10 m/px natif de Sentinel-2
+    // --- Couche "Sentinel-2" PAR DEFAUT : DATEE quand dispo -------------------
+    // (tiles.url pointe vers la scene datee la plus recente ; repli EOX si absent)
+    tiles: DEFAULT_S2 ? {
+      url: DEFAULT_S2.tilesUrl,
+      attribution: S2_ATTR,
+      dated: true,
+      date: DEFAULT_S2.date,
+      cloud: DEFAULT_S2.cloud,
+      item: DEFAULT_S2.item,
+      maxZoom: 16,
+      maxNativeZoom: 14,
       minZoom: 1,
       tileSize: 256,
-      bounds: [
-        [8.6, 21.8],
-        [22.2, 39.1],
-      ], // bbox Soudan [lat,lon] (indicatif pour Leaflet)
+      bounds: [[8.6, 21.8], [22.2, 39.1]],
+    } : {
+      url: eoxUrl(EOX_LATEST),
+      attribution: EOX_ATTR,
+      dated: false,
+      maxZoom: 16, maxNativeZoom: 14, minZoom: 1, tileSize: 256,
+      bounds: [[8.6, 21.8], [22.2, 39.1]],
     },
-    date: "composite annuel " + LATEST,
-    periode: String(LATEST),
+    date: DEFAULT_S2 ? DEFAULT_S2.date : ("composite annuel " + EOX_LATEST),
+    periode: DEFAULT_S2 ? ("acquisition datee " + DEFAULT_S2.date) : String(EOX_LATEST),
     key_required: false,
-    source:
-      "EOX::Maps « Sentinel-2 cloudless » (WMTS public, sans clé) — https://s2maps.eu",
-    license: LICENSE,
+    source: DEFAULT_S2
+      ? "Sentinel-2 L2A date via Microsoft Planetary Computer (tiler keyless)"
+      : "EOX::Maps « Sentinel-2 cloudless » (WMTS public, sans cle)",
 
-    // Toutes les années disponibles (pour un sélecteur / comparaison temporelle).
-    composites: YEARS.map(composite),
+    // --- Sentinel-2 DATE : une ou deux scenes reelles par secteur ------------
+    scenes_dated: SCENES_DATED,
 
-    // --- Palier 2 : scènes centrées sur les secteurs de focus -----------------
-    // Mêmes tuiles keyless, cadrées sur chaque focus ; aperçus JPEG réels
-    // (téléchargés via EOX WMS par scripts/sentinel/fetch_scenes.py).
-    scenes: [
-      {
-        key: "el_fasher",
-        label: "El-Fasher (Darfour Nord)",
-        bbox: BBOX_EL_FASHER,
-        center: centerOf(BBOX_EL_FASHER),
-        zoom: 10,
-        date: "composite annuel " + LATEST,
-        source: "EOX S2 cloudless " + LATEST,
-        tilesUrl: eoxUrl(LATEST),
-        preview: "data/raw/sentinel/el_fasher_s2cloudless-2025.jpg",
+    // --- Sentinel-1 RADAR (backscatter VV, RTC) ------------------------------
+    radar: RADAR,
+
+    // --- Comparatif avant/apres de DEUX scenes DATEES (indicatif) ------------
+    change_pairs: CHANGE_PAIRS,
+
+    // --- Repli EOX (mosaique ANNUELLE, etiquetee) ----------------------------
+    fallback_annual: {
+      tiles: {
+        url: eoxUrl(EOX_LATEST), attribution: EOX_ATTR,
+        maxZoom: 16, maxNativeZoom: 14, minZoom: 1, tileSize: 256,
       },
-      {
-        key: "kordofan",
-        label: "Kordofan — axe El-Obeid / Bara",
-        bbox: BBOX_KORDOFAN,
-        center: centerOf(BBOX_KORDOFAN),
-        zoom: 10,
-        date: "composite annuel " + LATEST,
-        source: "EOX S2 cloudless " + LATEST,
-        tilesUrl: eoxUrl(LATEST),
-        preview: "data/raw/sentinel/kordofan_s2cloudless-2025.jpg",
-      },
-    ],
+      kind: "composite annuel sans nuages (PAS une date unique)",
+      composites: EOX_YEARS.map(function (y) {
+        return { year: y, label: "S2 cloudless " + y, url: eoxUrl(y) };
+      }),
+      license: "CC BY 4.0 — Sentinel-2 cloudless by EOX (modified Copernicus Sentinel data).",
+      source: "EOX::Maps « Sentinel-2 cloudless » — https://s2maps.eu",
+      attribution: EOX_ATTR,
+    },
 
-    // --- Palier 3 : comparatif visuel "indicatif" (PAS un indice calculé) -----
-    // Avant/après de deux composites ANNUELS sur l'axe logistique du Kordofan.
-    // Ce n'est PAS une détection de brûlures/combats (ni NBR ni NDVI diff) :
-    // c'est un simple toggle d'imagerie pour l'œil. Restreint au Kordofan ;
-    // jamais El-Fasher / camps de déplacés (garde-fou Darfour).
-    change_pairs: [
-      {
-        key: "kordofan_2023_2025",
-        label: "Kordofan 2023 → 2025 (indicatif, composites annuels)",
-        sector: "kordofan",
-        bbox: BBOX_KORDOFAN,
-        center: centerOf(BBOX_KORDOFAN),
-        before: {
-          year: 2023,
-          url: eoxUrl(2023),
-          preview: "data/raw/sentinel/kordofan_s2cloudless-2023.jpg",
-        },
-        after: {
-          year: 2025,
-          url: eoxUrl(2025),
-          preview: "data/raw/sentinel/kordofan_s2cloudless-2025.jpg",
-        },
-        note:
-          "Comparatif visuel indicatif de mosaïques annuelles sans nuages. " +
-          "AUCUN indice de brûlure/combat n'est calculé. Les composites peuvent " +
-          "mélanger des dates différentes d'une année à l'autre.",
-      },
-    ],
+    attribution_s2: S2_ATTR,
+    attribution_s1: S1_ATTR,
 
-    // --- Honnêteté / limites --------------------------------------------------
+    // --- Honnetete / limites -------------------------------------------------
     note:
-      "Imagerie Sentinel-2 vraies couleurs, SANS clé, via EOX::Maps « Sentinel-2 " +
-      "cloudless » (CC BY 4.0, données Copernicus Sentinel modifiées). " +
-      "IMPORTANT : ce sont des MOSAÏQUES ANNUELLES sans nuages (composites), PAS " +
-      "des acquisitions datées uniques — la date affichée est l'année du composite, " +
-      "pas un jour de prise de vue. Résolution ~10 m/px (zoom natif max ~14). " +
-      "Le vrai pipeline de détection d'impacts par asymétrie de texture (type Ukraine) " +
-      "demande des mois de travail et des scènes datées appariées : CE N'EST PAS " +
-      "l'objectif ici, et aucune analyse fine de positions/fortifications n'est faite. " +
-      "GARDE-FOU DARFOUR : aucun produit dérivé ne cible des camps de déplacés ; " +
-      "le comparatif before/after est limité à l'axe logistique du Kordofan. " +
-      "ROADMAP (non livré) : des scènes datées réelles nécessiteraient un jeton " +
-      "Copernicus Data Space / SentinelHub (absent ici — seul un identifiant NASA " +
-      "Earthdata existe) ; l'alternative keyless NASA GIBS HLS (S30 = Sentinel-2 daté) " +
-      "a une couverture trop lacunaire sur le Soudan (tuiles vides testées le 2026-10-27) " +
-      "pour une couche statique fiable. Un proxy NBR/NDVI-diff « cicatrices » reste à " +
-      "faire proprement sur paires datées, étiqueté « indicatif ».",
+      "Sentinel-2 vraies couleurs DATEES (acquisitions L2A reelles, nuages indiques) et " +
+      "Sentinel-1 RADAR (backscatter VV, gamma0 terrain-corrige) sur les secteurs de focus, " +
+      "via les STAC publics + le tiler keyless de Microsoft Planetary Computer (aucun compte, " +
+      "aucune cle). La DATE affichee est le vrai jour d'acquisition. Le radar S1 traverse " +
+      "poussiere/nuages (utile a El-Fasher) : c'est une mesure de retrodiffusion, PAS une " +
+      "interpretation de positions/fortifications. Le comparatif avant/apres est une simple " +
+      "bascule entre deux scenes datees (meme tuile MGRS, grille identique), etiquete INDICATIF : " +
+      "AUCUN indice (NBR/NDVI) n'est calcule. La mosaique EOX annuelle reste en repli, etiquetee " +
+      "« composite annuel ». GARDE-FOU DARFOUR : aucun produit derive ne cible des camps de " +
+      "deplaces. ROADMAP (non livre ici) : proxy d'impacts NBR/NDVI-diff calcule sur paires " +
+      "datees (demande rasterio + lecture fenetree des COG, cf. ukraine-feux/scripts/impacts_v1) ; " +
+      "chemin radar alternatif ASF/HyP3 (jeton NASA Earthdata) documente dans le README, NON " +
+      "utilise ici (le jeton n'est jamais ecrit dans ce depot).",
 
-    generated: "2026-10-27",
+    generated: "2026-10-28",
   };
 })();

@@ -22,8 +22,17 @@ Autonome, sans build, sans dépendance externe installée (Leaflet est **vendu**
 - **`methode.html`** — méthodologie, sources + licences datées, prudence, garde-fou Darfour,
   et l'honnêteté sur l'absence de ligne de contrôle. Même mise en page que la méthode Ukraine.
 
+### Angle humanitaire (central)
+- **Bandeau proéminent en tête de page** : **8,62 M déplacés internes** (IOM DTM, au 2026-07-31) +
+  **3,76 M réfugiés** (UNHCR, fin 2025), dates et sources affichées, avec cadre éthique
+  « données officielles publiées, agrégées à la localité / l'État — pas de localisation de camp ».
+- **Couche « Déplacés — localités (IOM DTM) »** (rayon ∝ population) et **« Déplacement par État »**
+  (choroplèthe ADM1 teinté par nombre de déplacés, légende graduée).
+- **Panneau « Réfugiés par pays d'accueil »** (Tchad, Égypte, Libye, Soudan du Sud, Éthiopie…).
+
 ### Fonctionnalités (carte)
-- **Fond de carte** OpenStreetMap, inversé en CSS pour le thème sombre.
+- **Fond de carte** OpenStreetMap, inversé en CSS pour le thème sombre. **Emprise étendue au sud**
+  (bbox `[21.8, 8.2, 39.1, 22.3]`) + **contours des pays voisins** (dont le Soudan du Sud) en contexte.
 - **Couches basculables** (cases à cocher + légende) : frontières pays + États (ADM0/ADM1),
   **affrontements** (points colorés par paire d'acteurs), **densité d'activité** (~11 km),
   **feux FIRMS** (densité, fenêtre affichée dynamiquement), **secteurs de focus**, et —
@@ -47,6 +56,11 @@ fiabilité** explicite. Toutes sont i18n FR/EN/AR (dates via `Intl`).
 | **Contrôle approximatif par État** (`layer_maps.js` + `control_adm1_approx.geojson`) | `known_maps.control_approx` | remplissage ADM1 par acteur (SAF / RSF / contesté / autre) ; caveat **proéminent** : « esquisse au niveau **ÉTAT** — PAS une ligne de front (sièges, poches, fronts internes non représentés), à valider » ; **remplace** le créneau « à venir v1 » (repli conservé si absent) |
 | **Revendications SAF** / **RSF** (`layer_maps.js`) | `claims.saf` / `claims.rsf` | deux couches à parts égales, couleurs distinctes, étiquetées « **revendiqué — non vérifié** » ; popup lieu/date/source/prise |
 | **Cartes de référence** (`layer_maps.js`) | `known_maps.references` | panneau sur `methode.html` (nom, auteur, lien, date, licence) + note « citées, non reproduites — sauf Wikipédia **CC BY-SA 4.0** » |
+| **Humanitaire** (`layer_humanitarian.js`) | `humanitarian.{totals,idp_sites,displacement_by_state,refugees_by_country}` | bandeau en tête + couches déplacés (localités / par État) + panneau réfugiés ; sources IOM DTM / UNHCR / OCHA ; **agrégé localité/État, pas de camp individuel** |
+| **Flèches « qui avance »** (dérivé de `claims`) | `claims.saf/.rsf` (datées, `contested`) | axes reliant les prises **revendiquées** datées proches, flèches par camp ; cas **Bara** (changé de mains ~5×) en anneau « contesté » ; étiquette obligatoire « **axes d'après prises revendiquées datées, non vérifiées — PAS une ligne de front** » ; **activée par défaut** |
+| **Feux de conflit** vs **densité** (`fires_conflict_recent` / `fires_density`) | cœur `window.SUDAN` | couche distincte **« Feux de conflit »** (≤15 km d'un affrontement, 60 j) mise en avant, séparée des **« Feux — densité (surtout brûlage agricole, sud) »** ; section **« Feux : conflit ou agriculture ? »** avec frise `fires_timeline` (tous vs nord de 12°N) et `meta.fires_note` |
+| **Sentinel-2 daté + Sentinel-1 radar** (`sentinel`) | `sentinel.{tiles,scenes_dated,radar,fallback_annual}` | base mosaïque annuelle EOX (sélecteur d'année) **+ scènes datées** Planetary Computer (El-Fasher 27/10, Kordofan 26/10, boutons avec **date**) ; couche **Sentinel-1 radar** (voit à travers nuages/poussière, 20/10) ; attributions EOX **CC BY 4.0** et Copernicus/PC respectées |
+| **Pays voisins** (`sudan_neighbors.geojson`) | `boundaries.neighbors` | contours fins de contexte (Soudan du Sud, Tchad, Égypte…), activés par défaut |
 
 ### Fonctionnalités (analyses, sous la carte)
 - **Chiffres clés** : affrontements, morts estimés, États touchés, détections de feux.
@@ -102,13 +116,21 @@ window.SUDAN = {
   timeline:[{month,events,deaths,...}],
   focus:[{key,label,bbox,note}],
   boundaries:{adm0,adm1}, boundaries_url, control: null | [...],
+  // v2 : feux séparés conflit/agricole + frise
+  fires_conflict_recent:[{lon,lat,weight}], fires_history:[…], fires_timeline:[{month,all,north}],
+  meta:{ …, bbox:[21.8,8.2,39.1,22.3], fires_note, counts:{events:1626,…} },
   // couches signaux additives (fichiers data/layer_*.js) :
-  sentinel:{ tiles:{url,attribution,maxZoom,maxNativeZoom,bounds}, composites:[…2020-2025], scenes, license },
+  sentinel:{ tiles(daté PC), fallback_annual:{tiles,composites[2020-2025]}, scenes_dated:[{label,date,bbox,tilesUrl}], radar:{tilesUrl,date,bbox}, attribution_s2, attribution_s1 },
   osint:{ points:[{lon,lat,place,adm1,count,last_date,sides:{saf,rsf,neutral}}], channels, window_days },
   known_maps:{ references:[{name,author,url,date,license}], control_approx:[{geojson_url,actor,date,source,approx}] },
-  claims:{ saf:[{lon,lat,place,adm1,date,source,claim}], rsf:[…] }
+  claims:{ saf:[{lon,lat,place,adm1,date,source,claim,contested}], rsf:[…] },
+  humanitarian:{ totals:{idp,idp_as_of,idp_source,refugees,refugees_as_of,refugees_source},
+    idp_sites:[{lon,lat,name,state,population,as_of,source}],
+    displacement_by_state:[{state,adm1_id,idp,returnees,as_of}], refugees_by_country:[{country,people,neighbour}] }
 }
 ```
+*Événements : **1 626** (champ `source` = "ucdp" ; ACLED à venir). Compteurs et libellé source
+mis à jour automatiquement.*
 
 > **Appartenance.** Ce site **ne possède ni `data/` ni `scripts/`** : un agent « données » parallèle
 > les maintient. La page les **lit seulement** au runtime. Tout le reste (`*.html`, `style.css`,
@@ -131,12 +153,13 @@ window.SUDAN = {
 ## Preuve headless (Chromium / Puppeteer)
 
 Vérifié en headless sur `index.html` **et** `methode.html`, en **FR, EN et AR** :
-- **0 erreur console / pageerror** sur les 5 chargements, **toutes les 10 couches activées
-  simultanément** (les requêtes de tuiles externes OSM/EOX abandonnées en vol sont ignorées, ce ne
-  sont pas des erreurs de code) ;
-- couches (dont Sentinel + sélecteur d'année, OSINT, contrôle approx., revendications SAF/RSF),
-  catégories, filtre temporel, vues de focus, bascule du graphe et **bascule de thème** exercés ;
-  **AR** passe bien en `dir="rtl"` ;
+- **0 erreur console / pageerror** sur les 5 chargements, **toutes les 16 couches activées
+  simultanément** (les tuiles externes OSM / EOX / Planetary Computer abandonnées en vol sont
+  ignorées, ce ne sont pas des erreurs de code) ;
+- bandeau humanitaire visible (**8 622 801** / **3 761 034**), panneau réfugiés (12 pays), frise de
+  feux (2 séries), **33 flèches** d'avancée dérivées des revendications, couches Sentinel daté /
+  S1 radar / choroplèthe déplacés / contrôle approx. / OSINT, filtre temporel, graphes et **thème**
+  exercés ; **AR** passe bien en `dir="rtl"` ;
 - **0 scroll horizontal à 390 px** (`scrollWidth == clientWidth`) sur les deux pages ;
 - captures **clair / sombre / mobile** dans `screenshots/` (`light.png`, `dark.png`, `mobile.png`).
 
