@@ -84,6 +84,16 @@
           <option value="0.5">×0,5</option><option value="1" selected>×1</option><option value="2">×2</option><option value="4">×4</option>
         </select>
       </div>
+      <div class="replay-ctls">
+        <span class="rseg" id="replayGran" role="group">
+          <button class="btn" type="button" data-g="month" aria-pressed="true" data-t="rpMonth">Mois</button>
+          <button class="btn" type="button" data-g="week" aria-pressed="false" data-t="rpWeek">Semaine</button>
+        </span>
+        <span class="rseg" id="replayMetric" role="group">
+          <button class="btn" type="button" data-mt="acled" aria-pressed="true" data-t="rpACLED">ACLED</button>
+          <button class="btn" type="button" data-mt="fires" aria-pressed="false" data-t="rpFires">Feux</button>
+        </span>
+      </div>
       <input type="range" id="replaySlider" min="0" max="0" value="0" aria-label="Mois">
       <div class="replay-foot"><span id="replayRead" class="replay-read"></span><span class="replay-cav" id="replayCav" data-t="replayCaveat"></span></div>
     </div>
@@ -167,6 +177,7 @@
 <script src="data/layer_acled.js"></script>
 <script src="data/layer_geo.js"></script>
 <script src="data/layer_replay.js"></script>
+<script src="data/layer_impacts.js"></script>
 <script src="chrome.js"></script>
 <script src="app.js"></script>
 </body>

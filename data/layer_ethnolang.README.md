@@ -1,8 +1,9 @@
 # `window.SUDAN.ethnolang` — couche ethno-linguistique
 
 Couche **ethno-linguistique** du site Soudan : fond **structurel** montrant, à gros grain,
-les **zones de peuplement** de groupes ethniques politiquement pertinents et un **semis de
-points de langues**. Chargée **après** `data/bundle.js`, additive : elle pose
+les **zones de peuplement** de groupes ethniques politiquement pertinents et des **aires
+linguistiques approximatives** (polygones dérivés des aires ethniques), complétées de points
+de langues mineures. Chargée **après** `data/bundle.js`, additive : elle pose
 `window.SUDAN.ethnolang` sans toucher à aucun autre fichier.
 
 Produite par `scripts/ethnolang/build_ethnolang.py` à partir de sources **ouvertes,
@@ -78,20 +79,44 @@ Groupes et statut (selon EPR, 2012-2021) :
 > *discriminés*. C'est une description de l'**accès au pouvoir d'État**, pas un jugement sur
 > les personnes ni une explication mécanique de la guerre.
 
-### `languages` — points de langues
-91 objets (Glottolog, langues rattachées au Soudan `SD`, point tombant dans le pays).
-Chaque objet :
+### `languages` — aires linguistiques (polygones) + points mineurs
+92 objets. Schéma :
 ```
-{ name, glottocode, iso639_3, family, lat, lon, major, source }
+{ name, glottocode, iso639_3, family, major,
+  geometry: {type:"MultiPolygon", coordinates} | null,
+  centroid: [lon, lat], derivation?, source }
 ```
+
+**⚠️ Aires APPROXIMATIVES.** Les polygones de langues en licence ouverte sont rares : les
+**6 aires** (langues majeures, `major:true`, `geometry` non nul) sont **DÉRIVÉES des aires
+ethniques GeoEPR** du bloc `groups` — chaque groupe GeoEPR a une langue dominante. Ce ne
+sont **pas** des cartes linguistiques officielles (frontières floues, multilinguisme
+fréquent, zones mixtes). `derivation` explicite l'origine de chaque aire. `source` =
+« GeoEPR-2021 (aire) + Glottolog (nom / famille / ISO) ».
+
+| Langue (aire) | ISO | Famille | Dérivée de (groupe GeoEPR) |
+|---|---|---|---|
+| **Arabe soudanais (véhiculaire)** | apd | Afro-Asiatic | **agrégat** des polygones arabes (autres groupes arabes + arabes riverains + Rashaida) → ceinture centre/nord |
+| **Bedja (Beja)** | bej | Afro-Asiatic | groupe Beja |
+| **Four (Fur)** | fvr | Furan | groupe Fur |
+| **Masalit** | mls | Maban | groupe Masalit |
+| **Beria (Zaghawa)** | zag | Saharan | groupe Zaghawa |
+| **Langues nouba (kordofaniennes)** | — | plusieurs (kordofaniennes) | groupe Nuba (**recouvre plusieurs langues** distinctes) |
+
+- **Zone arabe** = **agrégat** (MultiPolygon réunissant les polygones des 3 groupes arabes
+  GeoEPR), pas une enveloppe lissée : les frontières internes ne sont pas dissoutes. L'arabe
+  est en réalité parlé **bien au-delà** de cette aire (langue véhiculaire nationale).
+- **Pas d'aire « nubien ».** GeoEPR ne code aucun polygone nubien distinct pour 2012-2021, et
+  son catch-all « autres groupes du Nord » est situé au **Darfour/Kordofan**, pas dans la
+  vallée du Nil nubienne : on **ne fabrique pas** d'aire fausse. Les langues nubiennes
+  (nobiin `fia`, kenuzi-dongola `kzh`, midob `mei`) restent donc des **points** Glottolog,
+  correctement placés.
+- **Langues mineures** (86) : `geometry:null`, `centroid` = point-référence Glottolog
+  indicatif — ni étendue ni nombre de locuteurs.
 - `family` : famille **de plus haut niveau selon Glottolog** (classification *conservatrice* :
   pas de macro-famille « nilo-saharienne » — d'où Nubian, Nilotic, Saharan, Central Sudanic,
   Kadugli-Krongo… comme familles distinctes).
-- `major` : `true` pour 9 langues principales / emblématiques (arabe soudanais `apd`, bedja
-  `bej`, nubien nobiin `fia` / kenuzi-dongola `kzh` / midob `mei`, four `fvr`, masalit `mls`,
-  daju du Darfour `daj`, tigré `tig`) — simple repérage, **sans hiérarchie de valeur**.
-- `lat`/`lon` : **un** point-référence Glottolog par langue (centroïde indicatif) — ne
-  représente ni l'étendue ni le nombre de locuteurs.
+- `centroid` : `[lon, lat]` — repère d'étiquette (pour toutes les entrées, aire ou point).
 
 ### `note`
 Avertissement complet (simplification contestée, non-déterminisme, garde-fou Darfour, limites
@@ -123,9 +148,11 @@ utilisés**.
   (estimations d'expert), pas des mesures locales ni un recensement.
 - **Données potentiellement anciennes** : GeoEPR/EPR s'arrêtent en **2021** ; Glottolog agrège
   des sources d'époques variées → fond **structurel**, pas instantané de la guerre.
-- **Points de langues réducteurs** : un seul point par langue ; **11 langues** rattachées au
-  Soudan mais dont le point Glottolog tombe **hors du pays** (ex. arabe standard placé en
-  Arabie) ont été écartées du semis.
+- **Aires linguistiques dérivées, pas mesurées** : les 6 aires calquent les polygones
+  ethniques GeoEPR (une langue dominante par groupe) — approximation assumée, pas une enquête
+  linguistique ; frontières floues et multilinguisme non représentés. Les 86 langues mineures
+  restent des points indicatifs ; **11 langues** rattachées au Soudan mais dont le point
+  Glottolog tombe **hors du pays** (ex. arabe standard placé en Arabie) ont été écartées.
 - **Aucune donnée nominative ni opérationnelle.**
 
 ---

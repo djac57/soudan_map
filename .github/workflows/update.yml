@@ -1,0 +1,218 @@
+name: Auto-update données (Soudan)
+
+# Rafraîchit les sources AUTO, reconstruit les couches dérivées, commit SEULEMENT
+# si des données ont changé, puis DÉPLOIE Pages lui-même.
+#
+# GOTCHA volontairement géré ici : un push fait par github-actions (GITHUB_TOKEN)
+# NE redéclenche PAS deploy.yml. Ce workflow déploie donc Pages directement
+# (configure-pages + upload-pages-artifact + deploy-pages) après avoir commité.
+#
+# Cadence :
+#   - quotidien (sauf lundi) : FIRMS NRT + rebuild core/bundle + analyse/replay
+#   - hebdomadaire (lundi)   : + OSINT Telegram, humanitaire, UCDP frais, FIRMS
+#                              archive SP, Sentinel daté
+# Déclenchement manuel : onglet Actions -> "Run workflow" (mode daily|weekly).
+
+on:
+  schedule:
+    - cron: "20 3 * * 0,2,3,4,5,6"   # quotidien 03:20 UTC, sauf lundi (=hebdo)
+    - cron: "40 3 * * 1"             # hebdomadaire lundi 03:40 UTC
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "daily = FIRMS + rebuild ; weekly = toutes les sources AUTO"
+        type: choice
+        default: daily
+        options: [daily, weekly]
+
+# Un seul déploiement Pages à la fois (partagé avec deploy.yml). On NE coupe pas
+# un déploiement en cours.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: write      # committer/pousser les données reconstruites
+  pages: write         # déployer GitHub Pages depuis ce workflow
+  id-token: write      # OIDC requis par deploy-pages
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Déterminer le mode (daily / weekly)
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            MODE="${{ github.event.inputs.mode }}"
+          elif [ "${{ github.event.schedule }}" = "40 3 * * 1" ]; then
+            MODE="weekly"
+          else
+            MODE="daily"
+          fi
+          echo "MODE=$MODE" >> "$GITHUB_ENV"
+          echo "RAWKEY=sudan-raw-$(date -u +%G-%V)" >> "$GITHUB_ENV"
+          echo "Mode retenu : $MODE"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup Node (dump_claims / replay)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Dépendances Python (hebdo seulement)
+        if: env.MODE == 'weekly'
+        run: python3 -m pip install --quiet openpyxl
+
+      # data/raw/ est gitignoré et ABSENT d'un checkout neuf : on persiste les
+      # entrées lourdes et quasi-statiques (zip stable UCDP ~29 Mo, archive FIRMS
+      # SP) entre les runs. Le NRT FIRMS, lui, est re-fetché chaque jour.
+      - name: Cache data/raw (entrées lourdes)
+        uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: ${{ env.RAWKEY }}
+          restore-keys: sudan-raw-
+
+      # ---------------- FETCH sources AUTO (continue-on-error par source) -------
+
+      - name: FIRMS NRT (quotidien)
+        continue-on-error: true
+        env:
+          FIRMS_MAP_KEY: ${{ secrets.FIRMS_MAP_KEY }}
+        run: python3 -I scripts/fetch_firms.py data/raw/firms 90 firms_raw_90d.geojson
+
+      - name: UCDP GED bulk (idempotent ; sans clé)
+        continue-on-error: true
+        run: python3 -I scripts/fetch_ucdp.py data/raw/ucdp
+
+      - name: FIRMS archive SP (hebdo)
+        if: env.MODE == 'weekly'
+        continue-on-error: true
+        env:
+          FIRMS_MAP_KEY: ${{ secrets.FIRMS_MAP_KEY }}
+        run: python3 -I scripts/fetch_firms_archive.py data/raw/firms 2023-04-01 "$(date -u -d '60 days ago' +%F)"
+
+      - name: OSINT Telegram public (hebdo)
+        if: env.MODE == 'weekly'
+        continue-on-error: true
+        run: |
+          python3 -I scripts/osint/scrape_tme.py data/raw/osint scripts/osint/channels.json 6 120
+          python3 -I scripts/osint/build_osint.py data/raw/osint scripts/osint/channels.json \
+            data/boundaries/sudan_adm1.geojson data/layer_osint.js 120
+
+      - name: Humanitaire HDX / IOM / UNHCR (hebdo)
+        if: env.MODE == 'weekly'
+        continue-on-error: true
+        run: |
+          python3 -I scripts/humanitarian/fetch_humanitarian.py data/raw/humanitarian
+          python3 -I scripts/humanitarian/build_humanitarian.py . data/raw/humanitarian
+
+      - name: Sentinel daté (Planetary Computer, keyless ; hebdo)
+        if: env.MODE == 'weekly'
+        continue-on-error: true
+        run: python3 -I scripts/sentinel/fetch_dated.py data/raw/sentinel data/layer_sentinel.js
+
+      # ---------------- REBUILD couches dérivées du cœur (événements/feux) ------
+      # Pas de continue-on-error : un échec ici doit stopper le job AVANT tout
+      # commit (on ne publie jamais un cœur partiel).
+
+      - name: Rebuild cœur (UCDP + FIRMS)
+        run: |
+          python3 -I scripts/process_ucdp.py data/raw/ucdp data
+          python3 -I scripts/build_sudan.py . data/sudan_core.json
+          python3 -I scripts/process_grids.py data firms_raw_90d.geojson
+          python3 -I scripts/build_bundle.py data data/bundle.js
+
+      - name: Recompute analyse "poussées probables"
+        continue-on-error: true
+        run: |
+          node scripts/analysis/dump_claims.js data/layer_maps.js "$RUNNER_TEMP/claims.json"
+          python3 -I scripts/analysis/build_analysis.py data/sudan_core.json \
+            "$RUNNER_TEMP/claims.json" data/layer_analysis.js
+
+      # Le replay dépend du classeur ACLED agrégé (export web MANUEL, gitignoré) :
+      # absent du CI, cette étape est sautée. Quand l'ACLED est rafraîchi en local,
+      # le replay est reconstruit là (ou via un run avec le cache portant le xlsx).
+      - name: Recompute replay (si classeur ACLED présent)
+        continue-on-error: true
+        run: |
+          XLSX="$(ls data/raw/acled/*.xlsx 2>/dev/null | head -1 || true)"
+          if [ -n "$XLSX" ]; then
+            python3 -I scripts/replay/build_replay.py "$XLSX" data/sudan_core.json \
+              data/layer_maps.js data/layer_replay.js
+          else
+            echo "ACLED xlsx absent (source MANUELLE) -> replay inchangé."
+          fi
+
+      # ---------------- GARDE-FOU intégrité : jamais régresser les événements ----
+      - name: Garde-fou intégrité (cœur)
+        run: |
+          python3 -I - <<'PY'
+          import json, subprocess, sys
+          new = json.load(open("data/sudan_core.json"))
+          n_new = len(new.get("events", []))
+          try:
+              old = json.loads(subprocess.check_output(["git", "show", "HEAD:data/sudan_core.json"]))
+              n_old = len(old.get("events", []))
+          except Exception:
+              n_old = 0
+          print(f"events: HEAD={n_old} nouveau={n_new}")
+          if n_new == 0 or (n_old > 0 and n_new < 0.5 * n_old):
+              sys.exit("GARDE-FOU : events régressés (fetch probablement cassé) -> commit refusé")
+          PY
+
+      # ---------------- COMMIT si (et seulement si) des données ont changé -------
+      - name: Commit des données rafraîchies
+        id: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Aucun changement de données -> pas de commit."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "data: auto-update ${MODE} ($(date -u +%F))
+
+          Co-Authored-By: Claude <noreply@anthropic.com>"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ---------------- DÉPLOIEMENT Pages (fait par CE workflow) -----------------
+      # data/raw/ (gitignoré mais présent sur disque) est écarté de l'artefact
+      # Pages pour ne pas publier des dizaines de Mo de brut ; remis ensuite pour
+      # que le cache de fin de job le repersiste.
+      - name: Écarter data/raw de l'artefact Pages
+        if: steps.commit.outputs.changed == 'true'
+        run: '[ -d data/raw ] && mv data/raw "$RUNNER_TEMP/raw" || true'
+
+      - name: Configure Pages
+        if: steps.commit.outputs.changed == 'true'
+        uses: actions/configure-pages@v5
+
+      - name: Upload artefact (site statique)
+        if: steps.commit.outputs.changed == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        if: steps.commit.outputs.changed == 'true'
+        uses: actions/deploy-pages@v4
+
+      - name: Restaurer data/raw (pour le cache)
+        if: always()
+        run: '[ -d "$RUNNER_TEMP/raw" ] && mv "$RUNNER_TEMP/raw" data/raw || true'

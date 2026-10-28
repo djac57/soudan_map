@@ -157,6 +157,7 @@
   var ethnolang = (S.ethnolang && typeof S.ethnolang==="object") ? S.ethnolang : null;
   var geo = (S.geo && typeof S.geo==="object") ? S.geo : null;
   var pipelines = (S.pipelines && (has(S.pipelines.lines)||has(S.pipelines.terminals))) ? S.pipelines : null;
+  var impacts = (S.impacts && has(S.impacts.sites)) ? S.impacts : null;
   var replay = (S.replay && has(S.replay.periods) && S.replay.by_state) ? S.replay : null;
   var backersAtten=false, _arrowsWasOn=false; // set when the backers layer is active (attenuate heavy fills)
   function fdate(s){ return window.SDN_FMTDATE ? window.SDN_FMTDATE(s) : String(s==null?"":s); }
@@ -574,10 +575,25 @@
             "<br><span class='muted' style='font-size:11px'>"+T("ethnoWarn")+"</span>"+(g.source?"<br><span class='muted' style='font-size:10px'>"+esc(g.source)+"</span>":"")); }
       }).eachLayer(function(l){ethnoGroupsLayer.addLayer(l);}); }catch(e){}
     });
-    (ethnolang.languages||[]).forEach(function(la){ if(!isFinite(la.lat))return;
-      var maj=!!la.major, col=cssv("--muted");
-      languagesLayer.addLayer(L.circleMarker([la.lat,la.lon],{radius:maj?5:3,color:col,weight:maj?1.5:.8,fillColor:col,fillOpacity:maj?.5:.25,opacity:.8})
-        .bindTooltip(esc(la.name)+(la.family?" ("+esc(la.family)+")":""),{direction:"top"}));
+    // languages: the few MAJOR ones become filled AREAS (polygons + centroid label);
+    // the many minor ones (no geometry) stay as discreet dots (zones are what matters).
+    var LANG_PAL=["#2f7fc4","#e08a33","#6f9134","#7b4fb0","#c6562e","#1f9e8a","#b5651d","#9a1e6e"];
+    var li=0;
+    (ethnolang.languages||[]).forEach(function(la){
+      var c=la.centroid || (isFinite(la.lon)?[la.lon,la.lat]:null);
+      if(la.geometry){
+        var col=LANG_PAL[li%LANG_PAL.length]; li++;
+        try{ L.geoJSON({type:"Feature",geometry:la.geometry,properties:la},{
+          style:function(){ return {color:col,weight:1.2,fillColor:col,fillOpacity:.24,opacity:.6}; },
+          onEachFeature:function(f,l){ l.bindPopup("<b>"+esc(la.name)+"</b>"+(la.family?" <span class='muted'>("+esc(la.family)+")</span>":"")+
+            "<br><span class='muted' style='font-size:11px'>"+T("ethnoLangCaveat")+"</span>"+(la.source?"<br><span class='muted' style='font-size:10px'>"+esc(la.source)+"</span>":"")); }
+        }).eachLayer(function(l){languagesLayer.addLayer(l);}); }catch(e){}
+        if(c) languagesLayer.addLayer(L.circleMarker([c[1],c[0]],{radius:0,opacity:0,fillOpacity:0,interactive:false})
+          .bindTooltip(esc(la.name),{permanent:true,direction:"center",className:"langlbl"}));
+      } else if(c){
+        languagesLayer.addLayer(L.circleMarker([c[1],c[0]],{radius:2.2,color:cssv("--muted"),weight:0,fillColor:cssv("--muted"),fillOpacity:.28,opacity:.5})
+          .bindTooltip(esc(la.name)+(la.family?" ("+esc(la.family)+")":""),{direction:"top"}));
+      }
     });
   }
   buildEthno();
@@ -625,6 +641,24 @@
   }
   buildPipelines();
 
+  // ---- Sentinel-2 surface-change (El-Fasher dNBR) — INDICATIVE proxy, section Satellite ----
+  var impactsLayer = L.layerGroup(); var impactDates="";
+  function impactRamp(v,thr){ var t=Math.max(0,Math.min(1,(v-(thr||0))/(0.8-(thr||0)))); return mix2(hex("#f6d9b0"),hex("#8a1e0e"),t); }
+  function buildImpacts(){ impactsLayer.clearLayers(); if(!impacts)return;
+    impacts.sites.forEach(function(s){ if(!s.change||!s.change.features)return;
+      var thr=s.threshold||0;
+      impactDates=(s.date_before||"?")+" → "+(s.date_after||"?");
+      try{ L.geoJSON(s.change,{ style:function(f){ var v=(f.properties&&f.properties.dnbr_mean)||0;
+          return {color:"transparent",weight:0,fillColor:impactRamp(v,thr),fillOpacity:Math.min(.85,.25+v)}; },
+        onEachFeature:function(f,l){ var p=f.properties||{};
+          l.bindPopup("<b>"+esc(s.name||"El-Fasher")+"</b> — dNBR "+(p.dnbr_mean!=null?p.dnbr_mean.toFixed(2):"?")+
+            "<br><span class='muted'>"+esc(impactDates)+"</span>"+
+            "<br><span class='muted' style='font-size:11px'>"+T("impactsCaveat")+"</span>"); }
+      }).eachLayer(function(l){impactsLayer.addLayer(l);}); }catch(e){}
+    });
+  }
+  buildImpacts();
+
   // ---- layer registry (humanitarian & "who advances" foregrounded) ----
   // group = collapsible section key; reasonable defaults (NOT everything on)
   var LAYERS = [
@@ -658,6 +692,7 @@
     // Satellite
     {grp:"secSat",     id:"sentinel",labelKey:"lyrSentinel",     on:false, lyr:sentinelLayer,     sw:"sat",      avail:!!sentinel},
     {grp:"secSat",     id:"s1",      labelKey:"lyrS1",           on:false, lyr:s1Layer,           sw:"radar",    avail:!!radar},
+    {grp:"secSat",     id:"impacts", labelKey:"lyrImpacts",      on:false, lyr:impactsLayer,      sw:"impact",   avail:!!impacts},
     // OSINT
     {grp:"secOsintGrp",id:"osint",   labelKey:"lyrOsint",        on:false, lyr:osintLayer,        sw:"osint",    avail:!!osintData},
     // (control sketch — legacy point field, usually absent)
@@ -694,6 +729,7 @@
     else if(kind==="ethno"){ sw.className="sw sq"; sw.style.background=cssv("--c-safoth"); sw.style.opacity=".4"; }
     else if(kind==="lang"){ sw.style.background=cssv("--muted"); }
     else if(kind==="pipe"){ sw.style.background="transparent"; sw.style.border="2px solid #b5651d"; sw.style.height="4px"; sw.style.width="16px"; sw.style.borderRadius="1px"; }
+    else if(kind==="impact"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,#f6d9b0,#8a1e0e)"; }
   }
   function renderLayerRow(L0, container){
     var row=document.createElement("label"); row.className="row";
@@ -801,11 +837,15 @@
       '<span class="pill" style="background:#f0461f"></span>'+T("legFiresConflict")); }
     if(backers && map.hasLayer(backersLayer)){ sec.push('<div class="legtitle">'+T("backersRecap")+'</div>'+
       '<span class="pill" style="background:'+cssv("--c-saf")+'"></span>SAF &nbsp;<span class="pill" style="background:'+cssv("--c-rsf")+'"></span>RSF<div class="muted" style="margin-top:2px">'+T("backersCaveat")+'</div>'); }
-    if(ethnolang && (map.hasLayer(ethnoGroupsLayer)||map.hasLayer(languagesLayer))){ sec.push('<div class="legtitle">'+T("lyrEthnoGroups")+'</div><div class="muted">'+T("ethnoWarn")+'</div>'); }
+    if(ethnolang && map.hasLayer(languagesLayer)){ sec.push('<div class="legtitle">'+T("lyrLanguages")+'</div><div class="muted">'+T("ethnoLangCaveat")+'</div>'); }
+    if(ethnolang && map.hasLayer(ethnoGroupsLayer)){ sec.push('<div class="legtitle">'+T("lyrEthnoGroups")+'</div><div class="muted">'+T("ethnoWarn")+'</div>'); }
     if(resources && map.hasLayer(resLayer)){ sec.push('<div class="legtitle">'+T("lyrResources")+'</div>'+
       '<span class="pill" style="background:#d4af37"></span>'+T("resGold")+' &nbsp;<span class="pill" style="background:#2c2c2c"></span>'+T("resOil")+' &nbsp;<span class="pill" style="background:#2d6f86"></span>'+T("resDam")+' &nbsp;<span class="pill" style="background:#6f9134"></span>'+T("resAgri")); }
     if(pipelines && map.hasLayer(pipelinesLayer)){ sec.push('<div class="legtitle">'+T("lyrPipelines")+'</div>'+
       '<span class="pill" style="background:#b5651d"></span>GNPOC &nbsp;<span class="pill" style="background:#7a4a12"></span>Petrodar'); }
+    if(impacts && map.hasLayer(impactsLayer)){ sec.push('<div class="legtitle">'+T("lyrImpacts")+'</div>'+
+      '<span class="pill sq" style="background:#f6d9b0"></span>'+T("legLo")+' &nbsp;<span class="pill sq" style="background:#8a1e0e"></span>'+T("legHi")+
+      '<div class="muted" style="margin-top:2px">'+esc(impactDates)+' · '+T("impactsCaveat")+'</div>'); }
     if(map.hasLayer(controlApproxLayer)){ sec.push('<div class="legtitle">'+T("legControlTitle")+'</div>'+
       '<span class="pill sq" style="background:'+cssv("--c-saf")+'"></span>'+T("actorSAF")+' &nbsp;'+
       '<span class="pill sq" style="background:'+cssv("--c-rsf")+'"></span>'+T("actorRSF")+' &nbsp;'+
@@ -1036,7 +1076,7 @@
     if(adm1Lyr) adm1Lyr.setStyle({color:cssv("--line"),fillColor:cssv("--muted")});
     buildFires(); buildAct(); buildSectors(); buildControl(); buildOsint(); buildClaims(); buildControlApprox();
     buildNeighbors(); buildIdpSites(); buildIdpState(); buildFiresConflict(); buildArrows();
-    buildAcled(); buildWatch(); buildResources(); buildBackers(); buildEthno(); buildInfra(); buildPipelines();
+    buildAcled(); buildWatch(); buildResources(); buildBackers(); buildEthno(); buildInfra(); buildPipelines(); buildImpacts();
     // re-add layers that were on
     LAYERS.forEach(function(L0){ if(L0.lyr && map.hasLayer(L0.lyr)){ map.removeLayer(L0.lyr); L0.lyr.addTo(map);} });
     drawClashes(); updateLegend();
@@ -1052,64 +1092,91 @@
     var wrap=document.getElementById("replayToggleWrap"), bar=document.getElementById("replayBar");
     if(!replay){ if(wrap)wrap.hidden=true; if(bar)bar.hidden=true; return; } // strict feature-detection
     if(wrap)wrap.hidden=false;
-    var periods=replay.periods;
     try{ map.createPane("replayPane"); map.getPane("replayPane").style.zIndex=445; }catch(e){}
     var choro=L.layerGroup(), marks=L.layerGroup();
-    // stable global colour scale across all months
-    var gMax=1;
-    periods.forEach(function(p){ var row=replay.by_state[p]||{}; Object.keys(row).forEach(function(k){ gMax=Math.max(gMax,(row[k]&&row[k].e)||0); }); });
-    function rRamp(v){ var t=Math.min(1,v>0?Math.log(1+v)/Math.log(1+gMax):0); return mix2(hex("#fde0d9"),hex("#9a1e0e"),t); }
+    var hasWeek = !!(replay.periods_week && replay.periods_week.length && replay.by_state_week);
+    var hasFires = !!replay.fires_by_state;
+    var gran="month", metric="acled", idx=0, timer=null, playing=false, gMax=1;
+    function periodsArr(){ return (gran==="week"&&hasWeek) ? replay.periods_week : replay.periods; }
+    function byStateMap(){ return (gran==="week"&&hasWeek) ? replay.by_state_week : replay.by_state; }
+    function totalsMap(){ return (gran==="week"&&hasWeek) ? (replay.totals_week||replay.totals) : replay.totals; }
+    function valueFor(P,id){ if(metric==="fires"&&hasFires){ var fr=(replay.fires_by_state[P.slice(0,7)]||{})[id]; return fr?(fr.a||fr.n||0):0; }
+      var d=(byStateMap()[P]||{})[id]; return d?(d.e||0):0; }
+    function computeMax(){ var m=1, ps=periodsArr(); ps.forEach(function(P){
+      var row=(metric==="fires"&&hasFires)?(replay.fires_by_state[P.slice(0,7)]||{}):(byStateMap()[P]||{});
+      Object.keys(row).forEach(function(k){ var v=(metric==="fires"&&hasFires)?(row[k].a||row[k].n||0):(row[k].e||0); if(v>m)m=v; }); }); return m; }
+    function ramp(v){ var t=Math.min(1,v>0?Math.log(1+v)/Math.log(1+gMax):0);
+      return metric==="fires" ? mix2(hex("#ffe1b0"),hex("#b5410e"),t) : mix2(hex("#fde0d9"),hex("#9a1e0e"),t); }
     var claimsSorted=(replay.claims_dated||[]).slice().sort(function(a,b){return (a.period||a.date)<(b.period||b.date)?-1:1;});
-    var idx=0, timer=null, playing=false;
+    gMax=computeMax();
 
     function frame(i){
+      var periods=periodsArr();
       idx=Math.max(0,Math.min(periods.length-1,i));
-      var P=periods[idx];
-      // choropleth by month events
+      var P=periods[idx], mk=P.slice(0,7);
       choro.clearLayers();
       if(adm1geo){ try{ L.geoJSON(adm1geo,{pane:"replayPane", style:function(f){ var pr=f.properties||{}; var id=pr.adm1_id||pr.shapeISO;
-          var row=replay.by_state[P]||{}; var d=id&&row[id]; var v=d?d.e:0;
-          return {color:cssv("--line"),weight:.8,fill:true,fillColor:rRamp(v),fillOpacity:v?.72:.05,opacity:.5}; },
-        onEachFeature:function(f,l){ var pr=f.properties||{}; var id=pr.adm1_id||pr.shapeISO; var row=replay.by_state[P]||{}; var d=id&&row[id];
-          l.bindPopup("<b>"+esc(pr.shapeName||pr.name||"?")+"</b> — "+fmtMonth(P)+"<br>"+(d?num(d.e)+" "+T("rdEvents")+" · "+num(d.f||0)+" "+T("rdFatal"):"<span class='muted'>—</span>")); }
+          var v=id?valueFor(P,id):0; return {color:cssv("--line"),weight:.8,fill:true,fillColor:ramp(v),fillOpacity:v?.72:.05,opacity:.5}; },
+        onEachFeature:function(f,l){ var pr=f.properties||{}; var id=pr.adm1_id||pr.shapeISO; var v=id?valueFor(P,id):0;
+          var unit=metric==="fires"?T("rdFires"):T("rdEvents");
+          l.bindPopup("<b>"+esc(pr.shapeName||pr.name||"?")+"</b> — "+(gran==="week"?fdate(P):fmtMonth(P))+"<br>"+num(v)+" "+unit); }
         }).eachLayer(function(l){choro.addLayer(l);}); }catch(e){} }
-      // claimed captures up to T (progressive), current-month ones labelled
+      // claimed captures up to current month (progressive), current-period ones labelled
       marks.clearLayers();
-      claimsSorted.forEach(function(c){ var cp=c.period||String(c.date||"").slice(0,7); if(cp>P) return;
+      claimsSorted.forEach(function(c){ var cp=c.period||String(c.date||"").slice(0,7); if(cp>mk) return;
         if(!isFinite(c.lat)||!isFinite(c.lon)) return;
-        var cur=(cp===P), col=sideColor(c.actor);
+        var cur=(cp===mk), col=sideColor(c.actor);
         var m=L.circleMarker([c.lat,c.lon],{pane:"replayPane",radius:cur?7:4,color:col,weight:cur?2.4:1.2,fillColor:col,fillOpacity:cur?.5:.2,opacity:cur?.95:.6});
         m.bindPopup("<b>"+esc(c.place||"?")+"</b> — "+String(c.actor||"").toUpperCase()+"<br><span class='muted'>"+fdate(c.date||cp)+" · "+T("claimTag")+"</span>");
         if(cur && c.place) m.bindTooltip(esc(c.place),{permanent:true,direction:"top",className:"replaylbl"});
         marks.addLayer(m);
       });
-      // labels
-      var ml=document.getElementById("replayMonth"); if(ml) ml.textContent=fmtMonth(P);
-      var tot=(replay.totals&&replay.totals[P])||{}, fr=(replay.fires&&replay.fires[P]);
+      // month/week label
+      var ml=document.getElementById("replayMonth"); if(ml) ml.textContent=(gran==="week"?fdate(P):fmtMonth(P));
+      // reader: this period + cumulative since 2023
+      var tot=(totalsMap()[P])||{}, fr=(replay.fires&&replay.fires[mk]);
+      var cumE=0,cumF=0, tm=totalsMap(); for(var j=0;j<=idx;j++){ var tt=tm[periods[j]]||{}; cumE+=tt.e||0; cumF+=tt.f||0; }
       var rd=document.getElementById("replayRead");
-      if(rd) rd.innerHTML="<b>"+num(tot.e||0)+"</b> "+T("rdEvents")+" · <b>"+num(tot.f||0)+"</b> "+T("rdFatal")+(fr!=null?" · <b>"+num(fr)+"</b> "+T("rdFires"):"");
-      var sl=document.getElementById("replaySlider"); if(sl && +sl.value!==idx) sl.value=idx;
+      if(rd) rd.innerHTML="<b>"+num(tot.e||0)+"</b> "+T("rdEvents")+" · <b>"+num(tot.f||0)+"</b> "+T("rdFatal")+
+        (metric==="fires"&&fr!=null?" · <b>"+num(fr)+"</b> "+T("rdFires"):"")+
+        ' <span class="muted">· '+T("rpCum")+" : "+num(cumE)+" "+T("rdEvents")+" · "+num(cumF)+" "+T("rdFatal")+"</span>";
+      var sl=document.getElementById("replaySlider"); if(sl){ if(+sl.max!==periods.length-1) sl.max=periods.length-1; if(+sl.value!==idx) sl.value=idx; }
     }
     function stop(){ playing=false; if(timer){clearInterval(timer);timer=null;} var pb=document.getElementById("replayPlay"); if(pb){pb.textContent="▶"; pb.setAttribute("aria-label",T("replayPlay"));} }
-    function play(){ if(playing)return; if(idx>=periods.length-1) frame(0);
+    function play(){ if(playing)return; var periods=periodsArr(); if(idx>=periods.length-1) frame(0);
       playing=true; var pb=document.getElementById("replayPlay"); if(pb){pb.textContent="⏸"; pb.setAttribute("aria-label",T("replayPause"));}
       var spd=parseFloat((document.getElementById("replaySpeed")||{}).value||"1")||1;
-      timer=setInterval(function(){ if(idx>=periods.length-1){ stop(); return; } frame(idx+1); }, Math.max(140, 650/spd));
+      timer=setInterval(function(){ if(idx>=periodsArr().length-1){ stop(); return; } frame(idx+1); }, Math.max(120, 600/spd));
     }
+    function reconfig(){ stop(); gMax=computeMax(); var periods=periodsArr(); if(idx>periods.length-1)idx=periods.length-1;
+      var sl=document.getElementById("replaySlider"); if(sl){ sl.max=periods.length-1; } frame(idx); }
     var mainEl=mapEl.parentNode;
     function enter(){ map.addLayer(choro); map.addLayer(marks); frame(idx); bar.hidden=false; if(mainEl)mainEl.classList.add("replay-open"); }
     function leave(){ stop(); map.removeLayer(choro); map.removeLayer(marks); bar.hidden=true; if(mainEl)mainEl.classList.remove("replay-open"); }
 
-    // slider
-    var sl=document.getElementById("replaySlider"); if(sl){ sl.min=0; sl.max=periods.length-1; sl.value=0;
+    var sl=document.getElementById("replaySlider"); if(sl){ sl.min=0; sl.max=periodsArr().length-1; sl.value=0;
       sl.addEventListener("input",function(){ stop(); frame(+sl.value); }); }
     var pb=document.getElementById("replayPlay"); if(pb) pb.addEventListener("click",function(){ if(playing)stop(); else play(); });
     var sp=document.getElementById("replaySpeed"); if(sp) sp.addEventListener("change",function(){ if(playing){ stop(); play(); } });
+    // granularity Month/Week (hide Week if no weekly data)
+    var gWrap=document.getElementById("replayGran");
+    if(gWrap){ gWrap.querySelectorAll("button").forEach(function(btn){
+      if(btn.getAttribute("data-g")==="week" && !hasWeek){ btn.disabled=true; btn.style.display="none"; return; }
+      btn.addEventListener("click",function(){ gran=btn.getAttribute("data-g");
+        gWrap.querySelectorAll("button").forEach(function(x){x.setAttribute("aria-pressed","false");}); btn.setAttribute("aria-pressed","true"); reconfig(); });
+    }); }
+    // metric ACLED/Fires (hide Fires if no fires_by_state)
+    var mWrap=document.getElementById("replayMetric");
+    if(mWrap){ mWrap.querySelectorAll("button").forEach(function(btn){
+      if(btn.getAttribute("data-mt")==="fires" && !hasFires){ btn.disabled=true; btn.style.display="none"; return; }
+      btn.addEventListener("click",function(){ metric=btn.getAttribute("data-mt");
+        mWrap.querySelectorAll("button").forEach(function(x){x.setAttribute("aria-pressed","false");}); btn.setAttribute("aria-pressed","true"); reconfig(); });
+    }); }
     // toggle
     var tg=document.getElementById("replayToggle");
     var on=false;
     if(tg) tg.addEventListener("click",function(){ on=!on; tg.setAttribute("aria-pressed",String(on)); if(on){ enter(); } else { leave(); } });
-    window.__replay={frame:frame, play:play, stop:stop, enter:enter, leave:leave, isOn:function(){return on;}, get idx(){return idx;}, periods:periods}; // test hook
+    window.__replay={frame:frame, play:play, stop:stop, enter:enter, leave:leave, isOn:function(){return on;}, setGran:function(g){gran=g;reconfig();}, setMetric:function(m){metric=m;reconfig();}, get idx(){return idx;}, get gran(){return gran;}, get periods(){return periodsArr();}}; // test hook
   }
 
   // ---- off-canvas layers drawer (mobile) ----

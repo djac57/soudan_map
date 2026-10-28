@@ -60,19 +60,32 @@ STATUS_FR = {
 INCLUDED = {"MONOPOLY", "DOMINANT", "SENIOR PARTNER", "JUNIOR PARTNER"}
 EXCLUDED = {"POWERLESS", "DISCRIMINATED", "SELF-EXCLUSION"}
 
-# Langues « principales » a mettre en avant (par code ISO 639-3), sans hierarchie
-# de valeur : simple reperage des langues les plus parlees / emblematiques.
-MAJOR_ISO = {
-    "apd",  # arabe soudanais
-    "bej",  # bedja
-    "fia",  # nobiin (nubien)
-    "kzh",  # kenuzi-dongola (nubien)
-    "mei",  # midob (nubien)
-    "fvr",  # four (fur)
-    "mls",  # masalit
-    "daj",  # daju du Darfour
-    "tig",  # tigré (Est)
-}
+# --- Langues « principales » portant une AIRE (polygone) ------------------
+# Les polygones de langues en licence ouverte sont rares : on DERIVE honnetement
+# les aires linguistiques des aires ethniques GeoEPR (chaque groupe a une langue
+# dominante), + une large aire ARABE vehiculaire (agregat des polygones arabes).
+# Cle = groupid GeoEPR ; valeur = metadonnees de la langue dominante (resolues
+# dans Glottolog par code ISO 639-3). L'aire arabe fusionne plusieurs groupes.
+AREA_LANGS = [
+    # (name_fr, iso, [groupids GeoEPR fusionnes], note_derivation)
+    ("Arabe soudanais (véhiculaire)", "apd", [9000, 12000, 16000],
+     "agrégat des aires des groupes arabes GeoEPR (arabes riverains, autres "
+     "groupes arabes, Rashaida) — aire véhiculaire du centre/nord"),
+    ("Bedja (Beja)", "bej", [3000], "aire du groupe Beja (GeoEPR)"),
+    ("Four (Fur)", "fvr", [5000], "aire du groupe Fur (GeoEPR)"),
+    ("Masalit", "mls", [14000], "aire du groupe Masalit (GeoEPR)"),
+    ("Beria (Zaghawa)", "zag", [15000], "aire du groupe Zaghawa (GeoEPR)"),
+    # NB : pas d'aire « nubien » — GeoEPR ne code aucun polygone nubien distinct
+    # pour 2012-2021, et le catch-all « autres groupes du Nord » est geographiquement
+    # situe au Darfour/Kordofan, PAS dans la vallee du Nil nubienne. Les langues
+    # nubiennes (nobiin, kenuzi-dongola, midob) restent donc des POINTS Glottolog,
+    # correctement places, plutot qu'une aire fabriquee et fausse.
+    ("Langues nouba (kordofaniennes)", None, [7000],
+     "aire du groupe Nuba (GeoEPR) — regroupe de NOMBREUSES langues "
+     "kordofaniennes distinctes, pas une seule langue"),
+]
+# isos deja representees par une AIRE -> on ne les redouble pas en point.
+AREA_ISO = {iso for (_n, iso, _g, _d) in AREA_LANGS if iso}
 
 
 # ========================================================================
@@ -259,17 +272,73 @@ def build_groups(raw: Path):
     return groups
 
 
-def build_languages(raw: Path):
+def _signed_area_ll(ring):
+    s = 0.0
+    for i in range(len(ring) - 1):
+        x1, y1 = ring[i]
+        x2, y2 = ring[i + 1]
+        s += (x2 - x1) * (y2 + y1)
+    return s
+
+
+def centroid_of_mp(coords):
+    """Point-label d'un MultiPolygon GeoJSON : barycentre du plus grand anneau ext."""
+    best, best_a = None, -1.0
+    for poly in coords:
+        if not poly:
+            continue
+        ring = poly[0]
+        a = abs(_signed_area_ll(ring))
+        if a > best_a:
+            best_a, best = a, ring
+    if not best:
+        return None
+    xs = [p[0] for p in best]
+    ys = [p[1] for p in best]
+    return [round(sum(xs) / len(xs), COORD_DP), round(sum(ys) / len(ys), COORD_DP)]
+
+
+def build_languages(raw: Path, groups):
     rows = list(csv.DictReader(open(raw / "glottolog_languages.csv", encoding="utf-8")))
     name_by_code = {r["Glottocode"]: r["Name"] for r in rows}
-    lon0, lat0, lon1, lat1 = SUDAN_BBOX
+    glotto_by_iso = {r["ISO639P3code"]: r for r in rows if r["ISO639P3code"]}
+    # aires ethniques GeoEPR indexees par groupid (groupid = gwgroupid - 62500000)
+    geom_by_groupid = {int(g["gwgroupid"]) - 62500000: g["geometry"]["coordinates"]
+                       for g in groups}
+
     langs = []
+
+    # 1) langues MAJEURES avec AIRE (polygones derives de GeoEPR)
+    for name_fr, iso, groupids, deriv in AREA_LANGS:
+        coords = []
+        for gid in groupids:
+            coords.extend(geom_by_groupid.get(gid, []))   # fusion = agregat des polygones
+        if not coords:
+            continue
+        meta = glotto_by_iso.get(iso) if iso else None
+        family = name_by_code.get(meta["Family_ID"], "") if meta and meta["Family_ID"] else None
+        langs.append({
+            "name": name_fr,
+            "glottocode": meta["Glottocode"] if meta else None,
+            "iso639_3": iso,
+            "family": family if iso else "plusieurs (kordofaniennes)",
+            "major": True,
+            "geometry": {"type": "MultiPolygon", "coordinates": coords},
+            "centroid": centroid_of_mp(coords),
+            "derivation": deriv,
+            "source": "GeoEPR-2021 (aire) + Glottolog (nom / famille / ISO)",
+        })
+
+    # 2) langues MINEURES Glottolog : points indicatifs, sans aire (geometry = null)
+    lon0, lat0, lon1, lat1 = SUDAN_BBOX
     skipped_outside = 0
     for r in rows:
         if r["Level"] != "language":
             continue
         countries = [c.strip() for c in r["Countries"].split(";") if c.strip()]
         if "SD" not in countries:
+            continue
+        if r["ISO639P3code"] in AREA_ISO:        # deja une aire -> pas de doublon
             continue
         if not (r["Latitude"] and r["Longitude"]):
             continue
@@ -284,13 +353,15 @@ def build_languages(raw: Path):
             "glottocode": r["Glottocode"],
             "iso639_3": r["ISO639P3code"] or None,
             "family": fam or ("Isolat" if r.get("Is_Isolate") == "True" else None),
-            "lat": lat,
-            "lon": lon,
-            "major": (r["ISO639P3code"] in MAJOR_ISO),
+            "major": False,
+            "geometry": None,
+            "centroid": [lon, lat],
             "source": "Glottolog (CLDF)",
         })
+
     langs.sort(key=lambda d: (not d["major"], d["name"]))
-    return langs, skipped_outside
+    n_area = sum(1 for d in langs if d["geometry"])
+    return langs, skipped_outside, n_area
 
 
 def main(argv):
@@ -301,7 +372,7 @@ def main(argv):
     raw = Path(argv[2]).resolve()
 
     groups = build_groups(raw)
-    languages, skipped = build_languages(raw)
+    languages, skipped, n_area = build_languages(raw, groups)
 
     note = (
         "Couche ETHNO-LINGUISTIQUE — cadre ACADEMIQUE et NEUTRE. "
@@ -329,12 +400,20 @@ def main(argv):
         "en aucun cas servir a cibler, essentialiser ou presumer des responsabilites "
         "collectives. La question d'une determination de genocide releve d'instances "
         "judiciaires et d'enquetes, pas de cette carte. "
-        "LANGUES (Glottolog) : chaque langue est reduite a UN point-reference unique "
-        "(centroide indicatif), ce qui ne represente ni l'etendue ni le nombre de "
-        f"locuteurs ; {skipped} langue(s) rattachee(s) au Soudan mais dont le point "
-        "Glottolog tombe hors du pays (ex. arabe standard) ont ete ecartees du semis. La "
-        "classification par famille suit Glottolog (conservatrice : pas de macro-famille "
-        "« nilo-saharienne »). "
+        "LANGUES — AIRES APPROXIMATIVES : les aires linguistiques (polygones) sont "
+        "DERIVEES des aires ethniques GeoEPR (chaque groupe a une langue dominante) "
+        "plus une large aire ARABE vehiculaire (agregat des polygones arabes GeoEPR). "
+        "Ce ne sont PAS des cartes linguistiques officielles : les frontieres sont "
+        "floues, le multilinguisme est frequent (l'arabe est parle bien au-dela de son "
+        "aire), une meme zone abrite souvent plusieurs langues, et l'aire « langues "
+        "nouba » recouvre en realite PLUSIEURS langues kordofaniennes distinctes. Les "
+        "langues NUBIENNES (nobiin, etc.) restent en POINTS et non en aire : GeoEPR ne "
+        "code aucun polygone nubien distinct pour 2012-2021 (pas d'aire fabriquee). Les "
+        "noms, familles et codes ISO 639-3 viennent de Glottolog (classification conservatrice : "
+        "pas de macro-famille « nilo-saharienne ») ; les contours viennent de GeoEPR. Les "
+        "langues mineures restantes sont de simples points-reference indicatifs "
+        f"(geometry=null) ; {skipped} langue(s) rattachee(s) au Soudan mais dont le point "
+        "Glottolog tombe hors du pays (ex. arabe standard) ont ete ecartees. "
         "Donnees potentiellement ANCIENNES (GeoEPR s'arrete en 2021 ; Glottolog agrege des "
         "sources d'epoques variees) : a lire comme un fond structurel, pas comme un "
         "instantane de la guerre. Aucune donnee nominative. Sources ouvertes, citees."
@@ -344,7 +423,8 @@ def main(argv):
         {
             "name": "GeoEPR-2021 — Geo-referencing Ethnic Power Relations",
             "org": "ETH Zurich, International Conflict Research (ICR)",
-            "role": "zones de peuplement des groupes ethniques politiquement pertinents",
+            "role": "zones de peuplement des groupes ethniques politiquement pertinents ; "
+                    "base geometrique des aires linguistiques (derivees)",
             "url": "https://icr.ethz.ch/data/epr/geoepr/",
             "license": "usage academique libre, citation requise "
                        "(Wucherpfennig et al. 2011 ; Vogt et al. 2015)",
@@ -361,7 +441,8 @@ def main(argv):
         {
             "name": "Glottolog (CLDF)",
             "org": "Max Planck Institute for Evolutionary Anthropology, Leipzig",
-            "role": "points de langues (lat/lon), famille, code ISO 639-3",
+            "role": "noms de langues, familles, codes ISO 639-3 ; points indicatifs "
+                    "des langues mineures",
             "url": "https://glottolog.org/ "
                    "(https://github.com/glottolog/glottolog-cldf)",
             "license": "CC BY 4.0",
@@ -398,9 +479,11 @@ def main(argv):
     out = root / "data" / "layer_ethnolang.js"
     out.write_text(header + body, encoding="utf-8")
     print(f"OK -> {out}")
-    print(f"   groupes   : {len(groups)}")
-    print(f"   langues   : {len(languages)} (dont {sum(l['major'] for l in languages)} majeures ; "
-          f"{skipped} ecartees hors-bbox)")
+    print(f"   groupes        : {len(groups)}")
+    print(f"   langues totales: {len(languages)}")
+    print(f"   dont AIRES     : {n_area} (polygones derives de GeoEPR)")
+    print(f"   points mineurs : {len(languages) - n_area} (geometry=null)")
+    print(f"   ecartees bbox  : {skipped}")
     return 0
 
 

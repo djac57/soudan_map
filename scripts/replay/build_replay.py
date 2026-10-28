@@ -108,6 +108,81 @@ def week_to_month(week_serial):
     return "%04d-%02d" % (d.year, d.month), d
 
 
+def week_to_key(week_serial):
+    """Serie Excel -> ('YYYY-MM-DD', date) : date de debut de semaine ISO."""
+    d = EPOCH + timedelta(days=int(week_serial))
+    return d.isoformat(), d
+
+
+# --- Point-in-polygon pur-python (ray casting) pour agreger les feux FIRMS
+# --- par Etat (frontieres ADM1). Aucune dependance externe. ------------------
+def _ring_contains(ring, x, y):
+    """Ray casting : le point (x=lon,y=lat) est-il dans l'anneau (liste [lon,lat]) ?"""
+    inside = False
+    n = len(ring)
+    j = n - 1
+    for i in range(n):
+        xi, yi = ring[i][0], ring[i][1]
+        xj, yj = ring[j][0], ring[j][1]
+        if ((yi > y) != (yj > y)) and \
+           (x < (xj - xi) * (y - yi) / (yj - yi + 1e-18) + xi):
+            inside = not inside
+        j = i
+    return inside
+
+
+def _poly_contains(rings, x, y):
+    """Polygone GeoJSON : dans l'anneau exterieur (rings[0]) et dans aucun trou."""
+    if not rings or not _ring_contains(rings[0], x, y):
+        return False
+    for hole in rings[1:]:
+        if _ring_contains(hole, x, y):
+            return False
+    return True
+
+
+def load_adm1_polys(path):
+    """Charge les polygones ADM1 -> [(sd_id, [polygon,...], (minx,miny,maxx,maxy))].
+    Chaque 'polygon' est une liste d'anneaux. shapeISO porte le code SD-XX
+    (Abyei = 'N/A' -> ignore : pas d'Etat soudanais SD-XX)."""
+    gj = json.load(open(path, encoding="utf-8"))
+    out = []
+    for feat in gj.get("features", []):
+        sd = (feat.get("properties") or {}).get("shapeISO", "")
+        if not isinstance(sd, str) or not sd.startswith("SD-"):
+            continue
+        geom = feat.get("geometry") or {}
+        gtype = geom.get("type")
+        coords = geom.get("coordinates") or []
+        polys = []
+        if gtype == "Polygon":
+            polys = [coords]
+        elif gtype == "MultiPolygon":
+            polys = coords
+        else:
+            continue
+        minx = miny = 1e9
+        maxx = maxy = -1e9
+        for poly in polys:
+            for ring in poly:
+                for xp, yp in ring:
+                    minx = min(minx, xp); maxx = max(maxx, xp)
+                    miny = min(miny, yp); maxy = max(maxy, yp)
+        out.append((sd, polys, (minx, miny, maxx, maxy)))
+    return out
+
+
+def state_of_point(polys_tbl, lon, lat):
+    """Renvoie le SD-XX contenant (lon,lat), sinon None (hors Soudan)."""
+    for sd, polys, (minx, miny, maxx, maxy) in polys_tbl:
+        if lon < minx or lon > maxx or lat < miny or lat > maxy:
+            continue
+        for poly in polys:
+            if _poly_contains(poly, lon, lat):
+                return sd
+    return None
+
+
 def month_range(start_month, end_month):
     """Liste chronologique inclusive de 'YYYY-MM'."""
     sy, sm = (int(x) for x in start_month.split("-"))
@@ -145,6 +220,9 @@ def main():
     core_path = sys.argv[2]
     maps_path = sys.argv[3]
     out_path = sys.argv[4]
+    # Optionnels (defauts = chemins standards du depot) :
+    adm1_path = sys.argv[5] if len(sys.argv) > 5 else "data/boundaries/sudan_adm1.geojson"
+    firms_sp_path = sys.argv[6] if len(sys.argv) > 6 else "data/raw/firms/firms_sp_agg.json"
 
     # ------------------------------------------------------------------
     # 1) ACLED -> by_state[mois][adm1_id] = {e,f} + totals[mois] = {e,f}
@@ -160,6 +238,9 @@ def main():
 
     by_state = {}          # mois -> {adm1_id -> {e,f}}
     totals = {}            # mois -> {e,f}  (national, toutes lignes Sudan)
+    by_state_week = {}     # 'YYYY-MM-DD' (lundi ISO) -> {adm1_id -> {e,f}}
+    totals_week = {}       # 'YYYY-MM-DD' -> {e,f}
+    weeks_set = set()
     states_seen = set()
     last_month = WAR_START_MONTH
     n_sudan = 0
@@ -170,15 +251,20 @@ def main():
         month, d = week_to_month(row[c_week])
         if d < WAR_START:
             continue
+        wk, _ = week_to_key(row[c_week])
         n_sudan += 1
         events = int(row[c_events]) if row[c_events] not in ("", None) else 0
         fat = int(row[c_fat]) if row[c_fat] not in ("", None) else 0
         if month > last_month:
             last_month = month
+        weeks_set.add(wk)
 
         tot = totals.setdefault(month, {"e": 0, "f": 0})
         tot["e"] += events
         tot["f"] += fat
+        totw = totals_week.setdefault(wk, {"e": 0, "f": 0})
+        totw["e"] += events
+        totw["f"] += fat
 
         name, adm1_id = ADMIN1_TO_ADM1.get(row[c_admin1], (row[c_admin1], None))
         if adm1_id is None:
@@ -187,8 +273,12 @@ def main():
         cell = by_state.setdefault(month, {}).setdefault(adm1_id, {"e": 0, "f": 0})
         cell["e"] += events
         cell["f"] += fat
+        cellw = by_state_week.setdefault(wk, {}).setdefault(adm1_id, {"e": 0, "f": 0})
+        cellw["e"] += events
+        cellw["f"] += fat
 
     periods = month_range(WAR_START_MONTH, last_month)
+    periods_week = sorted(weeks_set)
 
     # ------------------------------------------------------------------
     # 2) FIRMS -> fires[mois] = count (sous-ensemble "north", proxy conflit)
@@ -235,7 +325,89 @@ def main():
     claims_dated.sort(key=lambda x: (x["date"], x["actor"], x["place"] or ""))
 
     # ------------------------------------------------------------------
-    # 4) Assemblage du cube + ecriture du module JS.
+    # 4) FEUX par ETAT et par mois.
+    #    L'archive FIRMS gelee (firms_sp_agg.json) ne garde, par maille
+    #    0.1deg, qu'un decompte ANNUEL (champ 'y') + un drapeau 'north12'
+    #    (centroide >= 12N). On obtient donc :
+    #      * fires_year_by_state : MESURE direct (point-in-polygon des mailles
+    #        sur les frontieres ADM1), {a=tous feux, n=sous-ensemble nord12}.
+    #      * fires_by_state (mensuel) : ESTIMATION par desagregation — chaque
+    #        total ANNUEL mesure par Etat est reparti sur les mois selon le
+    #        PROFIL mensuel NATIONAL FIRMS (sudan_core.fires_timeline). Les deux
+    #        entrees (part spatiale annuelle par Etat, forme temporelle mensuelle
+    #        nationale) sont des valeurs sources ; leur produit est un estime,
+    #        signale dans meta. Jamais une preuve de feux de combat.
+    # ------------------------------------------------------------------
+    polys_tbl = load_adm1_polys(adm1_path)
+    sp = json.load(open(firms_sp_path, encoding="utf-8"))
+    years = sorted({y for c in sp.get("grid", []) for y in c.get("y", {})})
+
+    # Point-in-polygon : maille -> Etat ; cumul annuel {a,n} par Etat.
+    sy_all = {}   # sd -> {year -> count tous feux}
+    sy_north = {} # sd -> {year -> count nord12}
+    n_cells_in = 0
+    for c in sp.get("grid", []):
+        sd = state_of_point(polys_tbl, c["lon"], c["lat"])
+        if sd is None:
+            continue
+        n_cells_in += 1
+        north = bool(c.get("north12"))
+        a = sy_all.setdefault(sd, {})
+        nn = sy_north.setdefault(sd, {})
+        for yr, cnt in c.get("y", {}).items():
+            a[yr] = a.get(yr, 0) + cnt
+            if north:
+                nn[yr] = nn.get(yr, 0) + cnt
+
+    fires_year_by_state = {}
+    for yr in years:
+        d = {}
+        for sd in sorted(set(sy_all) | set(sy_north)):
+            av = sy_all.get(sd, {}).get(yr, 0)
+            nv = sy_north.get(sd, {}).get(yr, 0)
+            if av or nv:
+                d[sd] = {"a": av, "n": nv}
+        if d:
+            fires_year_by_state[yr] = d
+
+    # Profil mensuel national (fires_timeline.all), somme annuelle. On repartit
+    # 'a' ET 'n' par le MEME poids mensuel national : l'invariant n <= a (le
+    # sous-ensemble nord12 ne peut depasser le total) reste ainsi garanti chaque
+    # mois. Le decoupage temporel suit la saisonnalite nationale tous-feux.
+    nm_all = {rec["month"]: rec.get("all", 0) for rec in core.get("fires_timeline", [])}
+    ny_all = {}
+    for m in periods:
+        y = m[:4]
+        ny_all[y] = ny_all.get(y, 0) + nm_all.get(m, 0)
+
+    fires_by_state = {}
+    for m in periods:
+        y = m[:4]
+        wa = (nm_all.get(m, 0) / ny_all[y]) if ny_all.get(y) else 0.0
+        row_m = {}
+        for sd in sorted(set(sy_all) | set(sy_north)):
+            av = round(sy_all.get(sd, {}).get(y, 0) * wa)
+            nv = round(sy_north.get(sd, {}).get(y, 0) * wa)
+            if av or nv:
+                row_m[sd] = {"a": av, "n": nv}
+        fires_by_state[m] = row_m
+
+    # ------------------------------------------------------------------
+    # 5) CUMULS nationaux depuis le debut de la guerre (2023-04).
+    # ------------------------------------------------------------------
+    cum_events, cum_fatalities = {}, {}
+    ce = cf = 0
+    for m in periods:
+        t = totals.get(m, {"e": 0, "f": 0})
+        ce += t["e"]
+        cf += t["f"]
+        cum_events[m] = ce
+        cum_fatalities[m] = cf
+
+    firms_sp_meta = sp.get("meta", {})
+
+    # ------------------------------------------------------------------
+    # 6) Assemblage du cube + ecriture du module JS.
     # ------------------------------------------------------------------
     replay = {
         "granularity": "month",
@@ -243,16 +415,54 @@ def main():
         "by_state": {m: by_state.get(m, {}) for m in periods},
         "totals": {m: totals.get(m, {"e": 0, "f": 0}) for m in periods},
         "fires": {m: fires.get(m, 0) for m in periods},
+        "fires_by_state": fires_by_state,
+        "fires_year_by_state": fires_year_by_state,
+        "cum_events": cum_events,
+        "cum_fatalities": cum_fatalities,
+        # Granularite HEBDO (ACLED natif hebdomadaire ; cle = lundi ISO).
+        "granularity_week": "week",
+        "periods_week": periods_week,
+        "by_state_week": {w: by_state_week.get(w, {}) for w in periods_week},
+        "totals_week": {w: totals_week.get(w, {"e": 0, "f": 0}) for w in periods_week},
         "claims_dated": claims_dated,
         "meta": {
-            "source": ("ACLED (intensite par Etat) ; NASA FIRMS (feux) ; "
-                       "revendications SAF/RSF publiques geocodees "
-                       "(via data/layer_maps.js)."),
+            "source": ("ACLED (intensite par Etat, mensuel + hebdo) ; NASA FIRMS "
+                       "VIIRS (feux national + par Etat) ; revendications SAF/RSF "
+                       "publiques geocodees (via data/layer_maps.js)."),
             "as_of": AS_OF,
             "fires_basis": ("FIRMS fires_timeline.north — sous-ensemble des "
                             "detections au nord de ~12N, proxy conflit REDUIT "
                             "(le total 'all' reste domine par les feux agricoles "
                             "saisonniers). N'est PAS une preuve de feux de combat."),
+            "fires_by_state_basis": (
+                "fires_by_state[mois][SD-XX] = {a: tous feux, n: sous-ensemble "
+                "nord12}. ESTIMATION mensuelle par desagregation : le total "
+                "ANNUEL mesure par Etat (point-in-polygon des mailles 0.1deg de "
+                "l'archive FIRMS VIIRS_SNPP_SP sur les frontieres ADM1) est "
+                "reparti sur les mois selon le PROFIL mensuel NATIONAL FIRMS "
+                "tous-feux (sudan_core.fires_timeline.all, meme poids pour 'a' et "
+                "'n' -> l'invariant n<=a tient chaque mois). L'archive gelee ne conserve qu'un "
+                "decompte ANNUEL par maille : la repartition intra-annuelle par "
+                "Etat n'est donc PAS mesuree, elle suit la saisonnalite nationale. "
+                "fires_year_by_state[annee][SD-XX] donne, lui, la valeur MESUREE "
+                "(spatiale, annuelle). 'a' et 'n' restent domines par les feux "
+                "agricoles : jamais une preuve de feux de combat. Archive FIRMS "
+                "du " + str(firms_sp_meta.get("start")) + " au " +
+                str(firms_sp_meta.get("end")) + " (les mois 2026 posterieurs a la "
+                "fin d'archive heritent de la part spatiale annuelle mesuree "
+                "jusque-la)."),
+            "cumuls_basis": ("cum_events / cum_fatalities = somme cumulee de "
+                             "'totals' (national ACLED, toutes lignes Sudan) "
+                             "depuis 2023-04."),
+            "week_basis": ("periods_week / by_state_week / totals_week : "
+                           "granularite HEBDOMADAIRE native ACLED (cle = date du "
+                           "lundi ISO de debut de semaine). Memes regles que le "
+                           "mensuel : by_state_week au niveau Etat SD-XX, "
+                           "totals_week national."),
+            "displaced_basis": ("Deplacement NON animable : une seule date DTM "
+                                "disponible (IOM DTM snapshot_008, 28/07/2026). "
+                                "Aucun 'displaced_by_period' n'est produit — aucun "
+                                "etat intermediaire n'est invente."),
             "note": ("Cube temporel pour le replay anime (2023-04 -> " + last_month +
                      "). ACLED agrege AU MOIS a partir des semaines ISO (mois du "
                      "debut de semaine) et AU NIVEAU ETAT (adm1_id SD-XX) — "
@@ -300,6 +510,14 @@ def main():
     print("totaux national  events :", tot_e, " morts :", tot_f)
     print("claims_dated :", len(claims_dated), " (ecartees non datables :", dropped, ")")
     print("fires_basis : FIRMS north subset")
+    print("mailles FIRMS dans un Etat :", n_cells_in, "/", len(sp.get("grid", [])))
+    print("fires_year_by_state : annees", years,
+          "/ Etats couverts", len(set(sy_all) | set(sy_north)))
+    print("semaines (periods_week) :", len(periods_week),
+          (periods_week[0] + " -> " + periods_week[-1]) if periods_week else "")
+    print("cum_events final :", cum_events[periods[-1]],
+          " cum_fatalities final :", cum_fatalities[periods[-1]])
+    print("deplaces animables : NON (1 seul snapshot DTM)")
     print("taille layer_replay.js :", size, "octets (%.1f Ko)" % (size / 1024))
 
 

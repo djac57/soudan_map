@@ -50,9 +50,12 @@ Un **mode Replay** rejoue le conflit mois par mois. Un **toggle « Rejouer la gu
 (en tête du panneau) révèle une **barre temporelle** en bas de carte : **Lecture/Pause**, **vitesse**
 (×0,5 / ×1 / ×2 / ×4), un **curseur** sur toute la période, le **mois courant** affiché bien visible
 (via `Intl`) et un **lecteur** (événements · morts · feux du mois). À chaque période T s'animent :
-la **choroplèthe d'intensité ACLED par État** (`replay.by_state[T]`, échelle de couleur stable sur
+la **choroplèthe d'intensité par État** (`replay.by_state[T]`, échelle de couleur stable sur
 toute la guerre) et les **prises revendiquées jusqu'à T** (`replay.claims_dated`, period ≤ T), celles
-du mois courant étant étiquetées — on voit se dérouler Khartoum (2023), Gezira (déc. 2023),
+du mois courant étant étiquetées. **Granularité Mois / Semaine** (`periods_week`, 186 semaines, pour
+une animation plus fine), **bascule ACLED / Feux** (`fires_by_state`), et le lecteur affiche aussi le
+**cumul depuis 2023** (`cum_events` / `cum_fatalities`, ou somme courante). Chaque champ en
+feature-detection (toggle masqué si la donnée manque) — on voit se dérouler Khartoum (2023), Gezira (déc. 2023),
 la chute d'El-Fasher (oct. 2025), les poussées du Kordofan. Étiquette honnête : « intensité ACLED
 par mois · prises revendiquées (non vérifiées) ». **Feature-detection stricte** : si
 `window.SUDAN.replay` (fichier `data/layer_replay.js`, produit par l'agent données) est absent, le
@@ -75,7 +78,8 @@ ACLED, contrôle approx., voisins, flèches, poussées probables, déplacés-loc
 | **Poussées probables / secteurs à surveiller** | `analysis.watch_zones` | cercles gradués par `score`, popup `drivers` ; caveat **« indicatif, dynamique récente, PAS une prévision »** ; activée par défaut |
 | **Ressources & richesses** | `resources.{gold,oil,dams,agriculture}` | marqueurs par type, popup (contrôle, lien guerre, source) ; **or → financement RSF** mis en avant |
 | **Soutiens étrangers** | `backers.saf/.rsf` | **représentation principale = panneau 2 colonnes SAF / RSF** (pays, type, niveau `certainty`, « allégué/démenti ») ; carte secondaire : **flèches COURTES et courbées ancrées au point d'entrée** (`hub`, sinon un point près de la frontière — **plus de trait transcontinental**), plein = multi-source / pointillé = allégué, label au point d'entrée, dans une pane vive au-dessus ; quand la couche est active, le remplissage de contrôle est **atténué** et les flèches de mouvement masquées ; caveat « flux allégués, non une preuve ; démentis fréquents » |
-| **Groupes ethniques / Langues** | `ethnolang.groups/.languages` | polygones GeoEPR par statut + points de langues ; **décochées par défaut** ; avertissement TOUJOURS affiché « cadre EPR ; la guerre n'est pas ethnique ; simplification contestée » |
+| **Groupes ethniques / Langues** | `ethnolang.groups/.languages` | groupes = polygones GeoEPR par statut ; **langues = AIRES remplies** (6 langues majeures en MultiPolygon colorées + label au centroïde ; les 86 langues mineures en points discrets) ; **décochées par défaut** ; avertissements TOUJOURS affichés (« la guerre n'est pas ethnique » + « aires approximatives, frontières floues ») |
+| **Dommages El-Fasher (Sentinel-2)** (`layer_impacts.js`) | `impacts.sites[].change` | section **Satellite** ; 371 cellules dNBR 250 m remplies par `dnbr_mean`, popup + légende avec les **2 dates** (2024-11-06 → 2026-10-27) ; **décochée par défaut** ; étiquette obligatoire « **proxy INDICATIF de changement de surface, PAS une preuve de destruction** (brûlis/labour/chantier possibles) » |
 | **Relief / Routes & infra** | `geo.{relief,roads,airports,ports,crossings}` | hillshade Esri (pane dédiée, axes `{z}/{y}/{x}`) ; routes, **Port-Soudan** et **passages vers le Tchad** mis en avant (spillover) |
 | **Oléoducs** (`layer_pipelines.js`) | `pipelines.{lines,terminals}` | lignes « pétrole » épaisses (GNPOC / Petrodar) + terminaux d'export à Port-Soudan ; popup (opérateur, longueur doc.+OSM, statut, contexte guerre — Heglig FSR déc. 2025, force majeure, transit) ; section **Société & économie**, **décochée par défaut** ; caveat « tracé réel OSM (ODbL) ; séparation GNPOC/Petrodar inférée (`geometry_quality`) » |
 

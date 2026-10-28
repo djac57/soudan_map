@@ -116,7 +116,11 @@ window.SDN_I18N = {
     pipeCaveat:"Tracé réel OpenStreetMap (ODbL) ; la séparation GNPOC / Petrodar est une inférence documentée.",
     replayToggle:"Rejouer la guerre (2023→2026)", replaySpeed:"vitesse", replayPlay:"Lecture", replayPause:"Pause",
     replayCaveat:"Intensité ACLED par mois · prises revendiquées (non vérifiées).",
-    rdEvents:"événements", rdFatal:"morts", rdFires:"feux", legendLabel:"légende"
+    rdEvents:"événements", rdFatal:"morts", rdFires:"feux", legendLabel:"légende",
+    rpMonth:"Mois", rpWeek:"Semaine", rpACLED:"ACLED", rpFires:"Feux", rpCum:"depuis 2023",
+    lyrImpacts:"Dommages El-Fasher (Sentinel-2)",
+    impactsCaveat:"Proxy INDICATIF de changement de surface (dNBR), PAS une preuve de destruction (brûlis, labour, chantier possibles).",
+    ethnoLangCaveat:"Aires approximatives dérivées des aires ethniques GeoEPR + arabe véhiculaire ; frontières floues."
   },
   en: {
     dir:"ltr",
@@ -224,7 +228,11 @@ window.SDN_I18N = {
     pipeCaveat:"Real OpenStreetMap route (ODbL); the GNPOC / Petrodar split is a documented inference.",
     replayToggle:"Replay the war (2023→2026)", replaySpeed:"speed", replayPlay:"Play", replayPause:"Pause",
     replayCaveat:"Monthly ACLED intensity · claimed captures (unverified).",
-    rdEvents:"events", rdFatal:"fatalities", rdFires:"fires", legendLabel:"legend"
+    rdEvents:"events", rdFatal:"fatalities", rdFires:"fires", legendLabel:"legend",
+    rpMonth:"Month", rpWeek:"Week", rpACLED:"ACLED", rpFires:"Fires", rpCum:"since 2023",
+    lyrImpacts:"El-Fasher damage (Sentinel-2)",
+    impactsCaveat:"INDICATIVE surface-change proxy (dNBR), NOT proof of destruction (burning, ploughing, construction possible).",
+    ethnoLangCaveat:"Approximate areas derived from GeoEPR ethnic areas + vehicular Arabic; fuzzy boundaries."
   },
   ar: {
     dir:"rtl",
@@ -331,6 +339,10 @@ window.SDN_I18N = {
     pipeCaveat:"مسار حقيقي من OpenStreetMap (ODbL)؛ الفصل بين GNPOC و Petrodar استنتاج موثّق.",
     replayToggle:"إعادة تشغيل الحرب (2023→2026)", replaySpeed:"السرعة", replayPlay:"تشغيل", replayPause:"إيقاف",
     replayCaveat:"شدة ACLED شهريًا · سيطرات مُدّعاة (غير مُتحققة).",
-    rdEvents:"أحداث", rdFatal:"وفيات", rdFires:"حرائق", legendLabel:"مفتاح"
+    rdEvents:"أحداث", rdFatal:"وفيات", rdFires:"حرائق", legendLabel:"مفتاح",
+    rpMonth:"شهر", rpWeek:"أسبوع", rpACLED:"ACLED", rpFires:"حرائق", rpCum:"منذ 2023",
+    lyrImpacts:"أضرار الفاشر (Sentinel-2)",
+    impactsCaveat:"مؤشر إرشادي لتغيّر السطح (dNBR)، ليس دليلاً على الدمار (حرق أو حرث أو بناء ممكن).",
+    ethnoLangCaveat:"مساحات تقريبية مشتقة من مناطق GeoEPR العرقية + العربية التواصلية؛ حدود غير دقيقة."
   }
 };
