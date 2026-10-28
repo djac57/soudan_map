@@ -42,6 +42,17 @@
         .format(new Date(Date.UTC(+m[1],+m[2]-1,+m[3])));
     }catch(e){ return s; }
   };
+  // Format a "YYYY-MM" month with Intl in the current language.
+  window.SDN_FMTMONTH = function(s){
+    s = String(s==null?"":s);
+    var m = s.match(/^(\d{4})-(\d{2})/);
+    if(!m) return s;
+    try{
+      var loc = window.SDN_LANG==="ar"?"ar":(window.SDN_LANG||"fr");
+      return new Intl.DateTimeFormat(loc,{year:"numeric",month:"long"})
+        .format(new Date(Date.UTC(+m[1],+m[2]-1,1)));
+    }catch(e){ return s; }
+  };
 
   function apply(l){
     if(!I[l]) l = I.en?"en":"fr";

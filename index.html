@@ -50,6 +50,9 @@
     <div id="map"></div>
 
     <div class="ctl" id="ctl">
+      <div class="grp replaytoggle" id="replayToggleWrap" hidden>
+        <button class="btn btn-wide" id="replayToggle" type="button" aria-pressed="false">▶ <span data-t="replayToggle">Rejouer la guerre (2023→2026)</span></button>
+      </div>
       <h2 data-t="hLayers">Couches</h2>
       <div class="grp" id="layerGrp"></div>
       <h2 data-t="hCats">Affrontements — paire d'acteurs</h2>
@@ -63,6 +66,19 @@
     <div class="legend" id="legend">
       <div class="legtitle" id="legTitle">—</div>
       <div id="legBody"></div>
+    </div>
+
+    <!-- Replay temporel (révélé par le toggle ; masqué si window.SUDAN.replay absent) -->
+    <div class="replaybar" id="replayBar" hidden>
+      <div class="replay-top">
+        <button class="btn" id="replayPlay" type="button" aria-label="Lecture">▶</button>
+        <div class="replay-month" id="replayMonth">—</div>
+        <select class="mini" id="replaySpeed" aria-label="vitesse">
+          <option value="0.5">×0,5</option><option value="1" selected>×1</option><option value="2">×2</option><option value="4">×4</option>
+        </select>
+      </div>
+      <input type="range" id="replaySlider" min="0" max="0" value="0" aria-label="Mois">
+      <div class="replay-foot"><span id="replayRead" class="replay-read"></span><span class="replay-cav" id="replayCav" data-t="replayCaveat"></span></div>
     </div>
   </div>
 
@@ -134,6 +150,7 @@
 <script src="data/layer_analysis.js"></script>
 <script src="data/layer_acled.js"></script>
 <script src="data/layer_geo.js"></script>
+<script src="data/layer_replay.js"></script>
 <script src="chrome.js"></script>
 <script src="app.js"></script>
 </body>

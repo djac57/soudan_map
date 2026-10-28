@@ -45,6 +45,20 @@ Autonome, sans build, sans dépendance externe installée (Leaflet est **vendu**
   granularité fine au Darfour.
 - **Bandeau de garde-fou Darfour permanent** + caveats honnêtes (FIRMS = chaleur, pas conflit).
 
+#### Replay temporel (backfill animé de la guerre 2023→2026)
+Un **mode Replay** rejoue le conflit mois par mois. Un **toggle « Rejouer la guerre (2023→2026) »**
+(en tête du panneau) révèle une **barre temporelle** en bas de carte : **Lecture/Pause**, **vitesse**
+(×0,5 / ×1 / ×2 / ×4), un **curseur** sur toute la période, le **mois courant** affiché bien visible
+(via `Intl`) et un **lecteur** (événements · morts · feux du mois). À chaque période T s'animent :
+la **choroplèthe d'intensité ACLED par État** (`replay.by_state[T]`, échelle de couleur stable sur
+toute la guerre) et les **prises revendiquées jusqu'à T** (`replay.claims_dated`, period ≤ T), celles
+du mois courant étant étiquetées — on voit se dérouler Khartoum (2023), Gezira (déc. 2023),
+la chute d'El-Fasher (oct. 2025), les poussées du Kordofan. Étiquette honnête : « intensité ACLED
+par mois · prises revendiquées (non vérifiées) ». **Feature-detection stricte** : si
+`window.SUDAN.replay` (fichier `data/layer_replay.js`, produit par l'agent données) est absent, le
+toggle et la barre sont **masqués proprement, sans erreur**. Capture de preuve :
+`screenshots/replay.png` (mécanisme exercé avec des données de test ; le vrai fichier arrive).
+
 #### Organisation du panneau (v3)
 Avec 20+ couches, le panneau est **regroupé en sections repliables** (`<details>`) : **Conflit**
 (intensité ACLED, affrontements UCDP, poussées probables, flèches, feux de conflit/densité),

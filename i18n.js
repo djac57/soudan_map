@@ -113,7 +113,10 @@ window.SDN_I18N = {
     ethnoWarn:"Cadre académique (EPR, ETH Zurich). La guerre n'est PAS ethnique : une lecture ethnique est une simplification contestée. Couches décochées par défaut.",
     lyrRelief:"Relief", lyrInfra:"Routes & infrastructures", infraPort:"port", infraAirport:"aéroport", infraCrossing:"passage frontalier", fSpill:"Voisins (spillover)",
     lyrPipelines:"Oléoducs", pipeOperator:"opérateur", pipeLength:"longueur", pipeStatus:"statut", pipeTerminal:"terminal d'export",
-    pipeCaveat:"Tracé réel OpenStreetMap (ODbL) ; la séparation GNPOC / Petrodar est une inférence documentée."
+    pipeCaveat:"Tracé réel OpenStreetMap (ODbL) ; la séparation GNPOC / Petrodar est une inférence documentée.",
+    replayToggle:"Rejouer la guerre (2023→2026)", replaySpeed:"vitesse", replayPlay:"Lecture", replayPause:"Pause",
+    replayCaveat:"Intensité ACLED par mois · prises revendiquées (non vérifiées).",
+    rdEvents:"événements", rdFatal:"morts", rdFires:"feux"
   },
   en: {
     dir:"ltr",
@@ -218,7 +221,10 @@ window.SDN_I18N = {
     ethnoWarn:"Academic framing (EPR, ETH Zurich). The war is NOT ethnic: an ethnic reading is a contested oversimplification. Layers off by default.",
     lyrRelief:"Relief", lyrInfra:"Roads & infrastructure", infraPort:"port", infraAirport:"airport", infraCrossing:"border crossing", fSpill:"Neighbours (spillover)",
     lyrPipelines:"Oil pipelines", pipeOperator:"operator", pipeLength:"length", pipeStatus:"status", pipeTerminal:"export terminal",
-    pipeCaveat:"Real OpenStreetMap route (ODbL); the GNPOC / Petrodar split is a documented inference."
+    pipeCaveat:"Real OpenStreetMap route (ODbL); the GNPOC / Petrodar split is a documented inference.",
+    replayToggle:"Replay the war (2023→2026)", replaySpeed:"speed", replayPlay:"Play", replayPause:"Pause",
+    replayCaveat:"Monthly ACLED intensity · claimed captures (unverified).",
+    rdEvents:"events", rdFatal:"fatalities", rdFires:"fires"
   },
   ar: {
     dir:"rtl",
@@ -322,6 +328,9 @@ window.SDN_I18N = {
     ethnoWarn:"إطار أكاديمي (EPR). الحرب ليست عرقية: القراءة العرقية تبسيط متنازع عليه. الطبقات غير مفعّلة افتراضيًا.",
     lyrRelief:"التضاريس", lyrInfra:"طرق وبنية تحتية", infraPort:"ميناء", infraAirport:"مطار", infraCrossing:"معبر حدودي", fSpill:"الجوار (الامتداد)",
     lyrPipelines:"خطوط النفط", pipeOperator:"المشغّل", pipeLength:"الطول", pipeStatus:"الحالة", pipeTerminal:"محطة تصدير",
-    pipeCaveat:"مسار حقيقي من OpenStreetMap (ODbL)؛ الفصل بين GNPOC و Petrodar استنتاج موثّق."
+    pipeCaveat:"مسار حقيقي من OpenStreetMap (ODbL)؛ الفصل بين GNPOC و Petrodar استنتاج موثّق.",
+    replayToggle:"إعادة تشغيل الحرب (2023→2026)", replaySpeed:"السرعة", replayPlay:"تشغيل", replayPause:"إيقاف",
+    replayCaveat:"شدة ACLED شهريًا · سيطرات مُدّعاة (غير مُتحققة).",
+    rdEvents:"أحداث", rdFatal:"وفيات", rdFires:"حرائق"
   }
 };

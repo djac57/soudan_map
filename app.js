@@ -157,6 +157,7 @@
   var ethnolang = (S.ethnolang && typeof S.ethnolang==="object") ? S.ethnolang : null;
   var geo = (S.geo && typeof S.geo==="object") ? S.geo : null;
   var pipelines = (S.pipelines && (has(S.pipelines.lines)||has(S.pipelines.terminals))) ? S.pipelines : null;
+  var replay = (S.replay && has(S.replay.periods) && S.replay.by_state) ? S.replay : null;
   function fdate(s){ return window.SDN_FMTDATE ? window.SDN_FMTDATE(s) : String(s==null?"":s); }
   function pnum(n){ try{ return Number(n).toLocaleString(window.SDN_LANG==="ar"?"ar":(window.SDN_LANG||"fr")); }catch(e){ return String(n); } }
   function sideColor(k){
@@ -995,11 +996,79 @@
     // re-add layers that were on
     LAYERS.forEach(function(L0){ if(L0.lyr && map.hasLayer(L0.lyr)){ map.removeLayer(L0.lyr); L0.lyr.addTo(map);} });
     drawClashes(); updateLegend();
+    try{ if(window.__replay && window.__replay.isOn()) window.__replay.frame(window.__replay.idx); }catch(e){}
   }
   function renderAll(){ buildUI(); drawClashes(); fillStats(); fillHumHero(); fillRefugees(); buildChartToggle(); drawChart(); drawFiresChart(); fillControlSlot(); updateLegend(); }
 
+  // =====================================================================
+  //  REPLAY — animated backfill of the war (feature-detected; hidden if absent)
+  // =====================================================================
+  function fmtMonth(p){ return window.SDN_FMTMONTH ? window.SDN_FMTMONTH(p) : String(p); }
+  function setupReplay(){
+    var wrap=document.getElementById("replayToggleWrap"), bar=document.getElementById("replayBar");
+    if(!replay){ if(wrap)wrap.hidden=true; if(bar)bar.hidden=true; return; } // strict feature-detection
+    if(wrap)wrap.hidden=false;
+    var periods=replay.periods;
+    try{ map.createPane("replayPane"); map.getPane("replayPane").style.zIndex=445; }catch(e){}
+    var choro=L.layerGroup(), marks=L.layerGroup();
+    // stable global colour scale across all months
+    var gMax=1;
+    periods.forEach(function(p){ var row=replay.by_state[p]||{}; Object.keys(row).forEach(function(k){ gMax=Math.max(gMax,(row[k]&&row[k].e)||0); }); });
+    function rRamp(v){ var t=Math.min(1,v>0?Math.log(1+v)/Math.log(1+gMax):0); return mix2(hex("#fde0d9"),hex("#9a1e0e"),t); }
+    var claimsSorted=(replay.claims_dated||[]).slice().sort(function(a,b){return (a.period||a.date)<(b.period||b.date)?-1:1;});
+    var idx=0, timer=null, playing=false;
+
+    function frame(i){
+      idx=Math.max(0,Math.min(periods.length-1,i));
+      var P=periods[idx];
+      // choropleth by month events
+      choro.clearLayers();
+      if(adm1geo){ try{ L.geoJSON(adm1geo,{pane:"replayPane", style:function(f){ var pr=f.properties||{}; var id=pr.adm1_id||pr.shapeISO;
+          var row=replay.by_state[P]||{}; var d=id&&row[id]; var v=d?d.e:0;
+          return {color:cssv("--line"),weight:.8,fill:true,fillColor:rRamp(v),fillOpacity:v?.72:.05,opacity:.5}; },
+        onEachFeature:function(f,l){ var pr=f.properties||{}; var id=pr.adm1_id||pr.shapeISO; var row=replay.by_state[P]||{}; var d=id&&row[id];
+          l.bindPopup("<b>"+esc(pr.shapeName||pr.name||"?")+"</b> — "+fmtMonth(P)+"<br>"+(d?num(d.e)+" "+T("rdEvents")+" · "+num(d.f||0)+" "+T("rdFatal"):"<span class='muted'>—</span>")); }
+        }).eachLayer(function(l){choro.addLayer(l);}); }catch(e){} }
+      // claimed captures up to T (progressive), current-month ones labelled
+      marks.clearLayers();
+      claimsSorted.forEach(function(c){ var cp=c.period||String(c.date||"").slice(0,7); if(cp>P) return;
+        if(!isFinite(c.lat)||!isFinite(c.lon)) return;
+        var cur=(cp===P), col=sideColor(c.actor);
+        var m=L.circleMarker([c.lat,c.lon],{pane:"replayPane",radius:cur?7:4,color:col,weight:cur?2.4:1.2,fillColor:col,fillOpacity:cur?.5:.2,opacity:cur?.95:.6});
+        m.bindPopup("<b>"+esc(c.place||"?")+"</b> — "+String(c.actor||"").toUpperCase()+"<br><span class='muted'>"+fdate(c.date||cp)+" · "+T("claimTag")+"</span>");
+        if(cur && c.place) m.bindTooltip(esc(c.place),{permanent:true,direction:"top",className:"replaylbl"});
+        marks.addLayer(m);
+      });
+      // labels
+      var ml=document.getElementById("replayMonth"); if(ml) ml.textContent=fmtMonth(P);
+      var tot=(replay.totals&&replay.totals[P])||{}, fr=(replay.fires&&replay.fires[P]);
+      var rd=document.getElementById("replayRead");
+      if(rd) rd.innerHTML="<b>"+num(tot.e||0)+"</b> "+T("rdEvents")+" · <b>"+num(tot.f||0)+"</b> "+T("rdFatal")+(fr!=null?" · <b>"+num(fr)+"</b> "+T("rdFires"):"");
+      var sl=document.getElementById("replaySlider"); if(sl && +sl.value!==idx) sl.value=idx;
+    }
+    function stop(){ playing=false; if(timer){clearInterval(timer);timer=null;} var pb=document.getElementById("replayPlay"); if(pb){pb.textContent="▶"; pb.setAttribute("aria-label",T("replayPlay"));} }
+    function play(){ if(playing)return; if(idx>=periods.length-1) frame(0);
+      playing=true; var pb=document.getElementById("replayPlay"); if(pb){pb.textContent="⏸"; pb.setAttribute("aria-label",T("replayPause"));}
+      var spd=parseFloat((document.getElementById("replaySpeed")||{}).value||"1")||1;
+      timer=setInterval(function(){ if(idx>=periods.length-1){ stop(); return; } frame(idx+1); }, Math.max(140, 650/spd));
+    }
+    function enter(){ map.addLayer(choro); map.addLayer(marks); frame(idx); bar.hidden=false; }
+    function leave(){ stop(); map.removeLayer(choro); map.removeLayer(marks); bar.hidden=true; }
+
+    // slider
+    var sl=document.getElementById("replaySlider"); if(sl){ sl.min=0; sl.max=periods.length-1; sl.value=0;
+      sl.addEventListener("input",function(){ stop(); frame(+sl.value); }); }
+    var pb=document.getElementById("replayPlay"); if(pb) pb.addEventListener("click",function(){ if(playing)stop(); else play(); });
+    var sp=document.getElementById("replaySpeed"); if(sp) sp.addEventListener("change",function(){ if(playing){ stop(); play(); } });
+    // toggle
+    var tg=document.getElementById("replayToggle");
+    var on=false;
+    if(tg) tg.addEventListener("click",function(){ on=!on; tg.setAttribute("aria-pressed",String(on)); if(on){ enter(); } else { leave(); } });
+    window.__replay={frame:frame, play:play, stop:stop, enter:enter, leave:leave, isOn:function(){return on;}, get idx(){return idx;}, periods:periods}; // test hook
+  }
+
   // init
-  renderAll(); bindChartHover(); bindFiresHover(); refitAll();
+  renderAll(); bindChartHover(); bindFiresHover(); refitAll(); setupReplay();
   map.on("overlayadd overlayremove", updateLegend);
   var rT; window.addEventListener("resize", function(){ clearTimeout(rT); rT=setTimeout(function(){ try{ map.invalidateSize(); }catch(e){} }, 200); });
   new MutationObserver(function(){ restyleMap(); }).observe(root,{attributes:true,attributeFilter:["data-theme"]});
