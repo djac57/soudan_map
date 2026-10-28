@@ -156,6 +156,7 @@
   var backers = (S.backers && (has(S.backers.saf)||has(S.backers.rsf))) ? S.backers : null;
   var ethnolang = (S.ethnolang && typeof S.ethnolang==="object") ? S.ethnolang : null;
   var geo = (S.geo && typeof S.geo==="object") ? S.geo : null;
+  var pipelines = (S.pipelines && (has(S.pipelines.lines)||has(S.pipelines.terminals))) ? S.pipelines : null;
   function fdate(s){ return window.SDN_FMTDATE ? window.SDN_FMTDATE(s) : String(s==null?"":s); }
   function pnum(n){ try{ return Number(n).toLocaleString(window.SDN_LANG==="ar"?"ar":(window.SDN_LANG||"fr")); }catch(e){ return String(n); } }
   function sideColor(k){
@@ -575,6 +576,28 @@
   }
   buildInfra();
 
+  // ---- Oil pipelines (real OSM geometry; GNPOC/Petrodar split is a documented inference) ----
+  var pipelinesLayer = L.layerGroup();
+  var PIPE_COL = ["#b5651d","#7a4a12"]; // ambre/sombre, visibles sur le relief
+  function buildPipelines(){ pipelinesLayer.clearLayers(); if(!pipelines)return;
+    (pipelines.lines||[]).forEach(function(ln,i){ var g=ln.geometry; if(!g||!g.coordinates)return;
+      var col=PIPE_COL[i%PIPE_COL.length];
+      var segs = g.type==="MultiLineString" ? g.coordinates : [g.coordinates];
+      var pop="<b>"+esc(ln.name||"?")+"</b>"+
+        (ln.operator?"<br><span class='muted'>"+T("pipeOperator")+" : "+esc(ln.operator)+"</span>":"")+
+        ((ln.length_km||ln.length_km_osm)?"<br>"+T("pipeLength")+" : <b>"+(ln.length_km?num(ln.length_km)+" km":"?")+"</b>"+(ln.length_km_osm?" <span class='muted'>(OSM "+num(ln.length_km_osm)+" km)</span>":""):"")+
+        (ln.status?"<br><span class='muted' style='font-size:11px'>"+T("pipeStatus")+" : "+esc(ln.status)+"</span>":"")+
+        (ln.note?"<br><span class='muted' style='font-size:11px'>"+esc(ln.note)+"</span>":"")+
+        "<br><span class='muted' style='font-size:10.5px'>"+T("pipeCaveat")+"</span>";
+      segs.forEach(function(seg){ if(!seg||!seg.length)return;
+        pipelinesLayer.addLayer(L.polyline(seg.map(function(c){return [c[1],c[0]];}),{color:col,weight:3,opacity:.9,lineCap:"round"}).bindPopup(pop)); });
+    });
+    (pipelines.terminals||[]).forEach(function(t){ if(!isFinite(t.lat)||!isFinite(t.lon))return;
+      pipelinesLayer.addLayer(L.circleMarker([t.lat,t.lon],{radius:6,color:"#7a4a12",weight:2,fillColor:"#d08a2a",fillOpacity:.85,opacity:.95})
+        .bindPopup("<b>"+esc(t.name||"?")+"</b> <span class='tag'>"+T("pipeTerminal")+"</span>"+(t.type?"<br><span class='muted' style='font-size:11px'>"+esc(t.type)+"</span>":"")+(t.source?"<br><span class='muted' style='font-size:10px'>"+esc(t.source)+"</span>":""))); });
+  }
+  buildPipelines();
+
   // ---- layer registry (humanitarian & "who advances" foregrounded) ----
   // group = collapsible section key; reasonable defaults (NOT everything on)
   var LAYERS = [
@@ -601,6 +624,7 @@
     {grp:"secGeo",     id:"sectors", labelKey:"lyrSectors",      on:false, lyr:sectorLayer,       sw:"rect",     avail:focus.length>0},
     // Société & économie
     {grp:"secSociete", id:"resources",labelKey:"lyrResources",   on:false, lyr:resLayer,          sw:"res",      avail:!!resources},
+    {grp:"secSociete", id:"pipelines",labelKey:"lyrPipelines",   on:false, lyr:pipelinesLayer,    sw:"pipe",     avail:!!pipelines},
     {grp:"secSociete", id:"backers", labelKey:"lyrBackers",      on:false, lyr:backersLayer,      sw:"arrow",    avail:!!backers},
     {grp:"secSociete", id:"ethno",   labelKey:"lyrEthnoGroups",  on:false, lyr:ethnoGroupsLayer,  sw:"ethno",    avail:!!(ethnolang&&has(ethnolang.groups))},
     {grp:"secSociete", id:"langs",   labelKey:"lyrLanguages",    on:false, lyr:languagesLayer,    sw:"lang",     avail:!!(ethnolang&&has(ethnolang.languages))},
@@ -642,6 +666,7 @@
     else if(kind==="infra"){ sw.style.background="transparent"; sw.style.border="2px solid "+cssv("--cool"); sw.style.height="3px"; sw.style.width="16px"; sw.style.borderRadius="1px"; }
     else if(kind==="ethno"){ sw.className="sw sq"; sw.style.background=cssv("--c-safoth"); sw.style.opacity=".4"; }
     else if(kind==="lang"){ sw.style.background=cssv("--muted"); }
+    else if(kind==="pipe"){ sw.style.background="transparent"; sw.style.border="2px solid #b5651d"; sw.style.height="4px"; sw.style.width="16px"; sw.style.borderRadius="1px"; }
   }
   function renderLayerRow(L0, container){
     var row=document.createElement("label"); row.className="row";
@@ -752,6 +777,8 @@
     if(ethnolang && (map.hasLayer(ethnoGroupsLayer)||map.hasLayer(languagesLayer))){ sec.push('<div class="legtitle">'+T("lyrEthnoGroups")+'</div><div class="muted">'+T("ethnoWarn")+'</div>'); }
     if(resources && map.hasLayer(resLayer)){ sec.push('<div class="legtitle">'+T("lyrResources")+'</div>'+
       '<span class="pill" style="background:#d4af37"></span>'+T("resGold")+' &nbsp;<span class="pill" style="background:#2c2c2c"></span>'+T("resOil")+' &nbsp;<span class="pill" style="background:#2d6f86"></span>'+T("resDam")+' &nbsp;<span class="pill" style="background:#6f9134"></span>'+T("resAgri")); }
+    if(pipelines && map.hasLayer(pipelinesLayer)){ sec.push('<div class="legtitle">'+T("lyrPipelines")+'</div>'+
+      '<span class="pill" style="background:#b5651d"></span>GNPOC &nbsp;<span class="pill" style="background:#7a4a12"></span>Petrodar'); }
     if(map.hasLayer(controlApproxLayer)){ sec.push('<div class="legtitle">'+T("legControlTitle")+'</div>'+
       '<span class="pill sq" style="background:'+cssv("--c-saf")+'"></span>'+T("actorSAF")+' &nbsp;'+
       '<span class="pill sq" style="background:'+cssv("--c-rsf")+'"></span>'+T("actorRSF")+' &nbsp;'+
@@ -964,7 +991,7 @@
     if(adm1Lyr) adm1Lyr.setStyle({color:cssv("--line"),fillColor:cssv("--muted")});
     buildFires(); buildAct(); buildSectors(); buildControl(); buildOsint(); buildClaims(); buildControlApprox();
     buildNeighbors(); buildIdpSites(); buildIdpState(); buildFiresConflict(); buildArrows();
-    buildAcled(); buildWatch(); buildResources(); buildBackers(); buildEthno(); buildInfra();
+    buildAcled(); buildWatch(); buildResources(); buildBackers(); buildEthno(); buildInfra(); buildPipelines();
     // re-add layers that were on
     LAYERS.forEach(function(L0){ if(L0.lyr && map.hasLayer(L0.lyr)){ map.removeLayer(L0.lyr); L0.lyr.addTo(map);} });
     drawClashes(); updateLegend();

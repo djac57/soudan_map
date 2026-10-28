@@ -63,6 +63,7 @@ ACLED, contrôle approx., voisins, flèches, poussées probables, déplacés-loc
 | **Soutiens étrangers** | `backers.saf/.rsf` | flèches de flux pays→acteur par camp, plein = multi-source / pointillé = allégué, popup source + « allégué/démenti » ; caveat « flux allégués, non une preuve » |
 | **Groupes ethniques / Langues** | `ethnolang.groups/.languages` | polygones GeoEPR par statut + points de langues ; **décochées par défaut** ; avertissement TOUJOURS affiché « cadre EPR ; la guerre n'est pas ethnique ; simplification contestée » |
 | **Relief / Routes & infra** | `geo.{relief,roads,airports,ports,crossings}` | hillshade Esri (pane dédiée, axes `{z}/{y}/{x}`) ; routes, **Port-Soudan** et **passages vers le Tchad** mis en avant (spillover) |
+| **Oléoducs** (`layer_pipelines.js`) | `pipelines.{lines,terminals}` | lignes « pétrole » épaisses (GNPOC / Petrodar) + terminaux d'export à Port-Soudan ; popup (opérateur, longueur doc.+OSM, statut, contexte guerre — Heglig FSR déc. 2025, force majeure, transit) ; section **Société & économie**, **décochée par défaut** ; caveat « tracé réel OSM (ODbL) ; séparation GNPOC/Petrodar inférée (`geometry_quality`) » |
 
 #### Couches signaux additionnelles (fichiers `data/layer_*.js`, chargés après `bundle.js`)
 Chaque couche est **feature-detectée** (aucune erreur si le champ manque) et porte une **étiquette de

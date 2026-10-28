@@ -111,7 +111,9 @@ window.SDN_I18N = {
     lyrBackers:"Soutiens étrangers", backersCaveat:"Soutiens RAPPORTÉS, sujet sensible — souvent démentis. Flèches = flux allégués, non une preuve.", backersRecap:"Soutiens étrangers rapportés", certMulti:"multi-source", certReported:"rapporté / allégué", backerDenied:"démenti",
     lyrEthnoGroups:"Groupes ethniques (GeoEPR)", lyrLanguages:"Langues", statusIncl:"au pouvoir / inclus", statusExcl:"exclu",
     ethnoWarn:"Cadre académique (EPR, ETH Zurich). La guerre n'est PAS ethnique : une lecture ethnique est une simplification contestée. Couches décochées par défaut.",
-    lyrRelief:"Relief", lyrInfra:"Routes & infrastructures", infraPort:"port", infraAirport:"aéroport", infraCrossing:"passage frontalier", fSpill:"Voisins (spillover)"
+    lyrRelief:"Relief", lyrInfra:"Routes & infrastructures", infraPort:"port", infraAirport:"aéroport", infraCrossing:"passage frontalier", fSpill:"Voisins (spillover)",
+    lyrPipelines:"Oléoducs", pipeOperator:"opérateur", pipeLength:"longueur", pipeStatus:"statut", pipeTerminal:"terminal d'export",
+    pipeCaveat:"Tracé réel OpenStreetMap (ODbL) ; la séparation GNPOC / Petrodar est une inférence documentée."
   },
   en: {
     dir:"ltr",
@@ -214,7 +216,9 @@ window.SDN_I18N = {
     lyrBackers:"Foreign backers", backersCaveat:"REPORTED support, sensitive topic — often denied. Arrows = alleged flows, not proof.", backersRecap:"Reported foreign backers", certMulti:"multi-source", certReported:"reported / alleged", backerDenied:"denied",
     lyrEthnoGroups:"Ethnic groups (GeoEPR)", lyrLanguages:"Languages", statusIncl:"in power / included", statusExcl:"excluded",
     ethnoWarn:"Academic framing (EPR, ETH Zurich). The war is NOT ethnic: an ethnic reading is a contested oversimplification. Layers off by default.",
-    lyrRelief:"Relief", lyrInfra:"Roads & infrastructure", infraPort:"port", infraAirport:"airport", infraCrossing:"border crossing", fSpill:"Neighbours (spillover)"
+    lyrRelief:"Relief", lyrInfra:"Roads & infrastructure", infraPort:"port", infraAirport:"airport", infraCrossing:"border crossing", fSpill:"Neighbours (spillover)",
+    lyrPipelines:"Oil pipelines", pipeOperator:"operator", pipeLength:"length", pipeStatus:"status", pipeTerminal:"export terminal",
+    pipeCaveat:"Real OpenStreetMap route (ODbL); the GNPOC / Petrodar split is a documented inference."
   },
   ar: {
     dir:"rtl",
@@ -316,6 +320,8 @@ window.SDN_I18N = {
     lyrBackers:"داعمون أجانب", backersCaveat:"دعم مُبلّغ عنه، موضوع حساس — يُنكر غالبًا. الأسهم = تدفقات مزعومة لا دليل.", backersRecap:"داعمون أجانب مُبلّغ عنهم", certMulti:"متعدد المصادر", certReported:"مُبلّغ / مزعوم", backerDenied:"مُنكَر",
     lyrEthnoGroups:"مجموعات عرقية (GeoEPR)", lyrLanguages:"اللغات", statusIncl:"في السلطة / مشمول", statusExcl:"مُقصى",
     ethnoWarn:"إطار أكاديمي (EPR). الحرب ليست عرقية: القراءة العرقية تبسيط متنازع عليه. الطبقات غير مفعّلة افتراضيًا.",
-    lyrRelief:"التضاريس", lyrInfra:"طرق وبنية تحتية", infraPort:"ميناء", infraAirport:"مطار", infraCrossing:"معبر حدودي", fSpill:"الجوار (الامتداد)"
+    lyrRelief:"التضاريس", lyrInfra:"طرق وبنية تحتية", infraPort:"ميناء", infraAirport:"مطار", infraCrossing:"معبر حدودي", fSpill:"الجوار (الامتداد)",
+    lyrPipelines:"خطوط النفط", pipeOperator:"المشغّل", pipeLength:"الطول", pipeStatus:"الحالة", pipeTerminal:"محطة تصدير",
+    pipeCaveat:"مسار حقيقي من OpenStreetMap (ODbL)؛ الفصل بين GNPOC و Petrodar استنتاج موثّق."
   }
 };
