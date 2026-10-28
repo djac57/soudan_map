@@ -514,41 +514,64 @@
   }
   buildResources();
 
-  // ---- Foreign backers — SHORT curved flows anchored at the entry point (hub), vivid pane above ----
+  // ---- Foreign backers — cartographer map: country choropleth + typed war-routes + logistics airports ----
   var backersLayer = L.layerGroup();
-  try{ map.createPane("backersPane"); map.getPane("backersPane").style.zIndex=462; }catch(e){}
-  var SAF_ANCHOR=[18.6,34.0], RSF_ANCHOR=[13.2,25.2]; // SAF (centre/est) / RSF (Darfour) — ancres visuelles
-  function entryPoint(b, anchor){ // entry near the Sudan periphery in the country's direction (never the far centroid)
-    if(b.hub && isFinite(b.hub.lat) && isFinite(b.hub.lon)) return [b.hub.lat, b.hub.lon];
-    if(!isFinite(b.lat)||!isFinite(b.lon)) return anchor;
-    var dLat=b.lat-anchor[0], dLon=b.lon-anchor[1], len=Math.sqrt(dLat*dLat+dLon*dLon)||1, out=3.4;
-    return [anchor[0]+dLat/len*out, anchor[1]+dLon/len*out];
+  try{ map.createPane("backersFillPane"); map.getPane("backersFillPane").style.zIndex=432;
+       map.createPane("backersPane"); map.getPane("backersPane").style.zIndex=462; }catch(e){}
+  var ALIGN={RSF:"#e3882e", SAF:"#4f9a52", mixed:"#9aa05a", context:"#9aa6b6", theatre:"#8a7ea0"};
+  var ROUTE_COL={gold:"#d4572a", fighters:"#7b4fb0", arms_fuel:"#2f6b3a", drones:"#2f7fc4"};
+  function alignSide(p){ var s=String(p.side||"").toUpperCase();
+    if(p.ambivalent) return "mixed"; if(s==="RSF")return "RSF"; if(s==="SAF")return "SAF";
+    if(/THEAT|SDN|SUDAN/.test(s)||p.iso3==="SDN") return "theatre"; return "context"; }
+  function alignColor(s){ return ALIGN[s]||ALIGN.context; }
+  function alignLabel(s){ return s==="RSF"?T("alignRsf"):s==="SAF"?T("alignSaf"):s==="mixed"?T("alignMixed"):T("alignContext"); }
+  function routeColor(t){ return ROUTE_COL[t]||cssv("--muted"); }
+  function routeLabel(t){ return t==="gold"?T("routeGold"):t==="fighters"?T("routeFighters"):t==="arms_fuel"?T("routeArms"):t==="drones"?T("routeDrones"):t; }
+  // Catmull-Rom smoothing through real waypoints (curved routes, not straight lines)
+  function smooth(pts){ if(!pts||pts.length<3) return pts||[];
+    var out=[]; for(var i=0;i<pts.length-1;i++){ var p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;
+      for(var t=0;t<1;t+=0.1){ var t2=t*t,t3=t2*t;
+        out.push([0.5*((2*p1[0])+(-p0[0]+p2[0])*t+(2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2+(-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3),
+                  0.5*((2*p1[1])+(-p0[1]+p2[1])*t+(2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2+(-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3)]); } }
+    out.push(pts[pts.length-1]); return out;
   }
-  function curvePts(a,b,bend){ var mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2, dx=b[0]-a[0], dy=b[1]-a[1];
-    var pl=Math.sqrt(dx*dx+dy*dy)||1, cx=mx+(-dy/pl)*bend, cy=my+(dx/pl)*bend, pts=[];
-    for(var t=0;t<=1.0001;t+=0.1){ var u=1-t; pts.push([u*u*a[0]+2*u*t*cx+t*t*b[0], u*u*a[1]+2*u*t*cy+t*t*b[1]]); }
-    return pts;
-  }
+  var backersGeo=null;
+  var sidesTxt=(backers&&backers.legend&&backers.legend.sides)||{};
   function buildBackers(){ backersLayer.clearLayers(); if(!backers)return;
-    [["saf",backers.saf,SAF_ANCHOR],["rsf",backers.rsf,RSF_ANCHOR]].forEach(function(p){
-      var side=p[0], arr=p[1]||[], anchor=p[2], col=sideColor(side);
-      arr.forEach(function(b){
-        var multi=(b.certainty==="multi-source"||b.certainty==="multi");
-        var entry=entryPoint(b,anchor);
-        var pts=curvePts(entry,anchor, side==="rsf"?0.7:-0.7); // short curved flow into the actor zone
-        backersLayer.addLayer(L.polyline(pts,{pane:"backersPane",color:col,weight:multi?3:2,opacity:.85,dashArray:multi?null:"4 4",lineCap:"round"}));
-        backersLayer.addLayer(L.marker(anchor,{pane:"backersPane",icon:L.divIcon({className:"arrowico",html:'<svg width="16" height="16" viewBox="0 0 16 16" style="transform:rotate('+bearing(pts[pts.length-2],anchor)+'deg)"><path d="M8 1 L12.5 13 L8 10 L3.5 13 Z" fill="'+col+'" stroke="var(--panel)" stroke-width="1"/></svg>',iconSize:[16,16],iconAnchor:[8,8]}),interactive:false,keyboard:false}));
-        var cn=(window.SDN_LANG==="fr"&&b.country_fr)?b.country_fr:b.country;
-        var st=(b.support_type||[]).map(esc).join(", ");
-        var m=L.circleMarker(entry,{pane:"backersPane",radius:6,color:col,weight:2,fillColor:col,fillOpacity:.55,opacity:.95});
-        m.bindTooltip(esc(cn),{pane:"backersPane",permanent:true,direction:"top",className:"bklbl",offset:[0,-4]});
-        m.bindPopup("<b>"+esc(cn)+"</b> → "+side.toUpperCase()+(b.denied?" <span class='tag'>"+T("backerDenied")+"</span>":"")+
-          "<br><span class='muted'>"+(multi?T("certMulti"):T("certReported"))+(st?" · "+st:"")+"</span>"+
-          (b.note?"<br><span class='muted' style='font-size:11px'>"+esc(b.note)+"</span>":""));
-        backersLayer.addLayer(m);
-      });
+    // 1) country alignment choropleth (polygon props carry side/support/note)
+    if(backersGeo){ try{ L.geoJSON(backersGeo,{pane:"backersFillPane",
+      style:function(f){ var p=f.properties||{}, s=alignSide(p), c=alignColor(s);
+        return {color:c,weight:1,fillColor:c,fillOpacity:s==="theatre"?0:(s==="context"?.1:.42),opacity:s==="theatre"?0:.5}; },
+      onEachFeature:function(f,l){ var p=f.properties||{}, s=alignSide(p); var nm=(window.SDN_LANG==="fr"&&p.name_fr)?p.name_fr:(p.name||p.name_fr||p.iso3);
+        l.bindPopup("<b>"+esc(nm)+"</b> — "+esc(alignLabel(s))+(p.denied?" <span class='tag'>"+T("backerDenied")+"</span>":"")+
+          ((p.support_type||[]).length?"<br><span class='muted'>"+(p.support_type||[]).map(esc).join(", ")+"</span>":"")+
+          (p.note?"<br><span class='muted' style='font-size:11px'>"+esc(p.note)+"</span>":"")); }
+    }).eachLayer(function(l){backersLayer.addLayer(l);}); }catch(e){} }
+    // 2) typed war-routes (curved via real waypoints, colour by type, arrowhead at arrival)
+    (backers.routes||[]).forEach(function(r){ if(!has(r.coords))return;
+      var col=routeColor(r.type), dash=r.type==="drones"?"7 5":null;
+      var pts=smooth(r.coords.map(function(c){return [c[1],c[0]];}));
+      backersLayer.addLayer(L.polyline(pts,{pane:"backersPane",color:col,weight:2.8,opacity:.88,dashArray:dash,lineCap:"round",lineJoin:"round"})
+        .bindTooltip(esc(r.label||routeLabel(r.type)),{sticky:true})
+        .bindPopup("<b>"+esc(r.label||routeLabel(r.type))+"</b> <span class='tag'>"+esc(routeLabel(r.type))+"</span>"+
+          (r.denied?" <span class='tag'>"+T("backerDenied")+"</span>":"")+(r.note?"<br><span class='muted' style='font-size:11px'>"+esc(r.note)+"</span>":"")));
+      var end=pts[pts.length-1], prev=pts[pts.length-2]||end;
+      backersLayer.addLayer(L.marker(end,{pane:"backersPane",interactive:false,keyboard:false,icon:L.divIcon({className:"arrowico",
+        html:'<svg width="16" height="16" viewBox="0 0 16 16" style="transform:rotate('+bearing(prev,end)+'deg)"><path d="M8 1 L12.5 13 L8 10 L3.5 13 Z" fill="'+col+'" stroke="var(--panel)" stroke-width="1"/></svg>',iconSize:[16,16],iconAnchor:[8,8]})}));
+    });
+    // 3) logistics airports (plane icons, labelled; RSF ones flagged)
+    (backers.logistics_airports||[]).forEach(function(a){ if(!isFinite(a.lat)||!isFinite(a.lon))return;
+      var rsf=String(a.side||"").toUpperCase()==="RSF", col=rsf?ALIGN.RSF:ALIGN.SAF;
+      backersLayer.addLayer(L.marker([a.lat,a.lon],{pane:"backersPane",icon:L.divIcon({className:"airico",
+        html:'<span style="color:'+col+'">✈</span>',iconSize:[16,16],iconAnchor:[8,8]})})
+        .bindTooltip(esc(a.name),{permanent:true,direction:"right",className:"bklbl",offset:[7,0]})
+        .bindPopup("<b>"+esc(a.name)+"</b>"+(a.country?" <span class='muted'>("+esc(a.country)+")</span>":"")+
+          (rsf?" <span class='tag'>"+T("airportRsf")+"</span>":"")+(a.role?"<br><span class='muted' style='font-size:11px'>"+esc(a.role)+"</span>":"")));
     });
   }
+  var backersGeoUrl=(backers&&backers.alignment&&backers.alignment.geojson)||"data/backers_countries.geojson";
+  if(backers){ try{ fetch(backersGeoUrl).then(function(r){return r.json();}).then(function(g){ backersGeo=g; buildBackers();
+    if(map.hasLayer(backersLayer)){ map.removeLayer(backersLayer); backersLayer.addTo(map); } }).catch(function(){}); }catch(e){} }
   buildBackers();
 
   // Attenuate heavy fills + hide movement arrows while the backers layer is active (flows stand out)
@@ -835,8 +858,12 @@
       '<span class="pill sq" style="background:#cde2fb"></span>'+T("legLo")+' &nbsp;<span class="pill sq" style="background:#104281"></span>'+T("legHi")); }
     if(map.hasLayer(firesConflictLayer)){ sec.push('<div class="legtitle">'+T("lyrFiresConflict")+'</div>'+
       '<span class="pill" style="background:#f0461f"></span>'+T("legFiresConflict")); }
-    if(backers && map.hasLayer(backersLayer)){ sec.push('<div class="legtitle">'+T("backersRecap")+'</div>'+
-      '<span class="pill" style="background:'+cssv("--c-saf")+'"></span>SAF &nbsp;<span class="pill" style="background:'+cssv("--c-rsf")+'"></span>RSF<div class="muted" style="margin-top:2px">'+T("backersCaveat")+'</div>'); }
+    if(backers && map.hasLayer(backersLayer)){ sec.push('<div class="legtitle">'+T("legCountries")+'</div>'+
+      '<span class="pill sq" style="background:#e3882e"></span>'+T("alignRsf")+' &nbsp;<span class="pill sq" style="background:#4f9a52"></span>'+T("alignSaf")+
+      '<div class="legtitle" style="margin-top:5px">'+T("legRoutes")+'</div>'+
+      '<span class="pill" style="background:#d4572a"></span>'+T("routeGold")+' &nbsp;<span class="pill" style="background:#7b4fb0"></span>'+T("routeFighters")+' &nbsp;<span class="pill" style="background:#2f6b3a"></span>'+T("routeArms")+' &nbsp;<span class="pill" style="background:#2f7fc4"></span>'+T("routeDrones")+
+      '<div style="margin-top:4px">✈ '+T("legAirport")+'</div>'+
+      '<div class="muted" style="margin-top:3px">'+T("backersCaveat")+'</div>'); }
     if(ethnolang && map.hasLayer(languagesLayer)){ sec.push('<div class="legtitle">'+T("lyrLanguages")+'</div><div class="muted">'+T("ethnoLangCaveat")+'</div>'); }
     if(ethnolang && map.hasLayer(ethnoGroupsLayer)){ sec.push('<div class="legtitle">'+T("lyrEthnoGroups")+'</div><div class="muted">'+T("ethnoWarn")+'</div>'); }
     if(resources && map.hasLayer(resLayer)){ sec.push('<div class="legtitle">'+T("lyrResources")+'</div>'+
