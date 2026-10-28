@@ -1,0 +1,13 @@
+{
+  "_comment": "Balanced set of PUBLIC Telegram web-preview channels (https://t.me/s/<name>) tracking the Sudan war. lean = editorial side, NOT ground truth. Chosen for a balanced pro-SAF / pro-RSF / neutral mix. Scraped from public previews only (no API, no login). Leans sourced from IFRI 'Sudan Wartime Online Propaganda' (2026) and channel self-description.",
+  "channels": [
+    { "name": "RSFSudan",      "lean": "rsf",     "url": "https://t.me/s/RSFSudan",      "label": "Rapid Support Forces (official)" },
+    { "name": "GeneralDagalo",  "lean": "rsf",     "url": "https://t.me/s/GeneralDagalo",  "label": "Mohamed Hamdan Daglo / Hemedti (RSF leader)" },
+    { "name": "SudanBreaking",  "lean": "saf",     "url": "https://t.me/s/SudanBreaking",  "label": "Aajel Al-Sudan (pro-SAF breaking news; low activity since 2026-04)" },
+    { "name": "sudaaan",        "lean": "saf",     "url": "https://t.me/s/sudaaan",        "label": "Al-Sudan (active pro-government / pro-SAF-leaning general news)" },
+    { "name": "NewsfromSudan",  "lean": "neutral", "url": "https://t.me/s/NewsfromSudan",  "label": "News from Sudan (independent HR documentation)" },
+    { "name": "SudanTribune",   "lean": "neutral", "url": "https://t.me/s/SudanTribune",   "label": "Sudan Tribune (independent press)" },
+    { "name": "ourwarstoday",   "lean": "neutral", "url": "https://t.me/s/ourwarstoday",   "label": "Our Wars, Today (war OSINT aggregator)" },
+    { "name": "OSINTWarfare",   "lean": "neutral", "url": "https://t.me/s/OSINTWarfare",   "label": "OSINTWarfare (conflict OSINT aggregator)" }
+  ]
+}

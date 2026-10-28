@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Soudan — carte du conflit (SAF / RSF)</title>
+<meta name="description" content="Carte du conflit au Soudan (SAF vs RSF) : événements de conflit UCDP géolocalisés et signaux physiques de feux FIRMS. Données ouvertes, agrégées, datées, sans ligne de contrôle fabriquée. FR / EN / AR.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#10141c">
+<!-- TODO publication : ajouter <link rel="canonical"> + og:image absolus quand le domaine djac57 sera connu. Liens volontairement relatifs tant que le site n'est pas hébergé. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Soudan — carte du conflit (SAF / RSF)">
+<meta property="og:description" content="Événements de conflit géolocalisés et feux satellite au Soudan, agrégés et datés. Sans ligne de contrôle fabriquée.">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="ar_SD">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Soudan — carte du conflit (SAF / RSF)">
+<meta name="twitter:description" content="Événements de conflit géolocalisés et feux satellite au Soudan, agrégés et datés.">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.min.css">
+<link rel="stylesheet" href="style.css">
+<!-- TODO publication : mesure d'audience respectueuse de la vie privée (aucune URL inventée ici). -->
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <h1 data-t="title">Où frappe la guerre au Soudan ?</h1>
+      <p class="sub" id="daterange">…</p>
+    </div>
+    <div class="spacer"></div>
+    <span class="langs" role="group" aria-label="Langue / Language">
+      <button class="btn" data-l="fr" type="button" aria-pressed="true">FR</button>
+      <button class="btn" data-l="en" type="button" aria-pressed="false">EN</button>
+      <button class="btn" data-l="ar" type="button" aria-pressed="false">ع</button>
+    </span>
+    <button class="btn" data-theme-toggle type="button" aria-label="Thème clair/sombre">◐</button>
+  </header>
+
+  <div class="warnbar"><b data-t="guardrail">Garde-fou Darfour : données agrégées uniquement — aucun suivi d'unités, aucune donnée nominative. Les violences visant des civils sont comptées au niveau de l'État, jamais affichées en points. Données historiques, non temps réel.</b></div>
+
+  <div class="main">
+    <div id="map"></div>
+
+    <div class="ctl" id="ctl">
+      <h2 data-t="hLayers">Couches</h2>
+      <div class="grp" id="layerGrp"></div>
+      <h2 data-t="hCats">Affrontements — paire d'acteurs</h2>
+      <div class="grp" id="catGrp"></div>
+      <h2 data-t="hTime">Fenêtre temporelle</h2>
+      <div class="grp"><div class="times" id="timeBtns"></div></div>
+      <h2 data-t="hFocus">Vues de focus</h2>
+      <div class="grp"><div class="focusbtns" id="focusBtns"></div></div>
+    </div>
+
+    <div class="legend" id="legend">
+      <div class="legtitle" id="legTitle">—</div>
+      <div id="legBody"></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <p style="margin:16px 0 0"><a href="methode.html" data-t="methodLink" style="font-weight:600;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px">Méthode, sources &amp; prudence →</a></p>
+    <p class="seclead" style="margin-top:8px" data-t="purpose">Une lecture par les données du conflit entre l'armée régulière (SAF) et les Forces de soutien rapide (RSF).</p>
+
+    <section>
+      <h2 class="sec" data-t="secFigTitle">Chiffres clés</h2>
+      <div class="stats" id="statFigs"></div>
+    </section>
+
+    <section>
+      <h2 class="sec" data-t="secStatesTitle">Par État</h2>
+      <p class="seclead" data-t="secStatesLead">Agrégats au niveau de l'État. Les violences unilatérales contre les civils ne sont comptées qu'ici, jamais en points.</p>
+      <div class="card"><div class="tablewrap"><table class="states" id="stateTable"></table></div></div>
+    </section>
+
+    <section>
+      <h2 class="sec" data-t="secTimeTitle">Chronologie mensuelle</h2>
+      <p class="seclead" data-t="secTimeLead">Événements d'affrontement par mois. Bascule événements / morts estimés.</p>
+      <div class="card">
+        <div class="chtog" id="chTog"></div>
+        <div class="chartwrap chart"><div id="chart"></div><div class="chtip" id="chTip"></div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="sec" data-t="secControlTitle">Ligne de contrôle &amp; prévision</h2>
+      <div id="controlSlot" class="slot"></div>
+    </section>
+
+    <footer>
+      <p data-t="footSources">Sources : UCDP GED (CC BY 4.0) · NASA FIRMS / VIIRS · geoBoundaries (CC BY 3.0 IGO) · fond OpenStreetMap.</p>
+      <p data-t="footDisclaimer">Projet personnel de recherche, non affilié. Données agrégées, historiques et datées.</p>
+      <p><a href="methode.html" data-t="footData">Données, méthode et sources →</a></p>
+    </footer>
+  </div>
+</div>
+
+<script src="i18n.js"></script>
+<script src="vendor/leaflet/leaflet.min.js"></script>
+<script src="data/bundle.js"></script>
+<!-- Couches signaux additives (livrées par les agents données ; chargées après bundle, feature-detection) -->
+<script src="data/layer_sentinel.js"></script>
+<script src="data/layer_osint.js"></script>
+<script src="data/layer_maps.js"></script>
+<script src="chrome.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

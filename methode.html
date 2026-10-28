@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Méthode, sources &amp; prudence — carte du conflit au Soudan</title>
+<meta name="description" content="Méthode et sources de la carte du conflit au Soudan : événements UCDP géolocalisés, feux NASA FIRMS/VIIRS, frontières geoBoundaries. Prudence, garde-fou Darfour, et pourquoi il n'y a pas de ligne de contrôle.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#10141c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Méthode, sources &amp; prudence — carte du conflit au Soudan">
+<meta property="og:description" content="D'où viennent les données, et ce que la carte refuse volontairement de montrer.">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_US">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="stylesheet" href="style.css">
+<!-- TODO publication : canonical absolu quand le domaine sera connu. -->
+</head>
+<body>
+<header class="top">
+  <div><a href="index.html" class="backlink" data-t="mBack" style="color:inherit;text-decoration:none">← la carte</a></div>
+  <div class="spacer"></div>
+  <span class="langs" role="group" aria-label="Langue / Language">
+    <button class="btn" data-l="fr" type="button" aria-pressed="true">FR</button>
+    <button class="btn" data-l="en" type="button" aria-pressed="false">EN</button>
+    <button class="btn" data-l="ar" type="button" aria-pressed="false">ع</button>
+  </span>
+  <button class="btn" data-theme-toggle type="button" aria-label="Thème clair/sombre">◐</button>
+</header>
+
+<div class="wrap">
+<article class="method">
+  <h1 data-t="mTitle" style="font-size:28px;margin:28px 0 6px">Méthode, sources &amp; prudence</h1>
+  <p class="lead" data-t="mLead">Comment cette carte est construite, d'où viennent les données, et ce qu'elle refuse volontairement de montrer.</p>
+
+  <h2 data-t="mWhyH">Pourquoi cette carte</h2>
+  <p data-t="mWhy">…</p>
+
+  <h2 data-t="mReadH">Comment lire la carte</h2>
+  <p data-t="mRead">…</p>
+
+  <h2 data-t="mSrcH">Sources &amp; licences</h2>
+  <div class="tablewrap">
+  <table class="src">
+    <thead><tr><th data-t="thRole">Rôle</th><th data-t="thSource">Source</th><th data-t="thWindow">Fenêtre / date</th><th data-t="thLicense">Licence</th></tr></thead>
+    <tbody>
+      <tr><td data-t="srcEvents">Événements</td><td>UCDP GED — stable v25.1 + Candidate v25/v26 (<a href="https://ucdp.uu.se/downloads/" rel="noopener">ucdp.uu.se</a>)</td><td>→ 2026-09-28</td><td><span class="tag">CC BY 4.0</span></td></tr>
+      <tr><td data-t="srcFires">Feux</td><td>NASA FIRMS — VIIRS SNPP NRT (<a href="https://firms.modaps.eosdis.nasa.gov/" rel="noopener">firms.modaps.eosdis.nasa.gov</a>) · clé lue localement, jamais incluse</td><td>2026-10-27</td><td><span class="tag">domaine public (NASA EOSDIS/LANCE)</span></td></tr>
+      <tr><td data-t="srcBound">Frontières</td><td>geoBoundaries ADM0/ADM1 Soudan (<a href="https://www.geoboundaries.org/" rel="noopener">geoboundaries.org</a>)</td><td>2023</td><td><span class="tag">CC BY 4.0</span></td></tr>
+      <tr><td data-t="srcBase">Fond de carte</td><td>OpenStreetMap (tuiles en ligne, sans clé)</td><td>—</td><td><span class="tag">ODbL</span></td></tr>
+      <tr><td data-t="srcLib">Bibliothèque</td><td>Leaflet 1.9.4 (vendue dans <code>vendor/leaflet/</code>)</td><td>—</td><td><span class="tag">BSD-2</span></td></tr>
+      <tr><td data-t="srcDropped">Écartée</td><td data-t="srcDroppedWhy" colspan="3">ACLED — pas de clé locale et doute de licence sur l'usage IA.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2 data-t="mPrudH">Prudence appliquée</h2>
+  <p data-t="mPrud">…</p>
+
+  <h2 data-t="mGuardH">Garde-fou Darfour</h2>
+  <div class="guard"><span data-t="mGuard">…</span></div>
+
+  <h2 data-t="mControlH">Pas de ligne de contrôle — et pourquoi</h2>
+  <p data-t="mControl">…</p>
+
+  <h2 data-t="refsTitle">Cartes de référence &amp; revendications</h2>
+  <p data-t="refsNote" class="muted" style="font-size:13px">…</p>
+  <div class="tablewrap"><table class="src" id="refTable"></table></div>
+
+  <h2 data-t="mFirmsH">FIRMS : chaleur, pas conflit</h2>
+  <p data-t="mFirms">…</p>
+
+  <h2 data-t="mLimitsH">Limites</h2>
+  <ul>
+    <li data-t="limit1">…</li>
+    <li data-t="limit2">…</li>
+    <li data-t="limit3">…</li>
+    <li data-t="limit4">…</li>
+    <li data-t="limit5">…</li>
+  </ul>
+
+  <h2 data-t="mPublishH">Publication</h2>
+  <p data-t="mPublish">…</p>
+
+  <p class="backlink" style="margin-top:28px"><a href="index.html" data-t="mBack">← la carte</a></p>
+</article>
+
+<footer>
+  <p data-t="footDisclaimer">Projet personnel de recherche, non affilié.</p>
+</footer>
+</div>
+
+<script src="i18n.js"></script>
+<script src="data/layer_maps.js"></script>
+<script src="chrome.js"></script>
+<script>
+/* Render the reference-maps table from window.SUDAN.known_maps.references (dates via Intl). */
+(function(){
+  function esc(s){ return String(s==null?"":s).replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];}); }
+  function render(){
+    var tbl=document.getElementById("refTable"); if(!tbl) return;
+    var km=(window.SUDAN&&window.SUDAN.known_maps)||{}; var refs=km.references||[];
+    var T=window.SDN_T||function(k){return k;}; var fd=window.SDN_FMTDATE||function(s){return s;};
+    if(!refs.length){ tbl.innerHTML=""; return; }
+    var head="<thead><tr><th>"+T("thSource")+"</th><th>"+T("thAuthor")+"</th><th>"+T("thDate")+"</th><th>"+T("thLicense")+"</th></tr></thead>";
+    var rows=refs.map(function(r){
+      var nm = r.url ? '<a href="'+esc(r.url)+'" rel="noopener">'+esc(r.name||"?")+'</a>' : esc(r.name||"?");
+      return "<tr><td>"+nm+"</td><td>"+esc(r.author||"—")+"</td><td>"+esc(fd(r.date))+"</td><td><span class='tag'>"+esc(r.license||"—")+"</span></td></tr>";
+    }).join("");
+    tbl.innerHTML=head+"<tbody>"+rows+"</tbody>";
+  }
+  render();
+  document.addEventListener("sdn-lang", render);
+})();
+</script>
+</body>
+</html>
