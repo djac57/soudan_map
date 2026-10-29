@@ -62,6 +62,16 @@ par mois · prises revendiquées (non vérifiées) ». **Feature-detection stric
 toggle et la barre sont **masqués proprement, sans erreur**. Capture de preuve :
 `screenshots/replay.png` (mécanisme exercé avec des données de test ; le vrai fichier arrive).
 
+#### Clarté & UX (priorité mobile)
+- **Cadrage visible en haut** : une ligne « ce que montre cette carte » (contrôle approximatif par État
+  + avancées revendiquées, SAF vs RSF) et un **bouton Replay bien visible** « ▶ Rejouer la guerre
+  (2023→2026) », hors du panneau — on le trouve immédiatement.
+- **Vue par défaut épurée** : seulement **4 couches actives** (contrôle approximatif par État,
+  flèches « qui avance » / revendications, frontières, pays voisins) ; **tout le reste décoché** et
+  découvrable dans le panneau (sections repliables). On comprend en 5 secondes.
+- **Légende mobile refaite** : chip repliable « légende » (fermée par défaut), carte lisible à
+  l'ouverture, sans débordement ni chevauchement, testée à **360 et 390 px**.
+
 #### Organisation du panneau (v3)
 Avec 20+ couches, le panneau est **regroupé en sections repliables** (`<details>`) : **Conflit**
 (intensité ACLED, affrontements UCDP, poussées probables, flèches, feux de conflit/densité),

@@ -46,6 +46,14 @@
     <p class="humhero-caveat" id="humCaveat" data-t="humCaveat"></p>
   </div>
 
+  <!-- Cadrage : ce que montre la carte + accès direct au replay (toujours visible) -->
+  <div class="mapintro">
+    <p class="mapintro-what"><span class="mi-dk" data-t="mapWhat">Ce que montre cette carte : le contrôle approximatif par État et les avancées revendiquées (SAF vs RSF).</span><span class="mi-mb" data-t="mapWhatM">Contrôle approximatif + avancées revendiquées (SAF vs RSF).</span></p>
+    <div id="replayToggleWrap" hidden>
+      <button class="btn replay-cta" id="replayToggle" type="button" aria-pressed="false">▶ <span data-t="replayToggle">Rejouer la guerre (2023→2026)</span></button>
+    </div>
+  </div>
+
   <div class="main">
     <div id="map"></div>
 
@@ -56,9 +64,6 @@
       <div class="ctl-head">
         <span class="ctl-head-t" data-t="hLayers">Couches</span>
         <button class="ctl-close" id="ctlClose" type="button" aria-label="Fermer">×</button>
-      </div>
-      <div class="grp replaytoggle" id="replayToggleWrap" hidden>
-        <button class="btn btn-wide" id="replayToggle" type="button" aria-pressed="false">▶ <span data-t="replayToggle">Rejouer la guerre (2023→2026)</span></button>
       </div>
       <h2 data-t="hLayers">Couches</h2>
       <div class="grp" id="layerGrp"></div>

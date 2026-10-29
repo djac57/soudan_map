@@ -686,15 +686,15 @@
   // group = collapsible section key; reasonable defaults (NOT everything on)
   var LAYERS = [
     // Conflit
-    {grp:"secConflit", id:"acled",   labelKey:"lyrAcled",        on:true,  lyr:acledLayer,        sw:"acled",    avail:!!(acled&&adm1geo)},
+    {grp:"secConflit", id:"acled",   labelKey:"lyrAcled",        on:false,  lyr:acledLayer,        sw:"acled",    avail:!!(acled&&adm1geo)},
     {grp:"secConflit", id:"clash",   labelKey:"lyrClash",        on:false, lyr:clashLayer,        sw:"dot",      count:"clashCnt", avail:events.length>0},
-    {grp:"secConflit", id:"watch",   labelKey:"lyrWatch",        on:true,  lyr:watchLayer,        sw:"watch",    avail:!!analysis},
+    {grp:"secConflit", id:"watch",   labelKey:"lyrWatch",        on:false,  lyr:watchLayer,        sw:"watch",    avail:!!analysis},
     {grp:"secConflit", id:"arrows",  labelKey:"lyrArrows",       on:true,  lyr:arrowsLayer,       sw:"arrow",    avail:!!claims},
     {grp:"secConflit", id:"firesC",  labelKey:"lyrFiresConflict",on:false, lyr:firesConflictLayer,sw:"firec",    avail:firesConflict.length>0},
     {grp:"secConflit", id:"firms",   labelKey:"lyrFiresDensity", on:false, lyr:firesLayer,        sw:"fire",     avail:fires.length>0},
     {grp:"secConflit", id:"act",     labelKey:"lyrAct",          on:false, lyr:actLayer,          sw:"sq",       avail:activity.length>0},
     // Humanitaire
-    {grp:"secHuma",    id:"idpsites", labelKey:"lyrIdpSites",    on:true,  lyr:idpSitesLayer,     sw:"idp",      avail:!!(hum&&idpSites.length)},
+    {grp:"secHuma",    id:"idpsites", labelKey:"lyrIdpSites",    on:false,  lyr:idpSitesLayer,     sw:"idp",      avail:!!(hum&&idpSites.length)},
     {grp:"secHuma",    id:"idpstate", labelKey:"lyrIdpState",    on:false, lyr:idpStateLayer,     sw:"idpfill",  avail:!!(hum&&dispByState.length&&adm1geo)},
     // Contexte & contrôle
     {grp:"secContexte",id:"ctrlapx", labelKey:"lyrControlApprox",on:true,  lyr:controlApproxLayer,sw:"ctrlfill", avail:!!ctrlApprox},

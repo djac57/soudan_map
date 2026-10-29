@@ -125,7 +125,9 @@ window.SDN_I18N = {
     routeGold:"or", routeFighters:"combattants", routeArms:"armes & carburant", routeDrones:"drones",
     airportRsf:"aéroport-clé logistique FSR", airportKey:"aéroport logistique",
     legCountries:"Position des pays", legRoutes:"Routes de la guerre", legAirport:"aéroport-clé",
-    idpInternal:"Déplacés internes (IDP)", refIntl:"Réfugiés (internationaux)"
+    idpInternal:"Déplacés internes (IDP)", refIntl:"Réfugiés (internationaux)",
+    mapWhat:"Ce que montre cette carte : le contrôle approximatif par État et les avancées revendiquées (armée SAF vs RSF). Données ouvertes, agrégées, non vérifiées. Ajoutez des couches à droite.",
+    mapWhatM:"Contrôle approximatif par État + avancées revendiquées (SAF vs RSF). Couches : bouton ☰."
   },
   en: {
     dir:"ltr",
@@ -242,7 +244,9 @@ window.SDN_I18N = {
     routeGold:"gold", routeFighters:"fighters", routeArms:"arms & fuel", routeDrones:"drones",
     airportRsf:"key RSF logistics airport", airportKey:"logistics airport",
     legCountries:"Country alignment", legRoutes:"War routes", legAirport:"key airport",
-    idpInternal:"Internally displaced (IDP)", refIntl:"Refugees (international)"
+    idpInternal:"Internally displaced (IDP)", refIntl:"Refugees (international)",
+    mapWhat:"What this map shows: approximate control by state and claimed advances (SAF army vs RSF). Open, aggregated, unverified data. Add layers on the right.",
+    mapWhatM:"Approximate control by state + claimed advances (SAF vs RSF). Layers: ☰ button."
   },
   ar: {
     dir:"rtl",
@@ -358,6 +362,8 @@ window.SDN_I18N = {
     routeGold:"ذهب", routeFighters:"مقاتلون", routeArms:"أسلحة ووقود", routeDrones:"مسيّرات",
     airportRsf:"مطار لوجستي رئيسي للدعم السريع", airportKey:"مطار لوجستي",
     legCountries:"اصطفاف الدول", legRoutes:"طرق الحرب", legAirport:"مطار رئيسي",
-    idpInternal:"نازحون داخليًا", refIntl:"لاجئون (دوليون)"
+    idpInternal:"نازحون داخليًا", refIntl:"لاجئون (دوليون)",
+    mapWhat:"ما تعرضه هذه الخريطة: السيطرة التقريبية حسب الولاية والتقدمات المُدّعاة (الجيش مقابل الدعم السريع). بيانات مفتوحة مجمّعة غير مُتحقّقة. أضف طبقات من اليمين.",
+    mapWhatM:"سيطرة تقريبية حسب الولاية + تقدمات مُدّعاة (الجيش مقابل الدعم السريع). الطبقات: زر ☰."
   }
 };
