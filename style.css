@@ -87,7 +87,7 @@ header .spacer{flex:1}
 
 /* ---- map shell ---- */
 .app{display:flex; flex-direction:column; min-height:100dvh; max-width:100%; overflow-x:hidden;}
-.main{position:relative; height:70vh; min-height:420px; overflow:hidden; width:100%;}
+.main{position:relative; height:86vh; min-height:560px; overflow:hidden; width:100%;}
 #map{position:absolute; inset:0; background:var(--panel-2);}
 .leaflet-container{background:var(--panel-2); font-family:inherit;}
 :root[data-theme="dark"] .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.9);}
@@ -105,7 +105,8 @@ header .spacer{flex:1}
 .ctl-close{width:40px; height:40px; font-size:24px; line-height:1; background:var(--panel-2);
   border:1px solid var(--line); border-radius:9px; color:var(--ink); cursor:pointer;}
 .ctl{position:absolute; top:12px; right:12px; z-index:1000; width:238px; max-width:calc(100vw - 24px);
-  background:var(--panel); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow);
+  background:color-mix(in srgb, var(--panel) 72%, transparent); -webkit-backdrop-filter:blur(14px) saturate(1.6); backdrop-filter:blur(14px) saturate(1.6);
+  border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow);
   font-size:12px; overflow:hidden; max-height:calc(100% - 24px); overflow-y:auto;}
 .ctl h2{font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted);
   margin:0; padding:10px 12px 4px; display:flex; align-items:center; gap:6px}
@@ -167,9 +168,20 @@ header .spacer{flex:1}
 @media (max-width:560px){ .replaybar{left:0; right:0; bottom:0; border-radius:12px 12px 0 0} .replay-cav{flex-basis:100%; margin:0} }
 
 /* ---- legend (gradient layers) ---- */
-.legend{position:absolute; bottom:12px; left:12px; z-index:1000; background:var(--panel);
+.legend{position:absolute; bottom:12px; left:12px; z-index:1000;
+  background:color-mix(in srgb, var(--panel) 72%, transparent); -webkit-backdrop-filter:blur(14px) saturate(1.6); backdrop-filter:blur(14px) saturate(1.6);
   border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow); padding:8px 11px;
   font-size:11px; max-width:260px; display:none;}
+/* legend: header toggles the whole box; each section collapses on its own (closed body by default) */
+.legend .legwrap{display:none; margin-top:6px; max-height:52vh; overflow-y:auto; overflow-x:hidden; overflow-wrap:anywhere}
+.legend.open .legwrap{display:block}
+.legend-toggle{display:block; min-height:28px; line-height:28px}
+details.legsec{margin:0 0 4px}
+details.legsec>summary.legtitle{cursor:pointer; list-style:none; padding:3px 0; display:block}
+details.legsec>summary.legtitle::-webkit-details-marker{display:none}
+details.legsec>summary.legtitle::before{content:"▸ "; color:var(--faint)}
+details.legsec[open]>summary.legtitle::before{content:"▾ "}
+details.legsec>.legsec-body{padding:0 0 4px 12px}
 .legend .legtitle{font-size:10.5px; color:var(--muted); margin:0 0 3px; text-transform:uppercase; letter-spacing:.4px;}
 .legend-toggle{display:none; width:100%; text-align:start; background:none; border:0; color:var(--muted);
   font:inherit; font-size:11px; text-transform:uppercase; letter-spacing:.4px; cursor:pointer; padding:0;}

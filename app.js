@@ -968,7 +968,11 @@
       '<span class="pill sq" style="background:'+cssv("--c-safrsf")+';opacity:.3"></span>'+T("legLo")+' &nbsp;<span class="pill sq" style="background:'+cssv("--c-safrsf")+'"></span>'+T("legHi")); }
     if(!sec.length){ leg.style.display="none"; return; }
     leg.style.display="block"; t.style.display="none";
-    body.innerHTML=sec.join('<div style="height:7px"></div>');
+    // each legend section becomes its own collapsible block (title = summary)
+    body.innerHTML=sec.map(function(h){
+      return h.replace(/^<div class="legtitle"([^>]*)>([\s\S]*?)<\/div>([\s\S]*)$/, function(_,a,ttl,rest){
+        return '<details class="legsec" open><summary class="legtitle"'+a+'>'+ttl+'</summary><div class="legsec-body">'+rest+'</div></details>'; });
+    }).join('<div style="height:7px"></div>');
   }
 
   // =====================================================================
