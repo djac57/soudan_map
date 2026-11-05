@@ -1286,7 +1286,7 @@
     out+='<text x="'+pad.l+'" y="'+(H-14)+'" font-size="9" fill="'+cssv("--muted")+'">'+esc(T("tlLegend"))+'</text>';
     box.innerHTML='<div class="disptl-ttl">'+T("dispTimelineTitle")+'</div>'+
       '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(T("dispTimelineTitle"))+'">'+out+'</svg>'+
-      '<div class="disptl-note">'+T("tlNote")+' '+dispSrc("idp_dtm")+'</div>';
+      '<div class="disptl-note">'+T("tlNote")+' '+dispSrc("idp_dtm")+' · <a href="https://en.wikipedia.org/wiki/Battle_of_Khartoum_(2023%E2%80%932025)" target="_blank" rel="noopener">Wikipedia — Battle of Khartoum</a></div>';
   }
   // ---- Tableaux triables : clic sur un en-tête = tri croissant, reclic = décroissant ----
   function drawSortable(tb){
