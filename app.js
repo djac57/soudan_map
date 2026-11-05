@@ -1500,8 +1500,12 @@
     if(!TS) return null;
     var out={idp:null, idpDate:null, idpRound:null, refYear:null, refTotal:0, refBy:[]};
     var d = P.length===7 ? P+"-28" : P;
-    var rounds=(TS.idp_rounds||[]).filter(function(r){ return r.published<=d; });
-    if(rounds.length){ var r=rounds[rounds.length-1]; out.idp=r.idp; out.idpDate=r.published; out.idpRound=r.round; }
+    // relevés IOM : Mobility Updates (2024–2025) puis Displacement and Return Snapshots (2026), triés par date
+    var all=(((TS.idp_mobility_rounds||{}).rounds)||[]).map(function(r){ return {published:r.published, idp:r.idp, round:r.round, pre:r.displaced_before_2023_04_15, since:r.displaced_since_2023_04_15}; })
+      .concat((TS.idp_rounds||[]).map(function(r){ return {published:r.published, idp:r.idp, round:"Snapshot "+r.round, pre:null, since:null}; }));
+    all.sort(function(x,y){ return x.published<y.published?-1:1; });
+    var rounds=all.filter(function(r){ return r.published<=d; });
+    if(rounds.length){ var r=rounds[rounds.length-1]; out.idp=r.idp; out.idpDate=r.published; out.idpRound=r.round; out.idpPre=r.pre; out.idpSince=r.since; }
     // stock annuel : fin de l'année précédente tant que l'année n'est pas close (dernier relevé connu)
     var y=parseInt(P.slice(0,4),10), mo=parseInt(P.slice(5,7),10)||12;
     var sy = (mo===12) ? y : y-1;
@@ -1518,7 +1522,7 @@
     replayDispLayer.clearLayers();
     var info=dispAtPeriod(P); var rd=document.getElementById("replayDispRead");
     if(rd){ rd.innerHTML = info ? (
-        (info.idp!=null ? "<b>"+num(info.idp)+"</b> "+T("rpIdp")+" <span class='muted'>("+T("rpRound")+" "+info.idpRound+", "+fdate(info.idpDate)+")</span>"
+        (info.idp!=null ? "<b>"+num(info.idp)+"</b> "+T("rpIdp")+" <span class='muted'>("+T("rpRound")+" "+info.idpRound+", "+fdate(info.idpDate)+(info.idpSince!=null?"; "+T("tlSince")+" "+num(info.idpSince)+", "+T("tlPre")+" ≈ "+num(info.idpPre):"")+")</span>"
                         : "<span class='muted'>"+T("rpIdp")+": "+T("rpNoData")+"</span>")+
         " · "+(info.refYear ? "<b>"+num(info.refTotal)+"</b> "+T("rpRef")+" <span class='muted'>("+T("rpStockEnd")+" "+info.refYear+")</span>"
                             : "<span class='muted'>"+T("rpRef")+": "+T("rpNoData")+"</span>")) : ""; }
