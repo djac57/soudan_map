@@ -412,13 +412,14 @@
   //      réfugiés vers les pays voisins, retours. Flux = INDICATIFS (répartition supposée),
   //      chiffres = bases publiées (stock / arrivées / retours) affichées dans les popups.
   var displacementLayer = L.layerGroup();
+  var dispIntlLayer = L.layerGroup();
   var disp = (S.displacement && typeof S.displacement==="object") ? S.displacement : null;
   function dispSrc(key){ var s=disp&&disp.sources&&disp.sources[key]; return s ? esc(s.name)+" ("+esc(s.date)+") — <a href='"+esc(s.url)+"' target='_blank' rel='noopener'>"+T("dispSrcLink")+"</a>" : ""; }
   function dispStateCentroids(){ var out=[]; if(!adm1geo||!dispByState.length) return out;
     try{ L.geoJSON(adm1geo).eachLayer(function(l){ var p=(l.feature&&l.feature.properties)||{}; var d=dispFor(p);
       if(d && l.getBounds) out.push({d:d, c:l.getBounds().getCenter()}); }); }catch(e){}
     return out; }
-  function buildDisplacement(){ displacementLayer.clearLayers(); if(!disp) return;
+  function buildDisplacement(){ displacementLayer.clearLayers(); dispIntlLayer.clearLayers(); if(!disp) return;
     var hubs=disp.origin_hubs_idp_2023||[], nb=disp.neighbours||[], rt=disp.returns_to_sudan||null;
     var east=hubs[0], west=hubs.filter(function(h){return h.name_en==="West Darfur";})[0]||hubs[1]||hubs[0];
     var amber="#b5651d", green="#2e7d4f";
@@ -444,12 +445,12 @@
       var s=(n.refugees_stock||0)/maxS;
       var ln=L.polyline([from,c],{color:amber,weight:1.5+8*Math.sqrt(s),opacity:.6});
       ln.bindPopup("<b>"+esc(o.name_fr)+" → "+esc(n.country_fr)+"</b><br><span class='muted'>"+T("dispOriginNote")+"</span>");
-      displacementLayer.addLayer(ln); displacementLayer.addLayer(arrowhead(c, bearing(from,c), amber));
+      dispIntlLayer.addLayer(ln); dispIntlLayer.addLayer(arrowhead(c, bearing(from,c), amber));
       var m=L.circleMarker(c,{radius:5+20*Math.sqrt(s),color:amber,weight:1,fillColor:amber,fillOpacity:.45});
       m.bindPopup("<b>"+esc(n.country_fr)+"</b><br>"+pnum(n.refugees_stock||0)+" "+T("dispRefStock")+" <span class='muted'>("+esc(n.refugees_basis||"")+")</span>"+
         (n.arrivals?"<br>"+pnum(n.arrivals)+" "+T("dispArrivals")+" <span class='muted'>("+esc(n.arrivals_basis||"")+")</span>":"")+
         "<br><span class='muted'>"+dispSrc(n.source)+(n.source2?" · "+dispSrc(n.source2):"")+"</span>");
-      displacementLayer.addLayer(m); });
+      dispIntlLayer.addLayer(m); });
     // 3) Retours vers le Soudan (DTM, flux mesurés aux points de passage)
     if(rt && rt.entry_points) rt.entry_points.forEach(function(p){
       var src=nb.filter(function(n){return n.iso3===p.from;})[0]; if(!src) return;
@@ -457,7 +458,7 @@
       var ln=L.polyline([a,b],{color:green,weight:2+6*(share||0),opacity:.75,dashArray:"2 6"});
       ln.bindPopup("<b>"+T("dispReturns")+" → "+esc(p.name_fr)+"</b><br>"+pnum(rt.total)+" "+T("dispReturnsTotal")+" ("+esc(rt.period)+")<br>"+
         Math.round((share||0)*100)+" % "+T("dispFromCountry")+" "+esc(src.country_fr)+"<br><span class='muted'>"+esc(rt.drivers||"")+"</span><br><span class='muted'>"+esc(p.note||"")+"</span><br><span class='muted'>"+dispSrc(rt.source)+"</span>");
-      displacementLayer.addLayer(ln); displacementLayer.addLayer(arrowhead(b, bearing(a,b), green)); });
+      dispIntlLayer.addLayer(ln); dispIntlLayer.addLayer(arrowhead(b, bearing(a,b), green)); });
   }
   buildDisplacement();
 
@@ -750,6 +751,7 @@
     {grp:"secHuma",    id:"idpsites", labelKey:"lyrIdpSites",    on:false,  lyr:idpSitesLayer,     sw:"idp",      avail:!!(hum&&idpSites.length)},
     {grp:"secHuma",    id:"idpstate", labelKey:"lyrIdpState",    on:false, lyr:idpStateLayer,     sw:"idpfill",  avail:!!(hum&&dispByState.length&&adm1geo)},
     {grp:"secHuma",    id:"displacement", labelKey:"lyrDisplacement", on:false, lyr:displacementLayer, sw:"disp", avail:!!disp},
+    {grp:"secHuma",    id:"dispintl", labelKey:"lyrDispIntl", on:false, lyr:dispIntlLayer, sw:"disp", avail:!!disp},
     // Contexte & contrôle
     {grp:"secContexte",id:"ctrlapx", labelKey:"lyrControlApprox",on:true,  lyr:controlApproxLayer,sw:"ctrlfill", avail:!!ctrlApprox},
     {grp:"secContexte",id:"claimsaf",labelKey:"lyrClaimsSaf",    on:false, lyr:claimsSafLayer,    sw:"saf",      avail:!!(claims&&has(claims.saf))},
