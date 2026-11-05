@@ -387,3 +387,11 @@ footer a{color:var(--muted)}
 table.states th .sortbtn{background:none; border:0; padding:0; margin:0; font:inherit; color:inherit; cursor:pointer; text-align:inherit; text-transform:inherit; letter-spacing:inherit; white-space:nowrap}
 table.states th .sortbtn:hover{color:var(--accent)}
 table.states th .sortbtn:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:3px}
+
+/* collapsible sections of the layers panel (clashes, time window, focus views) — closed by default */
+.ctl details.ctlsec{border-bottom:1px solid var(--line)}
+.ctl details.ctlsec>summary{cursor:pointer; list-style:none; padding:9px 12px 6px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.6px; color:var(--muted)}
+.ctl details.ctlsec>summary::-webkit-details-marker{display:none}
+.ctl details.ctlsec>summary::before{content:"▸ "; color:var(--faint)}
+.ctl details.ctlsec[open]>summary::before{content:"▾ "}
+.ctl details.ctlsec>.grp{border-bottom:none}

@@ -174,6 +174,13 @@
   var focus = has(S.focus) ? S.focus.map(function(f){return {key:f.key,label:f.label,bbox:f.bbox,note:f.note};})
     : [ {key:"kord", labelKey:"fKord", bbox:[29.3,12.3,31.6,14.3]},
         {key:"fasher", labelKey:"fFasher", bbox:[24.6,12.9,26.1,14.3]} ];
+  // site-side focus views (approximate boxes, [west, south, east, north]); added to the data-file views
+  focus = focus.concat([
+    {key:"khartoum", labelKey:"fKhartoum", bbox:[32.2,15.3,33.0,15.9]},
+    {key:"darfur", labelKey:"fDarfur", bbox:[22.0,9.5,27.0,16.0]},
+    {key:"bluenile", labelKey:"fBlueNile", bbox:[33.0,9.5,35.5,12.8]},
+    {key:"gezira", labelKey:"fGezira", bbox:[32.2,13.3,34.3,15.0]}
+  ]);
 
   // =====================================================================
   //  MAP
