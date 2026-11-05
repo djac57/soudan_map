@@ -105,9 +105,9 @@ header .spacer{flex:1}
 .ctl-close{width:40px; height:40px; font-size:24px; line-height:1; background:var(--panel-2);
   border:1px solid var(--line); border-radius:9px; color:var(--ink); cursor:pointer;}
 .ctl{position:absolute; top:24px; right:24px; z-index:1000; width:238px; max-width:calc(100vw - 48px);
-  background:color-mix(in srgb, var(--panel) 55%, transparent); -webkit-backdrop-filter:blur(14px) saturate(1.6); backdrop-filter:blur(14px) saturate(1.6);
+  background:color-mix(in srgb, var(--panel) 70%, transparent); -webkit-backdrop-filter:blur(14px) saturate(1.6); backdrop-filter:blur(14px) saturate(1.6);
   border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow);
-  font-size:12px; overflow:hidden; max-height:calc(100% - 24px); overflow-y:auto;}
+  font-size:12px; overflow:hidden; top:24px; bottom:24px; height:auto; max-height:calc(100% - 48px); overflow-y:auto;}
 .ctl h2{font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted);
   margin:0; padding:10px 12px 4px; display:flex; align-items:center; gap:6px}
 .ctl .grp{padding:4px 12px 10px; border-bottom:1px solid var(--line);}
