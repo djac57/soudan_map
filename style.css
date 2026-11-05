@@ -406,3 +406,8 @@ table.states th .sortbtn:focus-visible{outline:2px solid var(--accent); outline-
 .replay-x{position:absolute; top:4px; right:6px; z-index:2; width:30px; height:30px; border:0; border-radius:8px; background:transparent; color:var(--ink); font-size:20px; line-height:1; cursor:pointer}
 .replay-x:hover{background:color-mix(in srgb, var(--ink) 10%, transparent)}
 .replay-x:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+
+/* replay controls: row moved down and clear of the × button; smaller play button with a triangle icon */
+.replay-top{margin-top:10px; padding-right:40px}
+.replay-play{min-width:30px; width:30px; height:30px; padding:0; display:inline-flex; align-items:center; justify-content:center; margin-top:0}
+.replay-play svg{display:block}

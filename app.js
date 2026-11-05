@@ -1492,6 +1492,9 @@
   //  REPLAY — animated backfill of the war (feature-detected; hidden if absent)
   // =====================================================================
   function fmtMonth(p){ return window.SDN_FMTMONTH ? window.SDN_FMTMONTH(p) : String(p); }
+  // icônes lecture / pause (comme un lecteur CD : triangle, deux barres)
+  var PLAY_ICON='<svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true"><polygon points="2,1 11,6 2,11" fill="currentColor"/></svg>';
+  var PAUSE_ICON='<svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1" width="3" height="10" fill="currentColor"/><rect x="7" y="1" width="3" height="10" fill="currentColor"/></svg>';
   // ---- Déplacement pendant le replay : relevés DTM (IDP) et stocks UNHCR par pays d'asile ----
   var replayDispLayer = L.layerGroup();
   var TS = (disp && disp.timeseries) ? disp.timeseries : null;
@@ -1596,9 +1599,9 @@
       var sl=document.getElementById("replaySlider"); if(sl){ if(+sl.max!==periods.length-1) sl.max=periods.length-1; if(+sl.value!==idx) sl.value=idx; }
       drawReplayDisp(P);
     }
-    function stop(){ playing=false; if(timer){clearInterval(timer);timer=null;} var pb=document.getElementById("replayPlay"); if(pb){pb.textContent="▶"; pb.setAttribute("aria-label",T("replayPlay"));} }
+    function stop(){ playing=false; if(timer){clearInterval(timer);timer=null;} var pb=document.getElementById("replayPlay"); if(pb){pb.innerHTML=PLAY_ICON; pb.setAttribute("aria-label",T("replayPlay"));} }
     function play(){ if(playing)return; var periods=periodsArr(); if(idx>=periods.length-1) frame(0);
-      playing=true; var pb=document.getElementById("replayPlay"); if(pb){pb.textContent="⏸"; pb.setAttribute("aria-label",T("replayPause"));}
+      playing=true; var pb=document.getElementById("replayPlay"); if(pb){pb.innerHTML=PAUSE_ICON; pb.setAttribute("aria-label",T("replayPause"));}
       var spd=parseFloat((document.getElementById("replaySpeed")||{}).value||"1")||1;
       timer=setInterval(function(){ if(idx>=periodsArr().length-1){ stop(); return; } frame(idx+1); }, Math.max(120, 600/spd));
     }
