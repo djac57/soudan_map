@@ -60,6 +60,7 @@ def main():
         "returns_to_sudan": rec["returns_to_sudan"],
         "idp_totals_timeline": rec["idp_totals_timeline"],
         "europe": rec.get("europe"),
+        "timeseries": json.load(open(os.path.join(HERE, "timeseries.json"), encoding="utf-8")),
     }
     out = os.path.join(soudan, "data", "layer_displacement.js")
     body = json.dumps(payload, ensure_ascii=False, indent=2)

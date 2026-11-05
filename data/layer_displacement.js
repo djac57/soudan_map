@@ -508,6 +508,201 @@
     ],
     "by_country_note": "Demandes d'asile par citoyenneté soudanaise : Eurostat 2025 (UE + Norvège, Suisse) ; Royaume-Uni : Home Office, année se terminant en juin 2026 (non inclus dans le total UE). Capitales comme point approximatif du pays.",
     "eu_total_label": "UE (Eurostat 2025, hors Royaume-Uni)"
+  },
+  "timeseries": {
+    "generated": "2026-11-05",
+    "note": "Séries temporelles pour l'animation. IDP : DTM Sudan Displacement and Return Snapshot, 10 rondes (publication). Réfugiés : UNHCR (API population, stock de fin d'année soudanais par pays d'asile : réfugiés + demandeurs d'asile). Ne pas additionner les bases.",
+    "idp_rounds": [
+      {
+        "round": 1,
+        "published": "2026-01-26",
+        "idp": 9258273,
+        "returnees": 3334705,
+        "source": "https://reliefweb.int/report/sudan/dtm-sudan-displacement-and-return-snapshot-update-1-26-january-2026"
+      },
+      {
+        "round": 2,
+        "published": "2026-02-08",
+        "idp": 9139309,
+        "returnees": 3500482,
+        "source": "https://reliefweb.int/report/sudan/dtm-sudan-displacement-and-return-snapshot-update-2-08-february-2026"
+      },
+      {
+        "round": 3,
+        "published": "2026-03-19",
+        "idp": 9044786,
+        "returnees": 3858136,
+        "source": "https://reliefweb.int/report/sudan/dtm-sudan-displacement-and-return-snapshot-update-3-19-march-2026"
+      },
+      {
+        "round": 4,
+        "published": "2026-04-12",
+        "idp": 8936175,
+        "returnees": null,
+        "source": "https://reliefweb.int/report/sudan/dtm-sudan-displacement-and-return-snapshot-update-4-12-april-2026"
+      },
+      {
+        "round": 5,
+        "published": "2026-05-21",
+        "idp": 8877515,
+        "returnees": null,
+        "source": "https://reliefweb.int/report/sudan/dtm-sudan-displacement-and-return-snapshot-update-5-21-may-2026"
+      },
+      {
+        "round": 6,
+        "published": "2026-06-15",
+        "idp": 8805506,
+        "returnees": null,
+        "source": "https://reliefweb.int/report/sudan/dtm-sudan-displacement-and-return-snapshot-update-6-15-june-2026"
+      },
+      {
+        "round": 7,
+        "published": "2026-07-23",
+        "idp": 8685273,
+        "returnees": null,
+        "source": "https://reliefweb.int/report/sudan/dtm-sudan-displacement-and-return-snapshot-update-7-23-july-2026"
+      },
+      {
+        "round": 8,
+        "published": "2026-08-18",
+        "idp": 8622801,
+        "returnees": null,
+        "source": "https://reliefweb.int/report/sudan/dtm-sudan-displacement-and-return-snapshot-update-8-18-august-2026"
+      },
+      {
+        "round": 9,
+        "published": "2026-09-20",
+        "idp": 8583274,
+        "returnees": null,
+        "source": "https://reliefweb.int/report/sudan/dtm-sudan-displacement-and-return-snapshot-update-9-20-september-2026"
+      },
+      {
+        "round": 10,
+        "published": "2026-10-18",
+        "idp": 8585611,
+        "returnees": 5273334,
+        "source": "https://reliefweb.int/report/sudan/dtm-sudan-displacement-and-return-snapshot-update-10-18-october-2026"
+      }
+    ],
+    "unhcr_sudanese_stock_by_year": {
+      "source": "https://api.unhcr.org/population/v1/population/ (coo=SDN, année)",
+      "years": [
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "countries": {
+        "TCD": {
+          "name": "Tchad",
+          "values": [
+            405896,
+            925313,
+            1112461,
+            1334595
+          ]
+        },
+        "EGY": {
+          "name": "Égypte",
+          "values": [
+            58237,
+            207833,
+            602702,
+            834201
+          ]
+        },
+        "SSD": {
+          "name": "Soudan du Sud",
+          "values": [
+            290759,
+            359594,
+            487664,
+            571071
+          ]
+        },
+        "LBY": {
+          "name": "Libye",
+          "values": [
+            19827,
+            31103,
+            255648,
+            639166
+          ]
+        },
+        "ETH": {
+          "name": "Éthiopie",
+          "values": [
+            48686,
+            77826,
+            90820,
+            98924
+          ]
+        },
+        "CAF": {
+          "name": "Centrafrique",
+          "values": [
+            501,
+            21844,
+            30025,
+            40323
+          ]
+        },
+        "UGA": {
+          "name": "Ouganda",
+          "values": [
+            3752,
+            15168,
+            65535,
+            92889
+          ]
+        },
+        "KEN": {
+          "name": "Kenya",
+          "values": [
+            10440,
+            10579,
+            12169,
+            13349
+          ]
+        },
+        "JOR": {
+          "name": "Jordanie",
+          "values": [
+            5314,
+            4989,
+            4900,
+            4266
+          ]
+        },
+        "YEM": {
+          "name": "Yémen",
+          "values": [
+            617,
+            651,
+            859,
+            911
+          ]
+        },
+        "SOM": {
+          "name": "Somalie",
+          "values": [
+            11,
+            144,
+            315,
+            447
+          ]
+        },
+        "COD": {
+          "name": "RD Congo",
+          "values": [
+            69,
+            62,
+            69,
+            143
+          ]
+        }
+      }
+    }
   }
 };
 })();
