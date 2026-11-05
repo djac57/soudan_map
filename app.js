@@ -1258,19 +1258,35 @@
   }
   function fillDispTimeline(){
     var box=document.getElementById("dispTimeline"); if(!box) return;
-    var tl=(disp&&disp.idp_totals_timeline)||[];
-    if(!tl.length){ box.innerHTML=""; return; }
-    var W=640, H=170, pad={l:8,r:8,t:22,b:58}, bw=(W-pad.l-pad.r)/tl.length, mx=Math.max.apply(null, tl.map(function(p){return p.idp||0;}))||1;
-    var bars="";
-    tl.forEach(function(p,i){ var h=(H-pad.t-pad.b)*((p.idp||0)/mx), x=pad.l+i*bw+bw*0.18, w=bw*0.64, y=H-pad.b-h;
-      bars+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="3" fill="'+cssv("--accent")+'" opacity=".75"/>'+
-        '<text x="'+(x+w/2).toFixed(1)+'" y="'+(y-5).toFixed(1)+'" text-anchor="middle" font-size="12" font-weight="600" fill="'+cssv("--ink")+'">'+esc((p.idp/1e6).toFixed(2).replace(".",(window.SDN_LANG==="ar"?"٫":","))+" M")+'</text>'+
-        '<text x="'+(x+w/2).toFixed(1)+'" y="'+(H-pad.b+16)+'" text-anchor="middle" font-size="11" fill="'+cssv("--muted")+'">'+esc(fdate(p.date))+'</text>'+
-        '<text x="'+(x+w/2).toFixed(1)+'" y="'+(H-pad.b+31)+'" text-anchor="middle" font-size="10" fill="'+cssv("--muted")+'">'+esc(p.label_fr||"")+'</text>';
+    var TS=disp&&disp.timeseries; if(!TS){ box.innerHTML=""; return; }
+    // séries : relevés Mobility (2024–2025) + Displacement and Return Snapshot (2026), triées par date
+    var pts=[];
+    ((TS.idp_mobility_rounds||{}).rounds||[]).forEach(function(r){ pts.push({date:r.published, idp:r.idp, pre:r.displaced_before_2023_04_15, since:r.displaced_since_2023_04_15, label:r.round, verified:r.verified!==false}); });
+    (TS.idp_rounds||[]).forEach(function(r){ pts.push({date:r.published, idp:r.idp, pre:null, since:null, label:"Snapshot "+r.round, verified:true}); });
+    pts.sort(function(x,y){ return x.date<y.date?-1:1; });
+    var W=760, H=210, pad={l:12,r:12,t:26,b:64}, n=pts.length, bw=(W-pad.l-pad.r)/n, mx=Math.max.apply(null, pts.map(function(p){return p.idp;}))||1;
+    var ph=H-pad.t-pad.b, out="";
+    var acc=cssv("--accent"), grey=cssv("--faint");
+    pts.forEach(function(p,i){
+      var x=pad.l+i*bw+bw*0.15, w=bw*0.7;
+      var hTot=ph*(p.idp/mx), y0=H-pad.b;
+      if(p.pre!=null && p.since!=null){
+        var hPre=ph*(p.pre/mx), hSince=ph*(p.since/mx);
+        out+='<rect x="'+x.toFixed(1)+'" y="'+(y0-hPre).toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+hPre.toFixed(1)+'" fill="'+grey+'" opacity=".55"><title>'+esc(T("tlPre"))+'</title></rect>';
+        out+='<rect x="'+x.toFixed(1)+'" y="'+(y0-hPre-hSince).toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+hSince.toFixed(1)+'" fill="'+acc+'" opacity=".8"><title>'+esc(T("tlSince"))+'</title></rect>';
+      } else {
+        out+='<rect x="'+x.toFixed(1)+'" y="'+(y0-hTot).toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+hTot.toFixed(1)+'" fill="'+acc+'" opacity=".45" stroke="'+acc+'" stroke-dasharray="3 2"><title>'+esc(T("tlTotalOnly"))+'</title></rect>';
+      }
+      out+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(y0-hTot-4).toFixed(1)+'" text-anchor="middle" font-size="10" font-weight="600" fill="'+cssv("--ink")+'">'+esc((p.idp/1e6).toFixed(2))+' M</text>';
+      out+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(H-pad.b+14)+'" text-anchor="middle" font-size="9" fill="'+cssv("--muted")+'">'+esc(fdate(p.date))+'</text>';
+      out+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(H-pad.b+27)+'" text-anchor="middle" font-size="8" fill="'+cssv("--muted")+'">'+esc(p.label)+'</text>';
     });
+    // marqueur : début de la guerre
+    out+='<text x="'+pad.l+'" y="14" font-size="10" font-weight="600" fill="'+cssv("--accent")+'">'+esc(T("tlWarStart"))+'</text>';
+    out+='<text x="'+pad.l+'" y="'+(H-14)+'" font-size="9" fill="'+cssv("--muted")+'">'+esc(T("tlLegend"))+'</text>';
     box.innerHTML='<div class="disptl-ttl">'+T("dispTimelineTitle")+'</div>'+
-      '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(T("dispTimelineTitle"))+'">'+bars+'</svg>'+
-      '<div class="disptl-note">'+T("dispTimelineNote")+' '+dispSrc("idp_dtm")+'</div>';
+      '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(T("dispTimelineTitle"))+'">'+out+'</svg>'+
+      '<div class="disptl-note">'+T("tlNote")+' '+dispSrc("idp_dtm")+'</div>';
   }
   // ---- Tableaux triables : clic sur un en-tête = tri croissant, reclic = décroissant ----
   function drawSortable(tb){
