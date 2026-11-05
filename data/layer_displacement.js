@@ -41,6 +41,11 @@
       "name": "IOM DTM Sudan — Displacement & Return Snapshot (round 8)",
       "url": "https://dtm.iom.int/sudan",
       "date": "2026-07-31"
+    },
+    "unhcr_europe": {
+      "name": "UNHCR Regional Bureau for Europe — Sudanese Movement to Europe: Profiles, Routes and Challenges Along the Way (sept. 2026)",
+      "url": "https://www.unhcr.org/",
+      "date": "2026-09"
     }
   },
   "origin_hubs_idp_2023": [
@@ -237,6 +242,79 @@
       "label_fr": "DTM round 8 (31 juil. 2026)",
       "source": "idp_dtm"
     }
-  ]
+  ],
+  "europe": {
+    "note": "Flux vers l'Europe : faible en nombre (14 104 arrivées en 2025 vs ~4,5 M réfugiés et demandeurs d'asile dans la région) mais documenté. Enquête : 173 entretiens, non représentative.",
+    "source": "unhcr_europe",
+    "arrivals_mediterranean_by_year": {
+      "2021": 2460,
+      "2022": 2253,
+      "2023": 7161,
+      "2024": 4094,
+      "2025": 14104
+    },
+    "asylum_first_time_by_year": {
+      "2021": 5449,
+      "2022": 7419,
+      "2023": 10981,
+      "2024": 14432,
+      "2025": 21298
+    },
+    "greece_arrivals_2025": 9110,
+    "libya_departure_share_2025": 0.84,
+    "survey_routes": {
+      "via_libya": 0.93,
+      "libya_to_greece": 0.79,
+      "greece_to_albania": 0.64,
+      "reached_greece": 0.88
+    },
+    "survey_destinations": {
+      "France": 0.31,
+      "Germany": 0.24,
+      "Italy": 0.22
+    },
+    "points": {
+      "libya": {
+        "name_fr": "Libye (départ)",
+        "lon": 13.1913,
+        "lat": 32.8872
+      },
+      "greece": {
+        "name_fr": "Grèce",
+        "lon": 23.7275,
+        "lat": 37.9838
+      },
+      "crete": {
+        "name_fr": "Crète (nouveau corridor 2025)",
+        "lon": 25.1442,
+        "lat": 35.2401
+      },
+      "albania": {
+        "name_fr": "Albanie",
+        "lon": 19.8187,
+        "lat": 41.3275
+      },
+      "italy": {
+        "name_fr": "Italie",
+        "lon": 12.4964,
+        "lat": 41.9028
+      },
+      "france": {
+        "name_fr": "France",
+        "lon": 2.3522,
+        "lat": 48.8566
+      },
+      "germany": {
+        "name_fr": "Allemagne",
+        "lon": 13.405,
+        "lat": 52.52
+      },
+      "europe": {
+        "name_fr": "Europe (centre approximatif)",
+        "lon": 10.0,
+        "lat": 50.0
+      }
+    }
+  }
 };
 })();

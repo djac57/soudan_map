@@ -485,6 +485,32 @@
   function dispSrc2(src){ return src ? esc(src.name)+" ("+esc(src.date)+") — <a href='"+esc(src.url)+"' target='_blank' rel='noopener'>"+T("dispSrcLink")+"</a>" : ""; }
   buildRefSites();
 
+  // ---- Route vers l'Europe (UNHCR Europe, sept. 2026) : faible en nombre, documenté ; enquête non représentative ----
+  var europeLayer = L.layerGroup();
+  var eu = (disp && disp.europe) ? disp.europe : null;
+  function pct(x){ return Math.round((x||0)*100)+" %"; }
+  function buildEurope(){ europeLayer.clearLayers(); if(!eu) return;
+    var P=eu.points, col="#5b2c83";
+    function pt(k){ return [P[k].lat,P[k].lon]; }
+    function seg(a,b,w,dash,pop){ var ln=L.polyline([a,b],{color:col,weight:w,opacity:.75,dashArray:dash||null});
+      if(pop) ln.bindPopup(pop); europeLayer.addLayer(ln); europeLayer.addLayer(arrowhead(b,bearing(a,b),col)); }
+    var src="<br><span class='muted'>"+dispSrc(eu.source)+"</span>";
+    seg(pt('libya'),pt('greece'),2+6*(eu.survey_routes.libya_to_greece||0),null,
+      "<b>"+T("euRouteLG")+"</b><br>"+pct(eu.survey_routes.libya_to_greece)+" · "+T("euSurvey")+src);
+    seg(pt('libya'),pt('crete'),2.5,"6 4","<b>"+T("euCrete")+"</b><br>"+T("euCreteNote")+src);
+    seg(pt('greece'),pt('albania'),2+6*(eu.survey_routes.greece_to_albania||0),null,
+      "<b>"+T("euRouteGA")+"</b><br>"+pct(eu.survey_routes.greece_to_albania)+" · "+T("euSurvey")+src);
+    Object.keys(eu.survey_destinations||{}).forEach(function(k){
+      var key=({France:'france',Germany:'germany',Italy:'italy'})[k]; if(!key) return; var sh=eu.survey_destinations[k];
+      seg(pt('albania'),pt(key),1+8*sh,"2 6","<b>"+T("euDest")+": "+esc(P[key].name_fr)+"</b><br>"+pct(sh)+" · "+T("euSurvey")+src); });
+    function dot(k,n,pop){ var p=P[k]; var m=L.circleMarker([p.lat,p.lon],{radius:5+14*Math.sqrt((n||0)/21298),color:col,weight:1.2,fillColor:col,fillOpacity:.4});
+      m.bindPopup(pop); europeLayer.addLayer(m); }
+    dot('greece',eu.greece_arrivals_2025,"<b>"+esc(P.greece.name_fr)+"</b><br>"+pnum(eu.greece_arrivals_2025)+" "+T("euGreeceArr")+src);
+    dot('libya',eu.arrivals_mediterranean_by_year["2025"],"<b>"+esc(P.libya.name_fr)+"</b><br>"+pnum(eu.arrivals_mediterranean_by_year["2025"])+" "+T("euMedTotal")+"<br>"+pct(eu.libya_departure_share_2025)+" "+T("euLibyaDep")+src);
+    dot('europe',eu.asylum_first_time_by_year["2025"],"<b>"+esc(P.europe.name_fr)+"</b><br>"+pnum(eu.asylum_first_time_by_year["2025"])+" "+T("euAsylum")+"<br><span class='muted'>"+T("euNotFound")+"</span>"+src);
+  }
+  buildEurope();
+
   // ---- Conflict fires (≤15 km of a recent clash) — distinct, foregrounded ----
   var firesConflictLayer = L.layerGroup();
   function buildFiresConflict(){ firesConflictLayer.clearLayers();
@@ -776,6 +802,7 @@
     {grp:"secHuma",    id:"displacement", labelKey:"lyrDisplacement", on:false, lyr:displacementLayer, sw:"disp", avail:!!disp},
     {grp:"secHuma",    id:"dispintl", labelKey:"lyrDispIntl", on:false, lyr:dispIntlLayer, sw:"disp", avail:!!disp},
     {grp:"secHuma",    id:"refsites", labelKey:"lyrRefSites", on:false, lyr:refSitesLayer, sw:"refsite", avail:refSites.length>0},
+    {grp:"secHuma",    id:"europe", labelKey:"lyrEurope", on:false, lyr:europeLayer, sw:"disp", avail:!!eu},
     // Contexte & contrôle
     {grp:"secContexte",id:"ctrlapx", labelKey:"lyrControlApprox",on:true,  lyr:controlApproxLayer,sw:"ctrlfill", avail:!!ctrlApprox},
     {grp:"secContexte",id:"claimsaf",labelKey:"lyrClaimsSaf",    on:false, lyr:claimsSafLayer,    sw:"saf",      avail:!!(claims&&has(claims.saf))},
@@ -1189,7 +1216,7 @@
     if(adm0Lyr) adm0Lyr.setStyle({color:cssv("--muted")});
     if(adm1Lyr) adm1Lyr.setStyle({color:cssv("--line"),fillColor:cssv("--muted")});
     buildFires(); buildAct(); buildSectors(); buildControl(); buildOsint(); buildClaims(); buildControlApprox();
-    buildNeighbors(); buildIdpSites(); buildIdpState(); buildDisplacement(); buildFiresConflict(); buildArrows();
+    buildNeighbors(); buildIdpSites(); buildIdpState(); buildDisplacement(); buildEurope(); buildFiresConflict(); buildArrows();
     buildAcled(); buildWatch(); buildResources(); buildBackers(); buildEthno(); buildInfra(); buildPipelines(); buildImpacts();
     // re-add layers that were on
     LAYERS.forEach(function(L0){ if(L0.lyr && map.hasLayer(L0.lyr)){ map.removeLayer(L0.lyr); L0.lyr.addTo(map);} });
