@@ -672,6 +672,78 @@
       },
       "sites_count": null,
       "sites_note": "Environ 80 % vivent hors camp ; camps non localisés."
+    },
+    {
+      "name_fr": "Yémen — total national (localisation non trouvée)",
+      "name_en": "Yemen — national total (location not found)",
+      "country_fr": "Yémen",
+      "country_en": "Yemen",
+      "kind": "national",
+      "location_found": false,
+      "lon": 48.5164,
+      "lat": 15.5527,
+      "coord_source": {
+        "name": "Centre approximatif du pays (référence géographique standard)",
+        "url": "https://www.openstreetmap.org/",
+        "date": "2026-11-05"
+      },
+      "sudanese": 921,
+      "sudanese_basis": "réfugiés soudanais, 31 août 2026",
+      "count_source": {
+        "name": "UNHCR Yémen — country page",
+        "url": "https://data.unhcr.org/en/country/yem",
+        "date": "2026-08-31"
+      },
+      "sites_count": null,
+      "sites_note": "Camps non localisés dans les sources consultées."
+    },
+    {
+      "name_fr": "Somalie — total national (localisation non trouvée)",
+      "name_en": "Somalia — national total (location not found)",
+      "country_fr": "Somalie",
+      "country_en": "Somalia",
+      "kind": "national",
+      "location_found": false,
+      "lon": 46.1996,
+      "lat": 5.1521,
+      "coord_source": {
+        "name": "Centre approximatif du pays (référence géographique standard)",
+        "url": "https://www.openstreetmap.org/",
+        "date": "2026-11-05"
+      },
+      "sudanese": 492,
+      "sudanese_basis": "réfugiés et demandeurs d'asile soudanais, 30 sept. 2026",
+      "count_source": {
+        "name": "UNHCR Somalie — country page",
+        "url": "https://data.unhcr.org/en/country/som",
+        "date": "2026-09-30"
+      },
+      "sites_count": null,
+      "sites_note": "Camps non localisés dans les sources consultées."
+    },
+    {
+      "name_fr": "RD Congo — total national (localisation non trouvée)",
+      "name_en": "DR Congo — national total (location not found)",
+      "country_fr": "RD Congo",
+      "country_en": "DR Congo",
+      "kind": "national",
+      "location_found": false,
+      "lon": 21.7587,
+      "lat": -4.0383,
+      "coord_source": {
+        "name": "Centre approximatif du pays (référence géographique standard)",
+        "url": "https://www.openstreetmap.org/",
+        "date": "2026-11-05"
+      },
+      "sudanese": 118,
+      "sudanese_basis": "réfugiés soudanais, 30 sept. 2026",
+      "count_source": {
+        "name": "UNHCR RD Congo — country page",
+        "url": "https://data.unhcr.org/en/country/cod",
+        "date": "2026-09-30"
+      },
+      "sites_count": null,
+      "sites_note": "Camps non localisés dans les sources consultées."
     }
   ]
 };
