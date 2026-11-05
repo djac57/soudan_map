@@ -126,8 +126,8 @@ window.SDN_I18N = {
     airportRsf:"aéroport-clé logistique FSR", airportKey:"aéroport logistique",
     legCountries:"Position des pays", legRoutes:"Routes de la guerre", legAirport:"aéroport-clé",
     idpInternal:"Déplacés internes (IDP)", refIntl:"Réfugiés (internationaux)",
-    mapWhat:"Ce que montre cette carte : le contrôle approximatif par État et les avancées revendiquées (armée SAF vs RSF). Données ouvertes, agrégées, non vérifiées. Ajoutez des couches à droite.",
-    mapWhatM:"Contrôle approximatif par État + avancées revendiquées (SAF vs RSF). Couches : bouton ☰."
+    mapWhat:"Cette carte montre la guerre entre l'armée soudanaise (SAF) et les Forces de soutien rapide (RSF) : affrontements recensés (UCDP, ACLED), détections de feux satellite (NASA FIRMS), contrôle approximatif par État, prises revendiquées par chaque camp, déplacement de population (déplacés internes, réfugiés, retours), population par État et soutiens étrangers rapportés. Données agrégées, datées et sourcées ; les revendications ne sont pas vérifiées et aucune ligne de front n'est tracée. Ajoutez des couches à droite.",
+    mapWhatM:"Affrontements, contrôle approximatif par État, prises revendiquées et déplacement de population. Couches : bouton ☰."
   },
   en: {
     dir:"ltr",
@@ -245,8 +245,8 @@ window.SDN_I18N = {
     airportRsf:"key RSF logistics airport", airportKey:"logistics airport",
     legCountries:"Country alignment", legRoutes:"War routes", legAirport:"key airport",
     idpInternal:"Internally displaced (IDP)", refIntl:"Refugees (international)",
-    mapWhat:"What this map shows: approximate control by state and claimed advances (SAF army vs RSF). Open, aggregated, unverified data. Add layers on the right.",
-    mapWhatM:"Approximate control by state + claimed advances (SAF vs RSF). Layers: ☰ button."
+    mapWhat:"This map shows the war between the Sudanese army (SAF) and the Rapid Support Forces (RSF): recorded clashes (UCDP, ACLED), satellite fire detections (NASA FIRMS), approximate control by state, captures claimed by each side, population displacement (internally displaced, refugees, returns), population by state and reported foreign backing. Data is aggregated, dated and sourced; claims are unverified and no front line is drawn. Add layers on the right.",
+    mapWhatM:"Clashes, approximate control by state, claimed captures and population displacement. Layers: ☰ button."
   },
   ar: {
     dir:"rtl",
@@ -363,7 +363,7 @@ window.SDN_I18N = {
     airportRsf:"مطار لوجستي رئيسي للدعم السريع", airportKey:"مطار لوجستي",
     legCountries:"اصطفاف الدول", legRoutes:"طرق الحرب", legAirport:"مطار رئيسي",
     idpInternal:"نازحون داخليًا", refIntl:"لاجئون (دوليون)",
-    mapWhat:"ما تعرضه هذه الخريطة: السيطرة التقريبية حسب الولاية والتقدمات المُدّعاة (الجيش مقابل الدعم السريع). بيانات مفتوحة مجمّعة غير مُتحقّقة. أضف طبقات من اليمين.",
-    mapWhatM:"سيطرة تقريبية حسب الولاية + تقدمات مُدّعاة (الجيش مقابل الدعم السريع). الطبقات: زر ☰."
+    mapWhat:"تعرض هذه الخريطة الحرب بين الجيش السوداني والقوات المسلحة للدعم السريع: الاشتباكات المسجلة (UCDP وACLED)، ورصد الحرائق بالأقمار الصناعية (NASA FIRMS)، والسيطرة التقريبية حسب الولاية، والمكاسب التي يدّعيها كل طرف، وحركة النزوح السكاني (النازحون داخليًا، واللاجئون، والعائدون)، والسكان حسب الولاية، والدعم الأجنبي المُبلَّغ عنه. البيانات مجمّعة ومؤرّخة ومصدّرة؛ الادعاءات غير مُتحقَّق منها ولا يُرسم أي خط جبهة. أضف طبقات من اليمين.",
+    mapWhatM:"الاشتباكات، والسيطرة التقريبية حسب الولاية، والمكاسب المُدّعاة، وحركة النزوح السكاني. الطبقات: زر ☰."
   }
 };
