@@ -913,7 +913,8 @@
     else if(kind==="pipe"){ sw.style.background="transparent"; sw.style.border="2px solid #b5651d"; sw.style.height="4px"; sw.style.width="16px"; sw.style.borderRadius="1px"; }
     else if(kind==="impact"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,#f6d9b0,#8a1e0e)"; }
     else if(kind==="disp"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,"+cssv("--accent")+",#b5651d)"; }
-    else if(kind==="exp"){ sw.style.background="transparent"; sw.style.border="0"; sw.style.width="22px"; sw.style.height="10px"; sw.style.height="16px"; sw.style.width="22px"; sw.innerHTML='<div style="line-height:0">'+expArrowSvg("#2b2b2b")+'</div><div style="line-height:0;margin-top:1px">'+expArrowSvg("#c9a227")+'</div><div style="line-height:0;margin-top:1px">'+expArrowSvg("#7a8b2e")+'</div>'; }
+    else if(kind==="exp"){ sw.style.background="transparent"; sw.style.border="0"; sw.style.width="22px"; sw.style.height="16px"; sw.style.display="inline-flex"; sw.style.flexDirection="column"; sw.style.justifyContent="space-between"; sw.style.verticalAlign="middle";
+      sw.innerHTML=["#2b2b2b","#c9a227","#7a8b2e"].map(function(c){ return '<svg width="22" height="5" viewBox="0 0 22 5" style="display:block"><line x1="1" y1="2.5" x2="14" y2="2.5" style="stroke:'+c+';stroke-width:2"/><polygon points="22,2.5 13,0.5 13,4.5" style="fill:'+c+'"/></svg>'; }).join(""); }
     else if(kind==="refsite"){ sw.style.background="#c2185b"; sw.style.opacity=".6"; }
     else if(kind==="dispInt"){ sw.style.background="transparent"; sw.style.border="0"; sw.style.height="3px"; sw.style.width="16px"; sw.style.borderRadius="1px";
       sw.style.backgroundImage="repeating-linear-gradient(90deg,"+cssv("--accent")+" 0 4px,transparent 4px 7px)"; }
