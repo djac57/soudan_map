@@ -1264,7 +1264,7 @@
     ((TS.idp_mobility_rounds||{}).rounds||[]).forEach(function(r){ pts.push({date:r.published, idp:r.idp, pre:r.displaced_before_2023_04_15, since:r.displaced_since_2023_04_15, label:r.round, verified:r.verified!==false}); });
     (TS.idp_rounds||[]).forEach(function(r){ pts.push({date:r.published, idp:r.idp, pre:null, since:null, label:"Snapshot "+r.round, verified:true}); });
     pts.sort(function(x,y){ return x.date<y.date?-1:1; });
-    var W=1100, H=300, pad={l:8,r:8,t:30,b:78}, n=pts.length, bw=(W-pad.l-pad.r)/n, mx=Math.max.apply(null, pts.map(function(p){return p.idp;}))||1;
+    var W=860, H=280, pad={l:8,r:8,t:44,b:70}, n=pts.length, bw=(W-pad.l-pad.r)/n, mx=Math.max.apply(null, pts.map(function(p){return p.idp;}))||1;
     var ph=H-pad.t-pad.b, out="";
     var acc=cssv("--accent"), grey=cssv("--faint");
     pts.forEach(function(p,i){
@@ -1275,17 +1275,17 @@
         out+='<rect x="'+x.toFixed(1)+'" y="'+(y0-hPre).toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+hPre.toFixed(1)+'" fill="'+grey+'" opacity=".55"><title>'+esc(T("tlPre"))+'</title></rect>';
         out+='<rect x="'+x.toFixed(1)+'" y="'+(y0-hPre-hSince).toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+hSince.toFixed(1)+'" fill="'+acc+'" opacity=".8"><title>'+esc(T("tlSince"))+'</title></rect>';
       } else {
-        out+='<rect x="'+x.toFixed(1)+'" y="'+(y0-hTot).toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+hTot.toFixed(1)+'" fill="'+acc+'" opacity=".45" stroke="'+acc+'" stroke-dasharray="3 2"><title>'+esc(T("tlTotalOnly"))+'</title></rect>';
+        out+='<rect x="'+x.toFixed(1)+'" y="'+(y0-hTot).toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+hTot.toFixed(1)+'" fill="'+acc+'" opacity=".4"><title>'+esc(T("tlTotalOnly"))+'</title></rect>';
       }
-      out+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(y0-hTot-6).toFixed(1)+'" text-anchor="middle" font-size="13" font-weight="700" fill="'+cssv("--ink")+'">'+esc((p.idp/1e6).toFixed(2))+' M</text>';
+      out+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(y0-hTot-6).toFixed(1)+'" text-anchor="middle" font-size="11" font-weight="700" fill="'+cssv("--ink")+'">'+esc((p.idp/1e6).toFixed(2))+' M</text>';
       var dd=new Date(p.date+"T12:00:00"); var dl=dd.getDate()+"/"+(dd.getMonth()+1)+"/"+String(dd.getFullYear()).slice(2);
-      out+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(H-pad.b+18)+'" text-anchor="middle" font-size="12" fill="'+cssv("--ink")+'">'+esc(dl)+'</text>';
+      out+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(H-pad.b+18)+'" text-anchor="middle" font-size="10" fill="'+cssv("--ink")+'">'+esc(dl)+'</text>';
       var sh=p.label.indexOf("Snapshot")===0 ? "S"+p.label.split(" ")[1] : "M"+p.label.split(" ")[2];
-      out+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(H-pad.b+36)+'" text-anchor="middle" font-size="12" font-weight="600" fill="'+cssv("--muted")+'">'+esc(sh)+'</text>';
+      out+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(H-pad.b+36)+'" text-anchor="middle" font-size="10" font-weight="600" fill="'+cssv("--muted")+'">'+esc(sh)+'</text>';
     });
     // marqueur : début de la guerre
-    out+='<text x="'+pad.l+'" y="16" font-size="13" font-weight="600" fill="'+cssv("--accent")+'">'+esc(T("tlWarStart"))+'</text>';
-    out+='<text x="'+pad.l+'" y="'+(H-12)+'" font-size="12" fill="'+cssv("--muted")+'">'+esc(T("tlLegend"))+' · M = '+esc("Mobility")+' · S = Snapshot</text>';
+    out+='<text x="'+pad.l+'" y="14" font-size="11" font-weight="600" fill="'+cssv("--accent")+'">'+esc(T("tlWarStart"))+'</text>';
+    out+='<text x="'+pad.l+'" y="'+(H-12)+'" font-size="10" fill="'+cssv("--muted")+'">'+esc(T("tlLegend"))+' · M = '+esc("Mobility")+' · S = Snapshot</text>';
     box.innerHTML='<div class="disptl-ttl">'+T("dispTimelineTitle")+'</div>'+
       '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(T("dispTimelineTitle"))+'">'+out+'</svg>'+
       '<div class="disptl-note">'+T("tlNote")+' '+dispSrc("idp_dtm")+' · <a href="https://en.wikipedia.org/wiki/Battle_of_Khartoum_(2023%E2%80%932025)" target="_blank" rel="noopener">Wikipedia — Battle of Khartoum</a></div>';
