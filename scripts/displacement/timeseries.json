@@ -233,11 +233,9 @@
         "round": "Mobility Update 20",
         "published": "2025-07-29",
         "idp": 9937444,
-        "source": "https://eastleighvoice.co.ke/darfur/201272/nearly-1-65-million-idps-return-home-as-sudan-displacement-numbers-fall",
+        "source": "https://dtm.iom.int/sudan",
         "verified": false,
-        "note": "Chiffre relayé par un média (Eastleigh Voice) ; page IOM non vérifiée. Date = données au 29 juillet 2025.",
-        "displaced_since_2023_04_15": 7548913,
-        "displaced_before_2023_04_15": 2388531
+        "note": "Chiffre DTM (Mobility Update 20, données au 29 juillet 2025) repris par la presse ; rapport d'origine à vérifier sur le site de l'OIM (dtm.iom.int)."
       }
     ]
   },
