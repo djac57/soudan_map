@@ -492,32 +492,6 @@
   function dispSrc2(src){ return src ? esc(src.name)+" ("+esc(src.date)+") — <a href='"+esc(src.url)+"' target='_blank' rel='noopener'>"+T("dispSrcLink")+"</a>" : ""; }
   buildRefSites();
 
-  // ---- Noms de lieux en anglais : superposition au fond de carte, hiérarchie d'importance selon le zoom ----
-  // pays dès le zoom 4 ; capitales (hors Soudan) dès le zoom 5 ; villes du Soudan dès le zoom 6
-  if(!map.getPane("englishNames")){ map.createPane("englishNames"); map.getPane("englishNames").style.zIndex=350; map.getPane("englishNames").style.pointerEvents="none"; }
-  var enPlacesLayer = L.layerGroup();
-  var PL = (window.SUDAN && window.SUDAN.places) ? window.SUDAN.places : null;
-  var enPlaceItems = [];
-  function enMinZoom(p){ if(p.kind==="country") return 4; if(p.kind==="capital") return 5; return 6; }
-  function refreshEnPlaces(){
-    enPlacesLayer.clearLayers(); var z=map.getZoom();
-    enPlaceItems.forEach(function(it){ if(z>=it.minz) enPlacesLayer.addLayer(it.marker); });
-  }
-  function buildEnPlaces(){ enPlacesLayer.clearLayers(); enPlaceItems=[]; if(!PL) return;
-    var all=(PL.countries||[]).concat(PL.sudan||[], PL.other||[]);
-    all.forEach(function(p){
-      var sudan=(PL.sudan||[]).indexOf(p)>=0;
-      var kind=p.kind==="country"?"country":(p.kind==="capital"?"capital":"town");
-      var html='<span class="enplace enplace-'+kind+'">'+esc(p.name)+'</span>';
-      var m=L.marker([p.lat,p.lon],{pane:"englishNames",interactive:false,keyboard:false,
-        icon:L.divIcon({className:"enplace-wrap",html:html,iconSize:[0,0]})});
-      enPlaceItems.push({marker:m, minz: p.kind==="country"?4:(sudan?6:(p.kind==="capital"?5:6))});
-    });
-    refreshEnPlaces();
-  }
-  map.on("zoomend", function(){ if(map.hasLayer(enPlacesLayer)) refreshEnPlaces(); });
-  map.on("layeradd", function(e){ if(e.layer===enPlacesLayer) refreshEnPlaces(); });
-  buildEnPlaces();
 
   // ---- Route vers l'Europe (UNHCR Europe, sept. 2026) : faible en nombre, documenté ; enquête non représentative ----
   var europeLayer = L.layerGroup();
@@ -857,7 +831,6 @@
     {grp:"secContexte",id:"claimrsf",labelKey:"lyrClaimsRsf",    on:false, lyr:claimsRsfLayer,    sw:"rsf",      avail:!!(claims&&has(claims.rsf))},
     {grp:"secContexte",id:"adm",     labelKey:"lyrAdm",          on:false,  lyr:admGroup,          sw:"line",     avail:!!(adm0geo||adm1geo)},
     {grp:"secContexte",id:"neighbors",labelKey:"lyrNeighbors",   on:false,  lyr:neighborsLayer,    sw:"nbr",      avail:true},
-    {grp:"secContexte",id:"enplaces",labelKey:"lyrEnPlaces",on:false,lyr:enPlacesLayer,sw:"text",avail:!!PL},
     // Géographie
     {grp:"secGeo",     id:"relief",  labelKey:"lyrRelief",       on:false, lyr:reliefLayer,       sw:"relief",   avail:!!reliefLayer},
     {grp:"secGeo",     id:"infra",   labelKey:"lyrInfra",        on:false, lyr:infraLayer,        sw:"infra",    avail:!!geo},
@@ -910,7 +883,6 @@
     else if(kind==="pipe"){ sw.style.background="transparent"; sw.style.border="2px solid #b5651d"; sw.style.height="4px"; sw.style.width="16px"; sw.style.borderRadius="1px"; }
     else if(kind==="impact"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,#f6d9b0,#8a1e0e)"; }
     else if(kind==="disp"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,"+cssv("--accent")+",#b5651d)"; }
-    else if(kind==="text"){ sw.style.background="transparent"; sw.style.border="0"; sw.textContent="Aa"; sw.style.fontSize="10px"; sw.style.fontWeight="700"; sw.style.color=cssv("--ink"); sw.style.width="auto"; }
     else if(kind==="refsite"){ sw.style.background="#c2185b"; sw.style.opacity=".6"; }
     else if(kind==="dispInt"){ sw.style.background="transparent"; sw.style.border="0"; sw.style.height="3px"; sw.style.width="16px"; sw.style.borderRadius="1px";
       sw.style.backgroundImage="repeating-linear-gradient(90deg,"+cssv("--accent")+" 0 4px,transparent 4px 7px)"; }
@@ -1304,7 +1276,7 @@
     if(adm0Lyr) adm0Lyr.setStyle({color:cssv("--muted")});
     if(adm1Lyr) adm1Lyr.setStyle({color:cssv("--line"),fillColor:cssv("--muted")});
     buildFires(); buildAct(); buildSectors(); buildControl(); buildOsint(); buildClaims(); buildControlApprox();
-    buildNeighbors(); buildIdpSites(); buildIdpState(); buildDisplacement(); buildEurope(); buildEnPlaces(); buildFiresConflict(); buildArrows();
+    buildNeighbors(); buildIdpSites(); buildIdpState(); buildDisplacement(); buildEurope(); buildFiresConflict(); buildArrows();
     buildAcled(); buildWatch(); buildResources(); buildBackers(); buildEthno(); buildInfra(); buildPipelines(); buildImpacts();
     // re-add layers that were on
     LAYERS.forEach(function(L0){ if(L0.lyr && map.hasLayer(L0.lyr)){ map.removeLayer(L0.lyr); L0.lyr.addTo(map);} });
