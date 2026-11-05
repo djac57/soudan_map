@@ -1324,6 +1324,18 @@
     // if resized back to desktop, make sure drawer state is reset (CSS ignores .open on desktop anyway)
   }
 
+  // Clicks: on the canvas renderer only the TOPMOST interactive layer under the cursor gets the click.
+  // Filled polygons (e.g. the IDP-by-state choropleth) drawn after the point layers would hide them,
+  // so the point layers are re-raised every time a layer is added.
+  function raisePointLayers(){
+    [idpSitesLayer, refSitesLayer, dispIntlLayer, displacementLayer, clashLayer].forEach(function(g){
+      if(!map.hasLayer(g)) return;
+      g.eachLayer(function(l){ if(l.bringToFront) l.bringToFront(); });
+    });
+  }
+  map.on("layeradd", raisePointLayers);
+  raisePointLayers();
+
   // init
   renderAll(); bindChartHover(); bindFiresHover(); refitAll(); setupReplay(); setupDrawer();
   map.on("overlayadd overlayremove", updateLegend);
