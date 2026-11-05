@@ -1,0 +1,351 @@
+/* Noms de lieux en anglais (superposition). Généré par scripts/places/build_places.py */
+(function () { "use strict"; window.SUDAN = window.SUDAN || {}; window.SUDAN.places = {
+  "generated": "2026-11-06",
+  "note": "Noms anglais superposés aux noms locaux des fonds de carte (OpenStreetMap). Positions approximatives (quelques km). Sudan : toutes les villes principales ; autres pays : capitales dont le nom local n'est pas en alphabet latin.",
+  "sudan": [
+    {
+      "name": "Khartoum",
+      "kind": "capital",
+      "lat": 15.5,
+      "lon": 32.56
+    },
+    {
+      "name": "Omdurman",
+      "kind": "town",
+      "lat": 15.64,
+      "lon": 32.48
+    },
+    {
+      "name": "Khartoum North (Bahri)",
+      "kind": "town",
+      "lat": 15.63,
+      "lon": 32.53
+    },
+    {
+      "name": "Port Sudan",
+      "kind": "town",
+      "lat": 19.62,
+      "lon": 37.22
+    },
+    {
+      "name": "Wad Madani",
+      "kind": "town",
+      "lat": 14.4,
+      "lon": 33.52
+    },
+    {
+      "name": "Kassala",
+      "kind": "town",
+      "lat": 15.45,
+      "lon": 36.4
+    },
+    {
+      "name": "Gedaref",
+      "kind": "town",
+      "lat": 14.03,
+      "lon": 35.38
+    },
+    {
+      "name": "Sennar",
+      "kind": "town",
+      "lat": 13.55,
+      "lon": 33.62
+    },
+    {
+      "name": "Kosti",
+      "kind": "town",
+      "lat": 13.17,
+      "lon": 32.66
+    },
+    {
+      "name": "El Obeid",
+      "kind": "town",
+      "lat": 13.18,
+      "lon": 30.22
+    },
+    {
+      "name": "Al Fula",
+      "kind": "town",
+      "lat": 12.04,
+      "lon": 30.23
+    },
+    {
+      "name": "Kadugli",
+      "kind": "town",
+      "lat": 11.01,
+      "lon": 29.72
+    },
+    {
+      "name": "Nyala",
+      "kind": "town",
+      "lat": 12.05,
+      "lon": 24.88
+    },
+    {
+      "name": "El Fasher",
+      "kind": "town",
+      "lat": 13.63,
+      "lon": 25.35
+    },
+    {
+      "name": "El Geneina",
+      "kind": "town",
+      "lat": 13.45,
+      "lon": 22.45
+    },
+    {
+      "name": "Zalingei",
+      "kind": "town",
+      "lat": 12.9,
+      "lon": 23.47
+    },
+    {
+      "name": "Ed Daein",
+      "kind": "town",
+      "lat": 11.45,
+      "lon": 26.1
+    },
+    {
+      "name": "Ad Damazin",
+      "kind": "town",
+      "lat": 11.78,
+      "lon": 34.37
+    },
+    {
+      "name": "Malakal",
+      "kind": "town",
+      "lat": 9.53,
+      "lon": 31.65
+    },
+    {
+      "name": "Wau",
+      "kind": "town",
+      "lat": 7.7,
+      "lon": 27.99
+    },
+    {
+      "name": "Atbara",
+      "kind": "town",
+      "lat": 17.7,
+      "lon": 33.98
+    },
+    {
+      "name": "Dongola",
+      "kind": "town",
+      "lat": 19.17,
+      "lon": 30.48
+    },
+    {
+      "name": "Merowe",
+      "kind": "town",
+      "lat": 18.48,
+      "lon": 31.8
+    },
+    {
+      "name": "Kutum",
+      "kind": "town",
+      "lat": 14.2,
+      "lon": 24.67
+    },
+    {
+      "name": "Renk",
+      "kind": "town",
+      "lat": 11.75,
+      "lon": 32.8
+    },
+    {
+      "name": "Ed Dueim",
+      "kind": "town",
+      "lat": 13.99,
+      "lon": 32.33
+    },
+    {
+      "name": "Suakin",
+      "kind": "town",
+      "lat": 19.11,
+      "lon": 37.34
+    },
+    {
+      "name": "Um Ruwaba",
+      "kind": "town",
+      "lat": 12.9,
+      "lon": 31.2
+    },
+    {
+      "name": "Abyei",
+      "kind": "town",
+      "lat": 9.6,
+      "lon": 28.4
+    },
+    {
+      "name": "Tawila",
+      "kind": "town",
+      "lat": 13.27,
+      "lon": 25.2
+    }
+  ],
+  "other": [
+    {
+      "name": "Algiers",
+      "kind": "capital",
+      "lat": 36.75,
+      "lon": 3.06
+    },
+    {
+      "name": "Tunis",
+      "kind": "capital",
+      "lat": 36.81,
+      "lon": 10.18
+    },
+    {
+      "name": "Tripoli",
+      "kind": "capital",
+      "lat": 32.89,
+      "lon": 13.18
+    },
+    {
+      "name": "Cairo",
+      "kind": "capital",
+      "lat": 30.04,
+      "lon": 31.24
+    },
+    {
+      "name": "Rabat",
+      "kind": "capital",
+      "lat": 34.02,
+      "lon": -6.84
+    },
+    {
+      "name": "Nouakchott",
+      "kind": "capital",
+      "lat": 18.09,
+      "lon": -15.98
+    },
+    {
+      "name": "Addis Ababa",
+      "kind": "capital",
+      "lat": 9.03,
+      "lon": 38.74
+    },
+    {
+      "name": "Mogadishu",
+      "kind": "capital",
+      "lat": 2.05,
+      "lon": 45.32
+    },
+    {
+      "name": "Tehran",
+      "kind": "capital",
+      "lat": 35.69,
+      "lon": 51.39
+    },
+    {
+      "name": "Baghdad",
+      "kind": "capital",
+      "lat": 33.31,
+      "lon": 44.37
+    },
+    {
+      "name": "Damascus",
+      "kind": "capital",
+      "lat": 33.51,
+      "lon": 36.29
+    },
+    {
+      "name": "Beirut",
+      "kind": "capital",
+      "lat": 33.89,
+      "lon": 35.5
+    },
+    {
+      "name": "Jerusalem",
+      "kind": "capital",
+      "lat": 31.77,
+      "lon": 35.21
+    },
+    {
+      "name": "Amman",
+      "kind": "capital",
+      "lat": 31.95,
+      "lon": 35.93
+    },
+    {
+      "name": "Riyadh",
+      "kind": "capital",
+      "lat": 24.71,
+      "lon": 46.68
+    },
+    {
+      "name": "Sanaa",
+      "kind": "capital",
+      "lat": 15.37,
+      "lon": 44.19
+    },
+    {
+      "name": "Muscat",
+      "kind": "capital",
+      "lat": 23.59,
+      "lon": 58.41
+    },
+    {
+      "name": "Abu Dhabi",
+      "kind": "capital",
+      "lat": 24.45,
+      "lon": 54.38
+    },
+    {
+      "name": "Doha",
+      "kind": "capital",
+      "lat": 25.29,
+      "lon": 51.53
+    },
+    {
+      "name": "Manama",
+      "kind": "capital",
+      "lat": 26.23,
+      "lon": 50.58
+    },
+    {
+      "name": "Kuwait City",
+      "kind": "capital",
+      "lat": 29.38,
+      "lon": 47.99
+    },
+    {
+      "name": "Athens",
+      "kind": "capital",
+      "lat": 37.98,
+      "lon": 23.73
+    },
+    {
+      "name": "Sofia",
+      "kind": "capital",
+      "lat": 42.7,
+      "lon": 23.32
+    },
+    {
+      "name": "Kyiv",
+      "kind": "capital",
+      "lat": 50.45,
+      "lon": 30.52
+    },
+    {
+      "name": "Minsk",
+      "kind": "capital",
+      "lat": 53.9,
+      "lon": 27.57
+    },
+    {
+      "name": "Moscow",
+      "kind": "capital",
+      "lat": 55.76,
+      "lon": 37.62
+    },
+    {
+      "name": "Ankara",
+      "kind": "capital",
+      "lat": 39.93,
+      "lon": 32.86
+    }
+  ]
+}; })();
