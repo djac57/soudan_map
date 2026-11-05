@@ -1350,7 +1350,116 @@
     sortableTable(tb, cols, H.rows, render);
     var nt=document.getElementById("hostsNote"); if(nt) nt.textContent=H.note||"";
   }
-  function renderAll(){ buildUI(); drawClashes(); fillStats(); fillHumHero(); fillDispTimeline(); fillHosts(); fillRefugees(); fillBackers(); buildChartToggle(); drawChart(); drawFiresChart(); fillControlSlot(); updateLegend(); }
+  // ---- Qui est qui : acteurs, intérêts rapportés (sources citées ; non vérifiés) ----
+  var ACTORS=[
+  {
+    "name": "Forces armées soudanaises (SAF)",
+    "leader": "Abdel Fattah al-Burhan",
+    "camp": "gouvernement (Conseil souverain)",
+    "fr": "Contrôle Khartoum, le centre, l'est et Port-Soudan. Veut garder l'armée comme institution d'État ; réclame le retrait du RSF avant toute trêve.",
+    "en": "Holds Khartoum, the centre, the east and Port Sudan. Wants the army kept as the state institution; demands RSF withdrawal before any truce.",
+    "ar": "يسيطر على الخرطوم والوسط والشرق وبورتسودان. يريد الإبقاء على الجيش مؤسسة للدولة؛ ويطالب بانسحاب الدعم السريع قبل أي هدنة.",
+    "src": "Wikipedia (belligerents) ; Crisis Group, avr. 2026"
+  },
+  {
+    "name": "Forces de soutien rapide (RSF)",
+    "leader": "Hemedti (Mohamed Hamdan Dagalo), Abdul Rahim Dagalo",
+    "camp": "paramilitaire (gouvernement parallèle)",
+    "fr": "Issu des milices janjawids. Contrôle la plus grande part du Darfour et une partie du Kordofan ; vise le pouvoir politique national. Principal soutien rapporté : les Émirats arabes unis.",
+    "en": "Born from the Janjaweed militias. Controls most of Darfur and part of Kordofan; seeks national political power. Main reported backer: the United Arab Emirates.",
+    "ar": "نشأ من ميليشيات الجنجويد. يسيطر على معظم دارفور وجزء من كردفان؛ ويسعى إلى السلطة السياسية الوطنية. الداعم الرئيسي المُبلَّغ عنه: الإمارات العربية المتحدة.",
+    "src": "Wikipedia (belligerents) ; Crisis Group, avr. 2026 ; Groupe d'experts ONU"
+  },
+  {
+    "name": "SPLM-N (al-Hilu)",
+    "leader": "Abdelaziz al-Hilu",
+    "camp": "rébellion (Nuba, Nil Bleu)",
+    "fr": "Occupe des parties du Kordofan du Sud et du Nil Bleu ; allié au RSF depuis juillet 2025 (selon Wikipédia). Revendique un État fédéral laïque.",
+    "en": "Holds parts of South Kordofan and Blue Nile; allied with the RSF since July 2025 (per Wikipedia). Seeks a secular federal state.",
+    "ar": "يسيطر على أجزاء من جنوب كردفان والنيل الأزرق؛ حليف للدعم السريع منذ يوليو 2025 (وفق ويكيبيديا). يطالب بدولة اتحادية علمانية.",
+    "src": "Wikipedia (belligerents)"
+  },
+  {
+    "name": "SPLM-N (Agar) et Joint Force (Minnawi, SLM)",
+    "leader": "Malik Agar ; Minni Minnawi",
+    "camp": "alliés de l'armée",
+    "fr": "Mouvements armés du Darfour et du Nil Bleu alignés sur l'armée depuis fin 2023 ; protègent leurs communautés contre le RSF.",
+    "en": "Darfur and Blue Nile armed movements aligned with the army since late 2023; they protect their communities against the RSF.",
+    "ar": "حركات مسلحة من دارفور والنيل الأزرق متحالفة مع الجيش منذ أواخر 2023؛ تحمي مجتمعاتها من الدعم السريع.",
+    "src": "Crisis Group, avr. 2026 ; Wikipedia (belligerents)"
+  },
+  {
+    "name": "SLM (al-Nur)",
+    "leader": "Abdul Wahid al-Nur",
+    "camp": "rébellion (Darfour)",
+    "fr": "Mouvement armé du Darfour, tient des « zones libérées ». Position distincte des deux camps.",
+    "en": "Darfur armed movement holding 'Liberated Areas'. Its position is distinct from both sides.",
+    "ar": "حركة مسلحة من دارفور تسيطر على 'المناطق المحررة'. موقفها متمايز عن الطرفين.",
+    "src": "Wikipedia (belligerents)"
+  },
+  {
+    "name": "Émirats arabes unis",
+    "leader": "—",
+    "camp": "soutien au RSF (rapporté)",
+    "fr": "Principal soutien rapporté du RSF (armes, financement, routes via le Tchad et la Libye) ; démenti par Abou Dhabi. Rivalité avec l'Arabie saoudite pour la mer Rouge et la Corne.",
+    "en": "Main reported backer of the RSF (arms, funding, supply routes via Chad and Libya); denied by Abu Dhabi. Rivalry with Saudi Arabia over the Red Sea and the Horn.",
+    "ar": "الداعم الرئيسي المُبلَّغ عنه للدعم السريع (أسلحة وتمويل وطرق عبر تشاد وليبيا)؛ تنفي أبوظبي ذلك. تنافس مع السعودية على البحر الأحمر والقرن الأفريقي.",
+    "src": "Crisis Group, avr. 2026 ; Groupe d'experts ONU"
+  },
+  {
+    "name": "Égypte",
+    "leader": "—",
+    "camp": "soutien à l'armée",
+    "fr": "Principal soutien étatique de l'armée. Intérêt : stabilité à la frontière, rivalité avec l'Éthiopie (barrage de la Renaissance). Accueille environ 843 000 réfugiés soudanais.",
+    "en": "Principal state backer of the army. Interest: border stability and rivalry with Ethiopia (Renaissance Dam). Hosts about 843,000 Sudanese refugees.",
+    "ar": "الداعم الحكومي الرئيسي للجيش. مصلحته: استقرار الحدود والتنافس مع إثيوبيا (سد النهضة). تستضيف نحو 843 ألف لاجئ سوداني.",
+    "src": "Crisis Group, avr. 2026 ; UNHCR"
+  },
+  {
+    "name": "Arabie saoudite et Qatar",
+    "leader": "—",
+    "camp": "soutien à l'armée (rapporté)",
+    "fr": "Soutiennent l'armée (diplomatie, financement) et jouent le médiateur ; rivalité avec les Émirats.",
+    "en": "Back the army (diplomacy, financing) and act as mediators; rivalry with the Emirates.",
+    "ar": "يدعمان الجيش (دبلوماسيا وتمويلا) ويؤديان دور الوسيط؛ تنافس مع الإمارات.",
+    "src": "Crisis Group, avr. 2026"
+  },
+  {
+    "name": "Turquie, Iran, Érythrée",
+    "leader": "—",
+    "camp": "soutien à l'armée (rapporté)",
+    "fr": "Drones et appui diplomatique à l'armée. Érythrée : alliance avec Burhan, intérêt rival de l'Éthiopie.",
+    "en": "Drones and diplomatic support for the army. Eritrea: alliance with Burhan, rival of Ethiopia.",
+    "ar": "طائرات مسيّرة ودعم دبلوماسي للجيش. إريتريا: تحالف مع البرهان، وخصم لإثيوبيا.",
+    "src": "Crisis Group, avr. 2026 ; base de données backers (projet)"
+  },
+  {
+    "name": "Libye (Haftar, est)",
+    "leader": "Khalifa Haftar",
+    "camp": "soutien au RSF (rapporté)",
+    "fr": "Couloir de transit rapporté pour le RSF depuis l'est libyen ; Haftar le nie.",
+    "en": "Reported transit corridor for the RSF from eastern Libya; Haftar denies it.",
+    "ar": "ممر عبور مُبلَّغ عنه للدعم السريع من شرق ليبيا؛ ينفي حفتر ذلك.",
+    "src": "Wikipedia (belligerents) ; Crisis Group, avr. 2026"
+  },
+  {
+    "name": "Éthiopie",
+    "leader": "—",
+    "camp": "position ambiguë (rapportée)",
+    "fr": "Accusée par Khartoum d'accueillir des bases de drones du RSF ; Addis-Abeba le nie. Tensions avec l'Égypte et l'Érythrée.",
+    "en": "Accused by Khartoum of hosting RSF drone bases; Addis Ababa denies it. Tensions with Egypt and Eritrea.",
+    "ar": "تتهمها الخرطوم بإيواء قواعد مسيّرات للدعم السريع؛ وتنفي أديس أبابا ذلك. توتر مع مصر وإريتريا.",
+    "src": "Crisis Group, avr. 2026 ; CFR / médias"
+  }
+];
+  function fillActors(){
+    var tb=document.getElementById("actorsTable"); if(!tb) return;
+    var L=(window.SDN_LANG==="en"||window.SDN_LANG==="ar")?window.SDN_LANG:"fr";
+    var head="<thead><tr><th>"+(L==="fr"?"Acteur":L==="en"?"Actor":"الجهة")+"</th><th>"+(L==="fr"?"Dirigeant":L==="en"?"Leader":"القائد")+"</th><th>"+(L==="fr"?"Position":L==="en"?"Position":"الموقف")+"</th><th>"+(L==="fr"?"Intérêts rapportés":L==="en"?"Reported interests":"المصالح المُبلَّغ عنها")+"</th><th>"+(L==="fr"?"Sources":L==="en"?"Sources":"المصادر")+"</th></tr></thead>";
+    var body=ACTORS.map(function(a){ return "<tr><td><b>"+esc(a.name)+"</b></td><td>"+esc(a.leader)+"</td><td>"+esc(a.camp)+"</td><td>"+esc(a[L])+"</td><td><span class='muted'>"+esc(a.src)+"</span></td></tr>"; }).join("");
+    tb.innerHTML=head+"<tbody>"+body+"</tbody>";
+  }
+  function renderAll(){ buildUI(); drawClashes(); fillStats(); fillHumHero(); fillDispTimeline(); fillHosts(); fillActors(); fillRefugees(); fillBackers(); buildChartToggle(); drawChart(); drawFiresChart(); fillControlSlot(); updateLegend(); }
 
   // =====================================================================
   //  REPLAY — animated backfill of the war (feature-detected; hidden if absent)
