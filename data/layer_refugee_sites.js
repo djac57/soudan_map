@@ -152,7 +152,8 @@
         "date": "2026-10-31"
       },
       "location_found": true,
-      "sites_count": 14
+      "sites_count": null,
+      "sites_note": "Population urbaine : pas de camp."
     },
     {
       "name_fr": "Adré (camp, Tchad)",
