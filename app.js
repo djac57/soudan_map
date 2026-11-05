@@ -889,10 +889,17 @@
     else if(kind==="europe"){ sw.style.background="transparent"; sw.style.border="0"; sw.style.height="3px"; sw.style.width="16px"; sw.style.borderRadius="1px";
       sw.style.backgroundImage="repeating-linear-gradient(90deg,#5b2c83 0 2px,transparent 2px 5px)"; }
   }
+  // Symboles de légende = symboles de la carte (mêmes couleurs, traits, pointillés et pointes de flèche)
+  var SW_SVG={
+    dispInt:'<svg width="24" height="12" viewBox="0 0 24 12"><line x1="1" y1="6" x2="16" y2="6" style="stroke:var(--accent);stroke-width:2;stroke-dasharray:4 3"/><polygon points="24,6 15,2.5 15,9.5" style="fill:var(--accent)"/></svg>',
+    dispAbroad:'<svg width="24" height="12" viewBox="0 0 24 12"><line x1="1" y1="3" x2="16" y2="3" style="stroke:#b5651d;stroke-width:2"/><polygon points="24,3 15,0.5 15,5.5" style="fill:#b5651d"/><line x1="8" y1="9" x2="23" y2="9" style="stroke:#2e7d4f;stroke-width:2;stroke-dasharray:3 2"/><polygon points="0,9 9,6.5 9,11.5" style="fill:#2e7d4f"/></svg>',
+    europe:'<svg width="24" height="12" viewBox="0 0 24 12"><line x1="1" y1="3" x2="16" y2="3" style="stroke:#5b2c83;stroke-width:2"/><polygon points="24,3 15,0.5 15,5.5" style="fill:#5b2c83"/><line x1="1" y1="9" x2="16" y2="9" style="stroke:#5b2c83;stroke-width:2;stroke-dasharray:3 2"/><polygon points="24,9 15,6.5 15,11.5" style="fill:#5b2c83"/></svg>'
+  };
   function renderLayerRow(L0, container){
     var row=document.createElement("label"); row.className="row";
     var cb=document.createElement("input"); cb.type="checkbox"; cb.checked=L0.on;
     var sw=document.createElement("span"); sw.className="sw"; swStyle(sw,L0.sw);
+    if(SW_SVG[L0.sw]){ sw.style.background="none"; sw.style.border="0"; sw.style.width="24px"; sw.style.height="12px"; sw.style.display="inline-block"; sw.style.verticalAlign="middle"; sw.style.borderRadius="0"; sw.style.opacity="1"; sw.innerHTML=SW_SVG[L0.sw]; }
     var lab=document.createElement("span"); lab.className="lab";
     lab.textContent=T(L0.labelKey)+(L0.id==="firms"?" · "+firesDays+" j":"");
     var cnt=document.createElement("span"); cnt.className="cnt"; if(L0.count) cnt.id=L0.count;
