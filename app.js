@@ -639,6 +639,29 @@
   }
   buildResources();
 
+  // ---- Exportations : flèches depuis Port-Soudan vers les destinations (chiffres publiés, rapportés ou estimés) ----
+  var EXPORT_FLOWS=[{"id": "gold_uae", "label_fr": "Or → Émirats arabes unis", "label_en": "Gold → UAE", "to": "Dubaï", "lat": 25.2, "lon": 55.27, "com": "Or", "amount": "≈ 8,2 t (2025)", "value": "≈ 0,86 Md US$ (calcul : 8,2/14,7 × 1,536 Md)", "share": "≈ 56 % des exportations officielles d'or (2025) ; 22,2 t en 2024 (≈ 99 %)", "period": "2025", "status": "rapporté (banque centrale, via presse) ; valeur calculée", "vol": 8.2, "usd": 860000000.0, "src": "Al-Monitor / Sudan Tribune (données banque centrale citées)", "url": "https://www.al-monitor.com/originals/2025/03/sudans-booming-wartime-gold-trade-flows-through-uae"}, {"id": "gold_egy", "label_fr": "Or → Égypte", "label_en": "Gold → Egypt", "to": "Le Caire", "lat": 30.04, "lon": 31.24, "com": "Or", "amount": "≈ 4,9 t (2025)", "value": "≈ 517 M US$", "share": "≈ 20 fois plus qu'en 2024", "period": "2025", "status": "rapporté (banque centrale, via presse)", "vol": 4.9, "usd": 517000000.0, "src": "Citée par la presse (données banque centrale 2025)", "url": ""}, {"id": "gold_oman", "label_fr": "Or → Oman", "label_en": "Gold → Oman", "to": "Mascate", "lat": 23.59, "lon": 58.41, "com": "Or", "amount": "≈ 0,7 t (2025)", "value": "≈ 77 M US$", "share": "", "period": "2025", "status": "rapporté (banque centrale, via presse)", "vol": 0.7, "usd": 77000000.0, "src": "Citée par la presse (données banque centrale 2025)", "url": ""}, {"id": "oil_uae", "label_fr": "Pétrole brut → Émirats (Fujairah)", "label_en": "Crude → UAE (Fujairah)", "to": "Émirats arabes unis", "lat": 25.12, "lon": 56.35, "com": "Pétrole", "amount": "≈ 44 % des exportations de Port-Soudan (moyenne sur 5 ans)", "value": "non publié pour 2025", "share": "", "period": "moyenne sur 5 ans (S&P Global, août 2025)", "status": "rapporté ; part seule", "vol": null, "usd": null, "src": "S&P Global (août 2025)", "url": "https://www.spglobal.com/energy/en/news-research/latest-news/crude-oil/082725-tanker-with-crude-cargo-from-sudan-idles-off-uae-as-bilateral-ties-sour"}, {"id": "oil_mys", "label_fr": "Pétrole brut → Malaisie", "label_en": "Crude → Malaysia", "to": "Kuala Lumpur", "lat": 3.14, "lon": 101.69, "com": "Pétrole", "amount": "premier acheteur (9 premiers mois 2025)", "value": "part non publiée", "share": "", "period": "2025", "status": "rapporté", "vol": null, "usd": null, "src": "Rapport énergie (presse arabe) ; Kpler", "url": ""}, {"id": "oil_ita", "label_fr": "Pétrole brut → Italie", "label_en": "Crude → Italy", "to": "Rome", "lat": 41.9, "lon": 12.5, "com": "Pétrole", "amount": "destination secondaire (2025)", "value": "part non publiée", "share": "", "period": "2025", "status": "rapporté", "vol": null, "usd": null, "src": "Kpler (presse)", "url": ""}, {"id": "oil_total", "label_fr": "Pétrole : total Soudan + Soudan du Sud via Port-Soudan", "label_en": "Oil total: Sudan + South Sudan via Port Sudan", "to": "Estimation", "lat": 25.12, "lon": 56.35, "com": "Pétrole", "amount": "≈ 77 000 b/j (mars 2025)", "value": "≈ 2 Md US$/an (hypothèse : 70 US$/baril)", "share": "", "period": "2025", "status": "estimation (prix supposé)", "vol": null, "usd": 1970000000.0, "src": "Kpler (presse) ; prix supposé 70 US$/baril", "url": "", "hide_arrow": true}, {"id": "gum_fra", "label_fr": "Gomme arabique → France", "label_en": "Gum arabic → France", "to": "Paris", "lat": 48.86, "lon": 2.35, "com": "Gomme arabique", "amount": "non publié (2022)", "value": "≈ 80,1 M US$ (2022)", "share": "", "period": "2022", "status": "données OEC (valeur)", "vol": null, "usd": 80100000.0, "src": "OEC (Observatory of Economic Complexity)", "url": "https://oec.world/profile/bilateral-product/gum-arabic/reporter/sdn"}, {"id": "gum_usa", "label_fr": "Gomme arabique → États-Unis", "label_en": "Gum arabic → USA", "to": "Washington", "lat": 38.9, "lon": -77.04, "com": "Gomme arabique", "amount": "non publié (2022)", "value": "≈ 37,1 M US$ (2022)", "share": "", "period": "2022", "status": "données OEC (valeur)", "vol": null, "usd": 37100000.0, "src": "OEC", "url": "https://oec.world/profile/bilateral-product/gum-arabic/reporter/sdn"}, {"id": "gum_ind", "label_fr": "Gomme arabique → Inde", "label_en": "Gum arabic → India", "to": "New Delhi", "lat": 28.61, "lon": 77.21, "com": "Gomme arabique", "amount": "non publié (2022)", "value": "≈ 12,9 M US$ (2022)", "share": "", "period": "2022", "status": "données OEC (valeur)", "vol": null, "usd": 12900000.0, "src": "OEC", "url": "https://oec.world/profile/bilateral-product/gum-arabic/reporter/sdn"}, {"id": "gum_deu", "label_fr": "Gomme arabique → Allemagne", "label_en": "Gum arabic → Germany", "to": "Berlin", "lat": 52.52, "lon": 13.4, "com": "Gomme arabique", "amount": "non publié (2022)", "value": "≈ 12,7 M US$ (2022)", "share": "", "period": "2022", "status": "données OEC (valeur)", "vol": null, "usd": 12700000.0, "src": "OEC", "url": "https://oec.world/profile/bilateral-product/gum-arabic/reporter/sdn"}, {"id": "gum_gbr", "label_fr": "Gomme arabique → Royaume-Uni", "label_en": "Gum arabic → UK", "to": "Londres", "lat": 51.51, "lon": -0.13, "com": "Gomme arabique", "amount": "non publié (2022)", "value": "≈ 10,7 M US$ (2022)", "share": "", "period": "2022", "status": "données OEC (valeur)", "vol": null, "usd": 10700000.0, "src": "OEC", "url": "https://oec.world/profile/bilateral-product/gum-arabic/reporter/sdn"}];
+  var exportsLayer=L.layerGroup();
+  var PORT_SUDAN=[19.62,37.22];
+  function buildExports(){ exportsLayer.clearLayers(); if(!EXPORT_FLOWS) return;
+    var maxUsd=Math.max.apply(null, EXPORT_FLOWS.map(function(f){return f.usd||0;}).concat([1]));
+    EXPORT_FLOWS.forEach(function(f){
+      if(f.hide_arrow) return;
+      var col=(f.com==="Or")?"#b8860b":(f.com==="Pétrole"?"#1f1f1f":"#7a8b2e");
+      var to=[f.lat,f.lon];
+      var w=f.usd?(1.5+7*Math.sqrt(f.usd/maxUsd)):2;
+      var ln=L.polyline([PORT_SUDAN,to],{color:col,weight:w,opacity:.75,dashArray:f.usd?null:"4 4"});
+      var pop="<b>"+esc(f.label_fr)+"</b><br>"+esc(f.amount)+"<br>"+esc(f.value)+(f.share?"<br><span class='muted'>"+esc(f.share)+"</span>":"")+
+        "<br><span class='muted'>"+T("expPeriod")+": "+esc(f.period)+" · "+esc(f.status)+"</span>"+
+        (f.src?"<br><span class='muted' style='font-size:10px'>"+(f.url?"<a href='"+esc(f.url)+"' target='_blank' rel='noopener'>"+esc(f.src)+"</a>":esc(f.src))+"</span>":"");
+      ln.bindPopup(pop); exportsLayer.addLayer(ln);
+      exportsLayer.addLayer(arrowhead(to, bearing(PORT_SUDAN,to), col));
+      var m=L.circleMarker(to,{radius:4+(f.usd?10*Math.sqrt(f.usd/maxUsd):3),color:col,weight:1,fillColor:col,fillOpacity:.35});
+      m.bindPopup(pop); exportsLayer.addLayer(m);
+    });
+  }
+  buildExports();
+
   // ---- Foreign backers — cartographer map: country choropleth + typed war-routes + logistics airports ----
   var backersLayer = L.layerGroup();
   try{ map.createPane("backersFillPane"); map.getPane("backersFillPane").style.zIndex=432;
@@ -837,6 +860,7 @@
     {grp:"secGeo",     id:"sectors", labelKey:"lyrSectors",      on:false, lyr:sectorLayer,       sw:"rect",     avail:focus.length>0},
     // Société & économie
     {grp:"secSociete", id:"resources",labelKey:"lyrResources",   on:false, lyr:resLayer,          sw:"res",      avail:!!resources},
+    {grp:"secSociete", id:"exports", labelKey:"lyrExports", on:false, lyr:exportsLayer, sw:"exp", avail:true},
     {grp:"secSociete", id:"pipelines",labelKey:"lyrPipelines",   on:false, lyr:pipelinesLayer,    sw:"pipe",     avail:!!pipelines},
     {grp:"secSociete", id:"backers", labelKey:"lyrBackers",      on:false, lyr:backersLayer,      sw:"arrow",    avail:!!backers},
     {grp:"secSociete", id:"ethno",   labelKey:"lyrEthnoGroups",  on:false, lyr:ethnoGroupsLayer,  sw:"ethno",    avail:!!(ethnolang&&has(ethnolang.groups))},
@@ -883,6 +907,7 @@
     else if(kind==="pipe"){ sw.style.background="transparent"; sw.style.border="2px solid #b5651d"; sw.style.height="4px"; sw.style.width="16px"; sw.style.borderRadius="1px"; }
     else if(kind==="impact"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,#f6d9b0,#8a1e0e)"; }
     else if(kind==="disp"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,"+cssv("--accent")+",#b5651d)"; }
+    else if(kind==="exp"){ sw.style.background="transparent"; sw.style.border="0"; sw.style.width="24px"; sw.style.height="12px"; sw.innerHTML='<svg width="24" height="12" viewBox="0 0 24 12"><line x1="1" y1="6" x2="16" y2="6" style="stroke:#1f1f1f;stroke-width:2"/><polygon points="24,6 15,2.5 15,9.5" style="fill:#1f1f1f"/></svg>'; }
     else if(kind==="refsite"){ sw.style.background="#c2185b"; sw.style.opacity=".6"; }
     else if(kind==="dispInt"){ sw.style.background="transparent"; sw.style.border="0"; sw.style.height="3px"; sw.style.width="16px"; sw.style.borderRadius="1px";
       sw.style.backgroundImage="repeating-linear-gradient(90deg,"+cssv("--accent")+" 0 4px,transparent 4px 7px)"; }
