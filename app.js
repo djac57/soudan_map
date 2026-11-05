@@ -1340,6 +1340,45 @@
   //  REPLAY — animated backfill of the war (feature-detected; hidden if absent)
   // =====================================================================
   function fmtMonth(p){ return window.SDN_FMTMONTH ? window.SDN_FMTMONTH(p) : String(p); }
+  // ---- Déplacement pendant le replay : relevés DTM (IDP) et stocks UNHCR par pays d'asile ----
+  var replayDispLayer = L.layerGroup();
+  var TS = (disp && disp.timeseries) ? disp.timeseries : null;
+  function dispAtPeriod(P){
+    if(!TS) return null;
+    var out={idp:null, idpDate:null, idpRound:null, refYear:null, refTotal:0, refBy:[]};
+    var d = P.length===7 ? P+"-28" : P;
+    var rounds=(TS.idp_rounds||[]).filter(function(r){ return r.published<=d; });
+    if(rounds.length){ var r=rounds[rounds.length-1]; out.idp=r.idp; out.idpDate=r.published; out.idpRound=r.round; }
+    // stock annuel : fin de l'année précédente tant que l'année n'est pas close (dernier relevé connu)
+    var y=parseInt(P.slice(0,4),10), mo=parseInt(P.slice(5,7),10)||12;
+    var sy = (mo===12) ? y : y-1;
+    var yrs=(TS.unhcr_sudanese_stock_by_year||{}).years||[];
+    if(sy>yrs[yrs.length-1]) sy=yrs[yrs.length-1];
+    if(sy>=yrs[0]){
+      out.refYear=sy;
+      var C=(TS.unhcr_sudanese_stock_by_year||{}).countries||{};
+      Object.keys(C).forEach(function(k){ var v=C[k].values[yrs.indexOf(sy)]; if(v==null) return; out.refTotal+=v; out.refBy.push({iso3:k,name:C[k].name,v:v}); });
+    }
+    return out;
+  }
+  function drawReplayDisp(P){
+    replayDispLayer.clearLayers();
+    var info=dispAtPeriod(P); var rd=document.getElementById("replayDispRead");
+    if(rd){ rd.innerHTML = info ? (
+        (info.idp!=null ? "<b>"+num(info.idp)+"</b> "+T("rpIdp")+" <span class='muted'>("+T("rpRound")+" "+info.idpRound+", "+fdate(info.idpDate)+")</span>"
+                        : "<span class='muted'>"+T("rpIdp")+": "+T("rpNoData")+"</span>")+
+        " · "+(info.refYear ? "<b>"+num(info.refTotal)+"</b> "+T("rpRef")+" <span class='muted'>("+T("rpStockEnd")+" "+info.refYear+")</span>"
+                            : "<span class='muted'>"+T("rpRef")+": "+T("rpNoData")+"</span>")) : ""; }
+    if(!info || !info.refBy.length || !disp || !disp.neighbours) return;
+    var maxV=Math.max.apply(null, info.refBy.map(function(x){return x.v;}).concat([1]));
+    disp.neighbours.forEach(function(n){
+      var row=info.refBy.filter(function(x){return x.iso3===n.iso3;})[0]; if(!row||!row.v) return;
+      var m=L.circleMarker([n.lat,n.lon],{radius:4+18*Math.sqrt(row.v/maxV),color:"#b5651d",weight:1,fillColor:"#b5651d",fillOpacity:.45});
+      m.bindPopup("<b>"+esc(n.country_fr)+"</b><br>"+num(row.v)+" "+T("rpRef")+" <span class='muted'>("+T("rpStockEnd")+" "+info.refYear+")</span>");
+      replayDispLayer.addLayer(m);
+    });
+  }
+
   function setupReplay(){
     var wrap=document.getElementById("replayToggleWrap"), bar=document.getElementById("replayBar");
     if(!replay){ if(wrap)wrap.hidden=true; if(bar)bar.hidden=true; return; } // strict feature-detection
@@ -1393,6 +1432,7 @@
         (metric==="fires"&&fr!=null?" · <b>"+num(fr)+"</b> "+T("rdFires"):"")+
         ' <span class="muted">· '+T("rpCum")+" : "+num(cumE)+" "+T("rdEvents")+" · "+num(cumF)+" "+T("rdFatal")+"</span>";
       var sl=document.getElementById("replaySlider"); if(sl){ if(+sl.max!==periods.length-1) sl.max=periods.length-1; if(+sl.value!==idx) sl.value=idx; }
+      drawReplayDisp(P);
     }
     function stop(){ playing=false; if(timer){clearInterval(timer);timer=null;} var pb=document.getElementById("replayPlay"); if(pb){pb.textContent="▶"; pb.setAttribute("aria-label",T("replayPlay"));} }
     function play(){ if(playing)return; var periods=periodsArr(); if(idx>=periods.length-1) frame(0);
@@ -1403,8 +1443,8 @@
     function reconfig(){ stop(); gMax=computeMax(); var periods=periodsArr(); if(idx>periods.length-1)idx=periods.length-1;
       var sl=document.getElementById("replaySlider"); if(sl){ sl.max=periods.length-1; } frame(idx); }
     var mainEl=mapEl.parentNode;
-    function enter(){ map.addLayer(choro); map.addLayer(marks); frame(idx); bar.hidden=false; if(mainEl)mainEl.classList.add("replay-open"); }
-    function leave(){ stop(); map.removeLayer(choro); map.removeLayer(marks); bar.hidden=true; if(mainEl)mainEl.classList.remove("replay-open"); }
+    function enter(){ map.addLayer(choro); map.addLayer(marks); map.addLayer(replayDispLayer); frame(idx); bar.hidden=false; if(mainEl)mainEl.classList.add("replay-open"); }
+    function leave(){ stop(); map.removeLayer(choro); map.removeLayer(marks); map.removeLayer(replayDispLayer); bar.hidden=true; if(mainEl)mainEl.classList.remove("replay-open"); }
 
     var sl=document.getElementById("replaySlider"); if(sl){ sl.min=0; sl.max=periodsArr().length-1; sl.value=0;
       sl.addEventListener("input",function(){ stop(); frame(+sl.value); }); }

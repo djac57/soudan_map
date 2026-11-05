@@ -128,7 +128,7 @@ window.SDN_I18N = {
     idpInternal:"Déplacés internes (IDP)", refIntl:"Réfugiés (internationaux)",
     mapWhat:"Cette carte montre la guerre entre l'armée soudanaise (SAF) et les Forces de soutien rapide (RSF) : affrontements recensés (UCDP, ACLED), détections de feux satellite (NASA FIRMS), contrôle approximatif par État, prises revendiquées par chaque camp, déplacement de population (déplacés internes, réfugiés, retours), population par État et soutiens étrangers rapportés. Données agrégées, datées et sourcées ; les revendications ne sont pas vérifiées et aucune ligne de front n'est tracée. Ajoutez des couches à droite.",
     mapWhatM:"Affrontements, contrôle approximatif par État, prises revendiquées et déplacement de population. Couches : bouton ☰.",
-    fKhartoum:"Khartoum", fDarfur:"Darfour (5 États)", fBlueNile:"Nil Bleu", fGezira:"Gezira",
+    fKhartoum:"Khartoum", fDarfur:"Darfour (5 États)", fBlueNile:"Nil Bleu", fGezira:"Gezira", rpIdp:"déplacés internes (IOM DTM)", rpRef:"réfugiés soudanais (UNHCR)", rpNoData:"pas de relevé", rpRound:"ronde", rpStockEnd:"stock fin",
   },
   en: {
     dir:"ltr",
@@ -248,7 +248,7 @@ window.SDN_I18N = {
     idpInternal:"Internally displaced (IDP)", refIntl:"Refugees (international)",
     mapWhat:"This map shows the war between the Sudanese army (SAF) and the Rapid Support Forces (RSF): recorded clashes (UCDP, ACLED), satellite fire detections (NASA FIRMS), approximate control by state, captures claimed by each side, population displacement (internally displaced, refugees, returns), population by state and reported foreign backing. Data is aggregated, dated and sourced; claims are unverified and no front line is drawn. Add layers on the right.",
     mapWhatM:"Clashes, approximate control by state, claimed captures and population displacement. Layers: ☰ button.",
-    fKhartoum:"Khartoum", fDarfur:"Darfur (5 states)", fBlueNile:"Blue Nile", fGezira:"Gezira",
+    fKhartoum:"Khartoum", fDarfur:"Darfur (5 states)", fBlueNile:"Blue Nile", fGezira:"Gezira", rpIdp:"internally displaced (IOM DTM)", rpRef:"Sudanese refugees (UNHCR)", rpNoData:"no data yet", rpRound:"round", rpStockEnd:"stock end",
   },
   ar: {
     dir:"rtl",
@@ -367,6 +367,6 @@ window.SDN_I18N = {
     idpInternal:"نازحون داخليًا", refIntl:"لاجئون (دوليون)",
     mapWhat:"تعرض هذه الخريطة الحرب بين الجيش السوداني والقوات المسلحة للدعم السريع: الاشتباكات المسجلة (UCDP وACLED)، ورصد الحرائق بالأقمار الصناعية (NASA FIRMS)، والسيطرة التقريبية حسب الولاية، والمكاسب التي يدّعيها كل طرف، وحركة النزوح السكاني (النازحون داخليًا، واللاجئون، والعائدون)، والسكان حسب الولاية، والدعم الأجنبي المُبلَّغ عنه. البيانات مجمّعة ومؤرّخة ومصدّرة؛ الادعاءات غير مُتحقَّق منها ولا يُرسم أي خط جبهة. أضف طبقات من اليمين.",
     mapWhatM:"الاشتباكات، والسيطرة التقريبية حسب الولاية، والمكاسب المُدّعاة، وحركة النزوح السكاني. الطبقات: زر ☰.",
-    fKhartoum:"الخرطوم", fDarfur:"دارفور (5 ولايات)", fBlueNile:"النيل الأزرق", fGezira:"الجزيرة",
+    fKhartoum:"الخرطوم", fDarfur:"دارفور (5 ولايات)", fBlueNile:"النيل الأزرق", fGezira:"الجزيرة", rpIdp:"نازحون داخليًا (IOM DTM)", rpRef:"لاجئون سودانيون (UNHCR)", rpNoData:"لا توجد بيانات بعد", rpRound:"الجولة", rpStockEnd:"المخزون نهاية",
   }
 };
