@@ -203,7 +203,7 @@
   }
 
   // clashes
-  var catState = {}; ["saf_vs_rsf","saf_vs_other","rsf_vs_other","nonstate_other"].forEach(function(k){catState[k]=true;});
+  var catState = {}; ["saf_vs_rsf","saf_vs_other","rsf_vs_other","nonstate_other"].forEach(function(k){catState[k]=false;});
   var presentCats = {}; events.forEach(function(e){presentCats[e.pair]=(presentCats[e.pair]||0)+1;});
   var curMonths = 24;
   function cutoff(months){
