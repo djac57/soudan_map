@@ -462,6 +462,23 @@
   }
   buildDisplacement();
 
+  // ---- Sites d'accueil des réfugiés soudanais (camps / settlements / villes), sourcés ----
+  var refSitesLayer = L.layerGroup();
+  var refSites = (S.refugeeSites && has(S.refugeeSites.sites)) ? S.refugeeSites.sites : [];
+  function buildRefSites(){ refSitesLayer.clearLayers(); if(!refSites.length) return;
+    var maxN=Math.max.apply(null, refSites.map(function(s){return s.sudanese||0;}).concat([1]));
+    refSites.forEach(function(s){ var r=5+16*Math.sqrt((s.sudanese||0)/maxN);
+      var m=L.circleMarker([s.lat,s.lon],{radius:r,color:"#6b2e8a",weight:1.2,fillColor:"#6b2e8a",fillOpacity:.45});
+      m.bindPopup("<b>"+esc(s.name_fr)+"</b> — "+esc(s.country_fr)+"<br>"+pnum(s.sudanese||0)+" "+T("refSitesSudanese")+
+        " <span class='muted'>("+esc(s.sudanese_basis||"")+")</span>"+
+        (s.total_population?"<br><span class='muted'>"+T("refSitesTotal")+": "+pnum(s.total_population)+"</span>":"")+
+        "<br><span class='muted'>"+T("refSitesCoord")+": "+dispSrc2(s.coord_source)+"</span>"+
+        "<br><span class='muted'>"+T("refSitesCount")+": "+dispSrc2(s.count_source)+"</span>");
+      refSitesLayer.addLayer(m); });
+  }
+  function dispSrc2(src){ return src ? esc(src.name)+" ("+esc(src.date)+") — <a href='"+esc(src.url)+"' target='_blank' rel='noopener'>"+T("dispSrcLink")+"</a>" : ""; }
+  buildRefSites();
+
   // ---- Conflict fires (≤15 km of a recent clash) — distinct, foregrounded ----
   var firesConflictLayer = L.layerGroup();
   function buildFiresConflict(){ firesConflictLayer.clearLayers();
@@ -752,6 +769,7 @@
     {grp:"secHuma",    id:"idpstate", labelKey:"lyrIdpState",    on:false, lyr:idpStateLayer,     sw:"idpfill",  avail:!!(hum&&dispByState.length&&adm1geo)},
     {grp:"secHuma",    id:"displacement", labelKey:"lyrDisplacement", on:false, lyr:displacementLayer, sw:"disp", avail:!!disp},
     {grp:"secHuma",    id:"dispintl", labelKey:"lyrDispIntl", on:false, lyr:dispIntlLayer, sw:"disp", avail:!!disp},
+    {grp:"secHuma",    id:"refsites", labelKey:"lyrRefSites", on:false, lyr:refSitesLayer, sw:"refsite", avail:refSites.length>0},
     // Contexte & contrôle
     {grp:"secContexte",id:"ctrlapx", labelKey:"lyrControlApprox",on:true,  lyr:controlApproxLayer,sw:"ctrlfill", avail:!!ctrlApprox},
     {grp:"secContexte",id:"claimsaf",labelKey:"lyrClaimsSaf",    on:false, lyr:claimsSafLayer,    sw:"saf",      avail:!!(claims&&has(claims.saf))},
@@ -810,6 +828,7 @@
     else if(kind==="pipe"){ sw.style.background="transparent"; sw.style.border="2px solid #b5651d"; sw.style.height="4px"; sw.style.width="16px"; sw.style.borderRadius="1px"; }
     else if(kind==="impact"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,#f6d9b0,#8a1e0e)"; }
     else if(kind==="disp"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,"+cssv("--accent")+",#b5651d)"; }
+    else if(kind==="refsite"){ sw.style.background="#6b2e8a"; sw.style.opacity=".6"; }
   }
   function renderLayerRow(L0, container){
     var row=document.createElement("label"); row.className="row";
