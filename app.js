@@ -1050,14 +1050,20 @@
     var evSrc=(events[0]&&events[0].source)?String(events[0].source).toUpperCase():"UCDP";
     var dr=document.getElementById("daterange");
     if(dr) dr.textContent=(dateMin||"?")+" → "+(dateMax||"?")+" · "+num(events.length)+" "+T("kfClash")+" · "+T("srcLabel")+" "+evSrc;
-    // state table
+    // state table (sortable)
     var maxTot=states.reduce(function(m,s){return Math.max(m,s.events+s.civ);},1);
-    var head="<tr><th>"+T("thState")+"</th><th>"+T("thClash")+"</th><th>"+T("thCdeaths")+"</th><th>"+T("thCiv")+"</th><th>"+T("thCivD")+"</th></tr>";
-    var rows=states.map(function(s){
+    var scols=[
+      {key:"name",type:"text",label:T("thState"),val:function(r){return r.name;}},
+      {key:"ev",type:"num",label:T("thClash"),val:function(r){return r.events;}},
+      {key:"dd",type:"num",label:T("thCdeaths"),val:function(r){return r.deaths;}},
+      {key:"civ",type:"num",label:T("thCiv"),val:function(r){return r.civ;}},
+      {key:"civd",type:"num",label:T("thCivD"),val:function(r){return r.civD;}}
+    ];
+    var srender=function(s){
       var w=Math.round(60*(s.events+s.civ)/maxTot);
       return "<tr><td>"+esc(s.name)+' <span class="bar" style="width:'+w+'px"></span></td><td>'+num(s.events)+"</td><td>"+num(s.deaths)+"</td><td>"+num(s.civ)+"</td><td>"+num(s.civD)+"</td></tr>";
-    }).join("");
-    document.getElementById("stateTable").innerHTML=head+rows;
+    };
+    sortableTable(document.getElementById("stateTable"), scols, states, srender);
   }
 
   // =====================================================================
@@ -1258,24 +1264,66 @@
       '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(T("dispTimelineTitle"))+'">'+bars+'</svg>'+
       '<div class="disptl-note">'+T("dispTimelineNote")+' '+dispSrc("idp_dtm")+'</div>';
   }
+  // ---- Tableaux triables : clic sur un en-tête = tri croissant, reclic = décroissant ----
+  function drawSortable(tb){
+    var st=tb._sort, cols=tb._cols, rows=tb._rows.slice();
+    if(st.key){
+      var c=cols.filter(function(x){return x.key===st.key;})[0];
+      rows.sort(function(a,b){
+        var va=c.val(a), vb=c.val(b);
+        if(va==null&&vb==null) return 0; if(va==null) return 1; if(vb==null) return -1;
+        var r=(c.type==="text")?String(va).localeCompare(String(vb),undefined,{sensitivity:"base"}):(va-vb);
+        return r*st.dir;
+      });
+    }
+    var head="<thead><tr>"+cols.map(function(c){
+      var ar=(st.key===c.key)?(st.dir>0?" ▲":" ▼"):"";
+      return "<th><button type=\"button\" class=\"sortbtn\" data-k=\""+c.key+"\">"+esc(c.label)+ar+"</button></th>";
+    }).join("")+"</tr></thead>";
+    tb.innerHTML=head+"<tbody>"+rows.map(tb._render).join("")+"</tbody>";
+  }
+  function sortableTable(tb, cols, rows, renderRow){
+    if(!tb) return;
+    if(!tb._sort) tb._sort={key:null,dir:1};
+    tb._cols=cols; tb._rows=rows; tb._render=renderRow;
+    if(!tb._bound){ tb._bound=true;
+      tb.addEventListener("click",function(e){
+        var btn=e.target.closest&&e.target.closest(".sortbtn"); if(!btn) return;
+        var k=btn.getAttribute("data-k"), st=tb._sort;
+        if(st.key===k) st.dir=-st.dir; else { st.key=k; st.dir=1; }
+        drawSortable(tb);
+      });
+    }
+    drawSortable(tb);
+  }
+
   // ---- Pays d'accueil : tableau sous la carte (réfugiés soudanais, total accueilli, population, PIB) ----
   function fillHosts(){
     var H=window.SUDAN&&window.SUDAN.hosts; var tb=document.getElementById("hostsTable"); if(!H||!tb||!H.rows) return;
     var nd=function(){ return "<span class='muted'>n.d.</span>"; };
     var bn=function(v){ return v==null?nd():((v/1e9).toFixed(1)); };
-    var rows=H.rows.slice().sort(function(a,b){return (b.sudanese||0)-(a.sudanese||0);});
-    var head="<thead><tr><th>"+T("hostCountry")+"</th><th>"+T("hostSudanese")+"</th><th>"+T("hostTotalRef")+"</th><th>"+T("hostPctPop")+"</th><th>"+T("hostPop")+"</th><th>"+T("hostGdp")+"</th><th>"+T("hostGdpPpp")+"</th></tr></thead>";
-    var body=rows.map(function(r){
-      var pct=(r.population&&r.total_refugees)?(100*r.total_refugees/r.population).toFixed(1)+" %":nd();
-      var u=(r.src&&r.src[1])||{}; var src=u.url?"<a href='"+esc(u.url)+"' target='_blank' rel='noopener'>↗</a>":"";
-      return "<tr title='"+esc(r.sudanese_basis||"")+"'><td><b>"+esc(r.name_fr)+"</b> "+src+"</td>"+
+    var pctOf=function(r){ return (r.population&&r.total_refugees)?r.total_refugees/r.population:null; };
+    var cols=[
+      {key:"name",type:"text",label:T("hostCountry"),val:function(r){return r.name_fr;}},
+      {key:"sud",type:"num",label:T("hostSudanese"),val:function(r){return r.sudanese;}},
+      {key:"tot",type:"num",label:T("hostTotalRef"),val:function(r){return r.total_refugees;}},
+      {key:"pct",type:"num",label:T("hostPctPop"),val:pctOf},
+      {key:"pop",type:"num",label:T("hostPop"),val:function(r){return r.population;}},
+      {key:"gdp",type:"num",label:T("hostGdp"),val:function(r){return r.gdp;}},
+      {key:"ppp",type:"num",label:T("hostGdpPpp"),val:function(r){return r.gdp_ppp;}}
+    ];
+    var render=function(r){
+      var pct=pctOf(r)==null?nd():(100*pctOf(r)).toFixed(1)+" %";
+      var u=(r.src&&r.src[1])||{};
+      var link=u.url?"<a href='"+esc(u.url)+"' target='_blank' rel='noopener'>↗</a>":"";
+      return "<tr title='"+esc(r.sudanese_basis||"")+"'><td><b>"+esc(r.name_fr)+"</b> "+link+"</td>"+
         "<td>"+pnum(r.sudanese)+"<br><span class='muted'>"+esc(fdate(r.sudanese_date))+"</span></td>"+
         "<td>"+pnum(r.total_refugees)+"<br><span class='muted'>"+esc(fdate(r.total_date))+"</span></td>"+
         "<td>"+pct+"</td>"+
         "<td>"+(r.population==null?nd():pnum(r.population)+(r.year?"<br><span class='muted'>"+r.year+"</span>":""))+"</td>"+
         "<td>"+bn(r.gdp)+"</td><td>"+bn(r.gdp_ppp)+"</td></tr>";
-    }).join("");
-    tb.innerHTML=head+"<tbody>"+body+"</tbody>";
+    };
+    sortableTable(tb, cols, H.rows, render);
     var nt=document.getElementById("hostsNote"); if(nt) nt.textContent=H.note||"";
   }
   function renderAll(){ buildUI(); drawClashes(); fillStats(); fillHumHero(); fillDispTimeline(); fillHosts(); fillRefugees(); fillBackers(); buildChartToggle(); drawChart(); drawFiresChart(); fillControlSlot(); updateLegend(); }

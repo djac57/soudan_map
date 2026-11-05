@@ -382,3 +382,8 @@ footer a{color:var(--muted)}
 .leaflet-tooltip.eu-count{background:color-mix(in srgb, var(--panel) 72%, transparent); -webkit-backdrop-filter:blur(10px) saturate(1.5); backdrop-filter:blur(10px) saturate(1.5);
   border:1px solid var(--line); border-radius:6px; box-shadow:none; color:var(--ink); padding:1px 6px; font:600 11px/1.4 system-ui,sans-serif;}
 .leaflet-tooltip.eu-count::before{display:none}
+
+/* sortable table headers: look like headers, act like buttons */
+table.states th .sortbtn{background:none; border:0; padding:0; margin:0; font:inherit; color:inherit; cursor:pointer; text-align:inherit; text-transform:inherit; letter-spacing:inherit; white-space:nowrap}
+table.states th .sortbtn:hover{color:var(--accent)}
+table.states th .sortbtn:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:3px}
