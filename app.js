@@ -650,7 +650,7 @@
       var col=f.color;
       var to=[f.lat,f.lon], from=[f.olat,f.olon];
       var wgt=f.usd?(2+8*Math.sqrt(f.usd/maxUsd)):2.5;
-      var ln=L.polyline([from,to],{color:col,weight:wgt,opacity:.85});
+      var ln=L.polyline([from,to],{color:col,weight:wgt,opacity:.5});
       var pop="<b>"+esc(f.label_fr)+"</b><br>"+esc(f.amount)+"<br>"+esc(f.value)+(f.share?"<br><span class='muted'>"+esc(f.share)+"</span>":"")+
         "<br><span class='muted'>"+T("expPeriod")+": "+esc(f.period)+" · "+esc(f.status)+"</span>"+
         (f.src?"<br><span class='muted' style='font-size:10px'>"+(f.url?"<a href='"+esc(f.url)+"' target='_blank' rel='noopener'>"+esc(f.src)+"</a>":esc(f.src))+"</span>":"");
