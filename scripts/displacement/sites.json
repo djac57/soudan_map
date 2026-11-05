@@ -364,6 +364,27 @@
         "url": "https://data.unhcr.org/en/documents/details/124750",
         "date": "2026-11-02"
       }
+    },
+    {
+      "name_fr": "Aftit (site, Éthiopie)",
+      "name_en": "Aftit (site, Ethiopia)",
+      "country_fr": "Éthiopie",
+      "country_en": "Ethiopia",
+      "kind": "camp",
+      "lon": 36.3476,
+      "lat": 12.7928,
+      "coord_source": {
+        "name": "UNHCR Ethiopia — Aftit site profile (GPS coordinates), février 2026",
+        "url": "https://data.unhcr.org/en/documents/details/121459",
+        "date": "2026-02"
+      },
+      "sudanese": 6139,
+      "sudanese_basis": "ressortissants soudanais, population du site 9 022 personnes, février 2026",
+      "count_source": {
+        "name": "UNHCR Ethiopia — Aftit site profile (février 2026)",
+        "url": "https://data.unhcr.org/en/documents/details/121459",
+        "date": "2026-02"
+      }
     }
   ]
 }
