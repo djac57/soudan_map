@@ -169,7 +169,7 @@ header .spacer{flex:1}
 
 /* ---- legend (gradient layers) ---- */
 .legend{position:absolute; bottom:12px; left:12px; z-index:1000;
-  background:color-mix(in srgb, var(--panel) 72%, transparent); -webkit-backdrop-filter:blur(14px) saturate(1.6); backdrop-filter:blur(14px) saturate(1.6);
+  background:color-mix(in srgb, var(--panel) 50%, transparent); -webkit-backdrop-filter:blur(14px) saturate(1.6); backdrop-filter:blur(14px) saturate(1.6);
   border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow); padding:8px 11px;
   font-size:11px; max-width:260px; display:none;}
 /* legend: header toggles the whole box; each section collapses on its own (closed body by default) */
