@@ -649,8 +649,7 @@
       if(f.hide_arrow) return;
       var col=f.color;
       var to=[f.lat,f.lon], from=[f.olat,f.olon];
-      var w=f.usd?(1.5+7*Math.sqrt(f.usd/maxUsd)):2;
-      var ln=L.polyline([from,to],{color:col,weight:w,opacity:.8,dashArray:f.usd?null:"4 4"});
+      var ln=L.polyline([from,to],{color:col,weight:3,opacity:.85});
       var pop="<b>"+esc(f.label_fr)+"</b><br>"+esc(f.amount)+"<br>"+esc(f.value)+(f.share?"<br><span class='muted'>"+esc(f.share)+"</span>":"")+
         "<br><span class='muted'>"+T("expPeriod")+": "+esc(f.period)+" · "+esc(f.status)+"</span>"+
         (f.src?"<br><span class='muted' style='font-size:10px'>"+(f.url?"<a href='"+esc(f.url)+"' target='_blank' rel='noopener'>"+esc(f.src)+"</a>":esc(f.src))+"</span>":"");
@@ -913,7 +912,7 @@
     else if(kind==="pipe"){ sw.style.background="transparent"; sw.style.border="2px solid #b5651d"; sw.style.height="4px"; sw.style.width="16px"; sw.style.borderRadius="1px"; }
     else if(kind==="impact"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,#f6d9b0,#8a1e0e)"; }
     else if(kind==="disp"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,"+cssv("--accent")+",#b5651d)"; }
-    else if(kind==="exp"){ sw.style.background="transparent"; sw.style.border="0"; sw.style.width="24px"; sw.style.height="12px"; sw.innerHTML='<svg width="24" height="12" viewBox="0 0 24 12"><line x1="1" y1="6" x2="16" y2="6" style="stroke:#1f1f1f;stroke-width:2"/><polygon points="24,6 15,2.5 15,9.5" style="fill:#1f1f1f"/></svg>'; }
+    else if(kind==="exp"){ sw.style.background="transparent"; sw.style.border="0"; sw.style.width="22px"; sw.style.height="10px"; sw.innerHTML=expArrowSvg("#1f1f1f"); }
     else if(kind==="refsite"){ sw.style.background="#c2185b"; sw.style.opacity=".6"; }
     else if(kind==="dispInt"){ sw.style.background="transparent"; sw.style.border="0"; sw.style.height="3px"; sw.style.width="16px"; sw.style.borderRadius="1px";
       sw.style.backgroundImage="repeating-linear-gradient(90deg,"+cssv("--accent")+" 0 4px,transparent 4px 7px)"; }
@@ -1036,6 +1035,8 @@
       fb.appendChild(b);
     });
   }
+  function expArrowSvg(c){ return '<svg width="22" height="10" viewBox="0 0 22 10" style="vertical-align:middle"><line x1="1" y1="5" x2="14" y2="5" style="stroke:'+c+';stroke-width:3"/><polygon points="22,5 13,1.5 13,8.5" style="fill:'+c+'"/></svg>'; }
+  function expArrowRow(c,label){ return '<div style="margin-top:2px">'+expArrowSvg(c)+' '+label+'</div>'; }
   function updateLegend(){
     var leg=document.getElementById("legend"); var t=document.getElementById("legTitle"), body=document.getElementById("legBody");
     var sec=[];
@@ -1080,7 +1081,7 @@
     if(map.hasLayer(actLayer)){ sec.push('<div class="legtitle">'+T("legDensAct")+'</div>'+
       '<span class="pill sq" style="background:'+cssv("--c-safrsf")+';opacity:.3"></span>'+T("legLo")+' &nbsp;<span class="pill sq" style="background:'+cssv("--c-safrsf")+'"></span>'+T("legHi")); }
     if(map.hasLayer(exportsLayer)){ sec.push('<div class="legtitle">'+T("lyrExports")+'</div>'+
-      '<span class="pill" style="background:#c9a227"></span>'+T("legExpGold")+' &nbsp;<span class="pill" style="background:#2b2b2b"></span>'+T("legExpOil")+' &nbsp;<span class="pill" style="background:#7a8b2e"></span>'+T("legExpGum")+
+      expArrowRow("#c9a227",T("legExpGold"))+expArrowRow("#2b2b2b",T("legExpOil"))+expArrowRow("#7a8b2e",T("legExpGum"))+
       '<div class="muted" style="margin-top:2px">'+T("legExpNote")+'</div>'); }
     if(!sec.length){ leg.style.display="none"; return; }
     leg.style.display="block"; t.style.display="none";
