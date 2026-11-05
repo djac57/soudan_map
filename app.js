@@ -813,10 +813,10 @@
     // Humanitaire
     {grp:"secHuma",    id:"idpsites", labelKey:"lyrIdpSites",    on:false,  lyr:idpSitesLayer,     sw:"idp",      avail:!!(hum&&idpSites.length)},
     {grp:"secHuma",    id:"idpstate", labelKey:"lyrIdpState",    on:false, lyr:idpStateLayer,     sw:"idpfill",  avail:!!(hum&&dispByState.length&&adm1geo)},
-    {grp:"secHuma",    id:"displacement", labelKey:"lyrDisplacement", on:false, lyr:displacementLayer, sw:"disp", avail:!!disp},
-    {grp:"secHuma",    id:"dispintl", labelKey:"lyrDispIntl", on:false, lyr:dispIntlLayer, sw:"disp", avail:!!disp},
+    {grp:"secHuma",    id:"displacement", labelKey:"lyrDisplacement", on:false, lyr:displacementLayer, sw:"dispInt", avail:!!disp},
+    {grp:"secHuma",    id:"dispintl", labelKey:"lyrDispIntl", on:false, lyr:dispIntlLayer, sw:"dispAbroad", avail:!!disp},
     {grp:"secHuma",    id:"refsites", labelKey:"lyrRefSites", on:false, lyr:refSitesLayer, sw:"refsite", avail:refSites.length>0},
-    {grp:"secHuma",    id:"europe", labelKey:"lyrEurope", on:false, lyr:europeLayer, sw:"disp", avail:!!eu},
+    {grp:"secHuma",    id:"europe", labelKey:"lyrEurope", on:false, lyr:europeLayer, sw:"europe", avail:!!eu},
     // Contexte & contrôle
     {grp:"secContexte",id:"ctrlapx", labelKey:"lyrControlApprox",on:false,  lyr:controlApproxLayer,sw:"ctrlfill", avail:!!ctrlApprox},
     {grp:"secContexte",id:"claimsaf",labelKey:"lyrClaimsSaf",    on:false, lyr:claimsSafLayer,    sw:"saf",      avail:!!(claims&&has(claims.saf))},
@@ -860,8 +860,8 @@
     else if(kind==="osint"){ sw.style.background=cssv("--c-neutral"); }
     else if(kind==="sat"){ sw.className="sw sq"; sw.style.background="linear-gradient(135deg,#3b5a2a,#6b7f3a)"; }
     else if(kind==="nbr"){ sw.style.background="transparent"; sw.style.border="1.5px dashed "+cssv("--faint"); sw.style.height="4px"; sw.style.borderRadius="2px"; sw.style.width="16px"; }
-    else if(kind==="idpfill"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,#cde2fb,#104281)"; }
-    else if(kind==="idp"){ sw.style.background=cssv("--accent"); sw.style.opacity=".5"; }
+    else if(kind==="idpfill"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,#d3efeb,#063f4a)"; }
+    else if(kind==="idp"){ sw.className="sw"; sw.style.borderRadius="50%"; sw.style.background=cssv("--accent"); sw.style.opacity=".5"; }
     else if(kind==="arrow"){ sw.style.background="linear-gradient(90deg,"+cssv("--c-saf")+" 50%,"+cssv("--c-rsf")+" 50%)"; }
     else if(kind==="firec"){ sw.style.background="#f0461f"; }
     else if(kind==="radar"){ sw.className="sw sq"; sw.style.background="linear-gradient(135deg,#222,#aaa)"; }
@@ -876,6 +876,11 @@
     else if(kind==="impact"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,#f6d9b0,#8a1e0e)"; }
     else if(kind==="disp"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,"+cssv("--accent")+",#b5651d)"; }
     else if(kind==="refsite"){ sw.style.background="#6b2e8a"; sw.style.opacity=".6"; }
+    else if(kind==="dispInt"){ sw.style.background="transparent"; sw.style.border="0"; sw.style.height="3px"; sw.style.width="16px"; sw.style.borderRadius="1px";
+      sw.style.backgroundImage="repeating-linear-gradient(90deg,"+cssv("--accent")+" 0 4px,transparent 4px 7px)"; }
+    else if(kind==="dispAbroad"){ sw.style.background="linear-gradient(90deg,#b5651d 0 60%,#2e7d4f 60% 100%)"; sw.style.height="4px"; sw.style.width="16px"; sw.style.borderRadius="2px"; }
+    else if(kind==="europe"){ sw.style.background="transparent"; sw.style.border="0"; sw.style.height="3px"; sw.style.width="16px"; sw.style.borderRadius="1px";
+      sw.style.backgroundImage="repeating-linear-gradient(90deg,#5b2c83 0 2px,transparent 2px 5px)"; }
   }
   function renderLayerRow(L0, container){
     var row=document.createElement("label"); row.className="row";
