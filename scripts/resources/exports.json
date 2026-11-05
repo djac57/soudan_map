@@ -15,7 +15,12 @@
     "vol": 8.2,
     "usd": 860000000.0,
     "src": "Al-Monitor / Sudan Tribune (données banque centrale citées)",
-    "url": "https://www.al-monitor.com/originals/2025/03/sudans-booming-wartime-gold-trade-flows-through-uae"
+    "url": "https://www.al-monitor.com/originals/2025/03/sudans-booming-wartime-gold-trade-flows-through-uae",
+    "olat": 11.2,
+    "olon": 29.9,
+    "origin": "Zone aurifère du Kordofan (point représentatif)",
+    "color": "#c9a227",
+    "note_origin": "Point de sortie non publié : la route exacte n'est pas sourcée."
   },
   {
     "id": "gold_egy",
@@ -33,7 +38,12 @@
     "vol": 4.9,
     "usd": 517000000.0,
     "src": "Citée par la presse (données banque centrale 2025)",
-    "url": ""
+    "url": "",
+    "olat": 11.2,
+    "olon": 29.9,
+    "origin": "Zone aurifère du Kordofan (point représentatif)",
+    "color": "#c9a227",
+    "note_origin": "Point de sortie non publié : la route exacte n'est pas sourcée."
   },
   {
     "id": "gold_oman",
@@ -51,7 +61,12 @@
     "vol": 0.7,
     "usd": 77000000.0,
     "src": "Citée par la presse (données banque centrale 2025)",
-    "url": ""
+    "url": "",
+    "olat": 11.2,
+    "olon": 29.9,
+    "origin": "Zone aurifère du Kordofan (point représentatif)",
+    "color": "#c9a227",
+    "note_origin": "Point de sortie non publié : la route exacte n'est pas sourcée."
   },
   {
     "id": "oil_uae",
@@ -69,7 +84,11 @@
     "vol": null,
     "usd": null,
     "src": "S&P Global (août 2025)",
-    "url": "https://www.spglobal.com/energy/en/news-research/latest-news/crude-oil/082725-tanker-with-crude-cargo-from-sudan-idles-off-uae-as-bilateral-ties-sour"
+    "url": "https://www.spglobal.com/energy/en/news-research/latest-news/crude-oil/082725-tanker-with-crude-cargo-from-sudan-idles-off-uae-as-bilateral-ties-sour",
+    "olat": 19.62,
+    "olon": 37.22,
+    "origin": "Port-Soudan (terminal de Bashayer)",
+    "color": "#2b2b2b"
   },
   {
     "id": "oil_mys",
@@ -87,7 +106,11 @@
     "vol": null,
     "usd": null,
     "src": "Rapport énergie (presse arabe) ; Kpler",
-    "url": ""
+    "url": "",
+    "olat": 19.62,
+    "olon": 37.22,
+    "origin": "Port-Soudan (terminal de Bashayer)",
+    "color": "#2b2b2b"
   },
   {
     "id": "oil_ita",
@@ -105,7 +128,11 @@
     "vol": null,
     "usd": null,
     "src": "Kpler (presse)",
-    "url": ""
+    "url": "",
+    "olat": 19.62,
+    "olon": 37.22,
+    "origin": "Port-Soudan (terminal de Bashayer)",
+    "color": "#2b2b2b"
   },
   {
     "id": "oil_total",
@@ -124,7 +151,11 @@
     "usd": 1970000000.0,
     "src": "Kpler (presse) ; prix supposé 70 US$/baril",
     "url": "",
-    "hide_arrow": true
+    "hide_arrow": true,
+    "olat": 19.62,
+    "olon": 37.22,
+    "origin": "Port-Soudan (terminal de Bashayer)",
+    "color": "#2b2b2b"
   },
   {
     "id": "gum_fra",
@@ -142,7 +173,11 @@
     "vol": null,
     "usd": 80100000.0,
     "src": "OEC (Observatory of Economic Complexity)",
-    "url": "https://oec.world/profile/bilateral-product/gum-arabic/reporter/sdn"
+    "url": "https://oec.world/profile/bilateral-product/gum-arabic/reporter/sdn",
+    "olat": 13.18,
+    "olon": 30.22,
+    "origin": "Ceinture de gomme arabique du Kordofan (point représentatif)",
+    "color": "#7a8b2e"
   },
   {
     "id": "gum_usa",
@@ -160,7 +195,11 @@
     "vol": null,
     "usd": 37100000.0,
     "src": "OEC",
-    "url": "https://oec.world/profile/bilateral-product/gum-arabic/reporter/sdn"
+    "url": "https://oec.world/profile/bilateral-product/gum-arabic/reporter/sdn",
+    "olat": 13.18,
+    "olon": 30.22,
+    "origin": "Ceinture de gomme arabique du Kordofan (point représentatif)",
+    "color": "#7a8b2e"
   },
   {
     "id": "gum_ind",
@@ -178,7 +217,11 @@
     "vol": null,
     "usd": 12900000.0,
     "src": "OEC",
-    "url": "https://oec.world/profile/bilateral-product/gum-arabic/reporter/sdn"
+    "url": "https://oec.world/profile/bilateral-product/gum-arabic/reporter/sdn",
+    "olat": 13.18,
+    "olon": 30.22,
+    "origin": "Ceinture de gomme arabique du Kordofan (point représentatif)",
+    "color": "#7a8b2e"
   },
   {
     "id": "gum_deu",
@@ -196,7 +239,11 @@
     "vol": null,
     "usd": 12700000.0,
     "src": "OEC",
-    "url": "https://oec.world/profile/bilateral-product/gum-arabic/reporter/sdn"
+    "url": "https://oec.world/profile/bilateral-product/gum-arabic/reporter/sdn",
+    "olat": 13.18,
+    "olon": 30.22,
+    "origin": "Ceinture de gomme arabique du Kordofan (point représentatif)",
+    "color": "#7a8b2e"
   },
   {
     "id": "gum_gbr",
@@ -214,6 +261,10 @@
     "vol": null,
     "usd": 10700000.0,
     "src": "OEC",
-    "url": "https://oec.world/profile/bilateral-product/gum-arabic/reporter/sdn"
+    "url": "https://oec.world/profile/bilateral-product/gum-arabic/reporter/sdn",
+    "olat": 13.18,
+    "olon": 30.22,
+    "origin": "Ceinture de gomme arabique du Kordofan (point représentatif)",
+    "color": "#7a8b2e"
   }
 ]
