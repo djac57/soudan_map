@@ -391,9 +391,10 @@
   var idpByName={}, idpById={}, idpStateMax=1;
   dispByState.forEach(function(d){ idpStateMax=Math.max(idpStateMax,d.idp||0);
     if(d.state) idpByName[String(d.state).toLowerCase()]=d; if(d.adm1_id) idpById[d.adm1_id]=d; });
-  function idpRamp(v){ var t=Math.min(1, v>0?(Math.log(1+v)/Math.log(1+idpStateMax)):0);
-    // single-hue sequential on the accent blue
-    var lo=hex("#cde2fb"), hi=hex("#104281"); return mix2(lo,hi,t); }
+  function idpRamp(v){ var t=Math.min(1, v>0?Math.sqrt(v/idpStateMax):0);
+    // single-hue sequential in TEAL (distinct from the accent-blue locality circles); darker = more displaced
+    var lo=hex("#d3efeb"), hi=hex("#063f4a"); return mix2(lo,hi,t); }
+  function popFor(nm){ var P=window.SUDAN&&window.SUDAN.population&&window.SUDAN.population.states; if(!P||!nm) return null; return P[String(nm).toUpperCase()]||null; }
   function mix2(A,B,t){ return "rgb("+Math.round(A[0]+(B[0]-A[0])*t)+","+Math.round(A[1]+(B[1]-A[1])*t)+","+Math.round(A[2]+(B[2]-A[2])*t)+")"; }
   function dispFor(props){ var id=props.adm1_id||props.shapeISO||props.ADM1_PCODE;
     if(id && idpById[id]) return idpById[id];
@@ -403,7 +404,7 @@
     try{ L.geoJSON(adm1geo,{ style:function(f){ var d=dispFor(f.properties||{}); var v=d?d.idp:0;
         return {color:cssv("--line"), weight:.8, fill:true, fillColor:idpRamp(v), fillOpacity:v?.72:.08, opacity:.6}; },
       onEachFeature:function(f,l){ var d=dispFor(f.properties||{}); var nm=(f.properties&&(f.properties.shapeName||f.properties.name))||"?";
-        l.bindPopup("<b>"+esc(nm)+"</b><br>"+(d?pnum(d.idp)+" "+T("idpPop")+(d.returnees?" · "+pnum(d.returnees)+" "+T("idpReturnees"):"")+(d.as_of?"<br><span class='muted'>"+T("humAsOf")+" "+fdate(d.as_of)+"</span>":""):"<span class='muted'>—</span>")); }
+        l.bindPopup("<b>"+esc(nm)+"</b><br>"+(popFor(nm)?T("popStatePop")+": "+pnum(popFor(nm).population)+(d&&popFor(nm).population?" · "+(100*d.idp/popFor(nm).population).toFixed(1)+" % "+T("popDisplaced"):"")+"<br>":"")+(d?pnum(d.idp)+" "+T("idpPop")+(d.returnees?" · "+pnum(d.returnees)+" "+T("idpReturnees"):"")+(d.as_of?"<br><span class='muted'>"+T("humAsOf")+" "+fdate(d.as_of)+"</span>":""):"<span class='muted'>—</span>")); }
     }).eachLayer(function(l){idpStateLayer.addLayer(l);}); }catch(e){}
   }
   buildIdpState();
@@ -1023,6 +1024,7 @@
     var parts='<div class="humhero-ttl">'+T("humTitle")+'</div>';
     if(tt.idp!=null) parts+='<div class="humfig"><b>'+pnum(tt.idp)+'</b><span class="lab">'+T("humIdp")+'</span><span class="src">'+T("humAsOf")+' '+fdate(tt.idp_as_of)+(tt.idp_source?' · '+esc(tt.idp_source):'')+'</span></div>';
     if(tt.refugees!=null) parts+='<div class="humfig"><b>'+pnum(tt.refugees)+'</b><span class="lab">'+T("humRefugees")+'</span><span class="src">'+T("humAsOf")+' '+fdate(tt.refugees_as_of)+(tt.refugees_source?' · '+esc(tt.refugees_source):'')+'</span></div>';
+    var PN=window.SUDAN&&window.SUDAN.population&&window.SUDAN.population.national; if(PN){ parts+='<div class="humfig"><b>'+pnum(PN.value_2020_est)+'</b><span class="lab">'+T("popNational")+'</span><span class="src">'+T("popNationalSrc")+' · '+esc(PN.value_2020_source.name.split(' — ')[0])+' ; '+T("popUN")+' '+pnum(PN.value_un_2026)+'</span></div>'; }
     figs.innerHTML=parts;
     var cav=document.getElementById("humCaveat"); if(cav) cav.textContent=T("humCaveat");
     box.hidden=false;
