@@ -412,8 +412,11 @@ table.states th .sortbtn:focus-visible{outline:2px solid var(--accent); outline-
 .replay-play{min-width:30px; width:30px; height:30px; padding:0; display:inline-flex; align-items:center; justify-content:center; margin-top:0}
 .replay-play svg{display:block}
 
-/* English place names overlay: same family as the base-map labels; halo keeps them legible on any tile */
+/* English place names: same hierarchy as the base map (countries = large caps; capitals and cities = same family, capitals bold) */
 .enplace-wrap{background:none; border:0}
-.enplace{position:absolute; left:6px; top:-7px; white-space:nowrap; font-family:system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif; font-size:11px; font-weight:500; line-height:1.2; color:#3b3b3b; text-shadow:0 0 2px #fff,0 0 3px #fff,0 0 1px #fff; pointer-events:none}
+.enplace{position:absolute; left:4px; top:-8px; white-space:nowrap; font-family:"Noto Sans",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif; line-height:1.2; color:#333; text-shadow:0 0 2px #fff,0 0 3px #fff,0 0 1px #fff; pointer-events:none}
+.enplace-country{font-size:13px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#5b5b5b; left:0; top:-9px}
 .enplace-capital{font-size:12px; font-weight:700}
-:root:not([data-theme="light"]) .enplace, :root[data-theme="dark"] .enplace{color:#e6e6e6; text-shadow:0 0 2px #1b1f25,0 0 3px #1b1f25}
+.enplace-town{font-size:11px; font-weight:400}
+:root:not([data-theme="light"]) .enplace, :root[data-theme="dark"] .enplace{color:#e8e8e8; text-shadow:0 0 2px #1b1f25,0 0 3px #1b1f25,0 0 1px #1b1f25}
+:root:not([data-theme="light"]) .enplace-country, :root[data-theme="dark"] .enplace-country{color:#c4c4c4}

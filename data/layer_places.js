@@ -1,7 +1,7 @@
 /* Noms de lieux en anglais (superposition). Généré par scripts/places/build_places.py */
 (function () { "use strict"; window.SUDAN = window.SUDAN || {}; window.SUDAN.places = {
   "generated": "2026-11-06",
-  "note": "Noms anglais superposés aux noms locaux des fonds de carte (OpenStreetMap). Positions approximatives (quelques km). Sudan : toutes les villes principales ; autres pays : capitales dont le nom local n'est pas en alphabet latin.",
+  "note": "Noms anglais superposés au fond de carte. Hiérarchie : pays (dès le zoom 4), capitales (zoom 5), villes du Soudan (zoom 6). Positions approximatives (quelques km ; centres des pays approximatifs).",
   "sudan": [
     {
       "name": "Khartoum",
@@ -346,6 +346,650 @@
       "kind": "capital",
       "lat": 39.93,
       "lon": 32.86
+    }
+  ],
+  "countries": [
+    {
+      "name": "Algeria",
+      "kind": "country",
+      "lat": 28.0,
+      "lon": 2.6
+    },
+    {
+      "name": "Morocco",
+      "kind": "country",
+      "lat": 31.8,
+      "lon": -7.1
+    },
+    {
+      "name": "Tunisia",
+      "kind": "country",
+      "lat": 34.0,
+      "lon": 9.5
+    },
+    {
+      "name": "Libya",
+      "kind": "country",
+      "lat": 26.3,
+      "lon": 17.2
+    },
+    {
+      "name": "Egypt",
+      "kind": "country",
+      "lat": 26.8,
+      "lon": 30.8
+    },
+    {
+      "name": "Sudan",
+      "kind": "country",
+      "lat": 15.5,
+      "lon": 30.0
+    },
+    {
+      "name": "South Sudan",
+      "kind": "country",
+      "lat": 7.0,
+      "lon": 30.0
+    },
+    {
+      "name": "Ethiopia",
+      "kind": "country",
+      "lat": 9.1,
+      "lon": 40.5
+    },
+    {
+      "name": "Eritrea",
+      "kind": "country",
+      "lat": 15.2,
+      "lon": 39.8
+    },
+    {
+      "name": "Djibouti",
+      "kind": "country",
+      "lat": 11.8,
+      "lon": 42.6
+    },
+    {
+      "name": "Somalia",
+      "kind": "country",
+      "lat": 5.2,
+      "lon": 46.2
+    },
+    {
+      "name": "Kenya",
+      "kind": "country",
+      "lat": 0.0,
+      "lon": 37.9
+    },
+    {
+      "name": "Uganda",
+      "kind": "country",
+      "lat": 1.4,
+      "lon": 32.3
+    },
+    {
+      "name": "Tanzania",
+      "kind": "country",
+      "lat": -6.4,
+      "lon": 34.9
+    },
+    {
+      "name": "Rwanda",
+      "kind": "country",
+      "lat": -1.9,
+      "lon": 29.9
+    },
+    {
+      "name": "Burundi",
+      "kind": "country",
+      "lat": -3.4,
+      "lon": 29.9
+    },
+    {
+      "name": "DR Congo",
+      "kind": "country",
+      "lat": -2.9,
+      "lon": 23.7
+    },
+    {
+      "name": "Congo",
+      "kind": "country",
+      "lat": -0.2,
+      "lon": 15.8
+    },
+    {
+      "name": "Gabon",
+      "kind": "country",
+      "lat": -0.8,
+      "lon": 11.6
+    },
+    {
+      "name": "Equatorial Guinea",
+      "kind": "country",
+      "lat": 1.6,
+      "lon": 10.3
+    },
+    {
+      "name": "Cameroon",
+      "kind": "country",
+      "lat": 6.0,
+      "lon": 12.7
+    },
+    {
+      "name": "Central African Rep.",
+      "kind": "country",
+      "lat": 6.6,
+      "lon": 20.9
+    },
+    {
+      "name": "Chad",
+      "kind": "country",
+      "lat": 15.5,
+      "lon": 18.7
+    },
+    {
+      "name": "Niger",
+      "kind": "country",
+      "lat": 17.0,
+      "lon": 8.1
+    },
+    {
+      "name": "Nigeria",
+      "kind": "country",
+      "lat": 9.6,
+      "lon": 8.1
+    },
+    {
+      "name": "Mali",
+      "kind": "country",
+      "lat": 17.6,
+      "lon": -4.0
+    },
+    {
+      "name": "Mauritania",
+      "kind": "country",
+      "lat": 21.0,
+      "lon": -10.9
+    },
+    {
+      "name": "Senegal",
+      "kind": "country",
+      "lat": 14.5,
+      "lon": -14.5
+    },
+    {
+      "name": "Gambia",
+      "kind": "country",
+      "lat": 13.4,
+      "lon": -15.3
+    },
+    {
+      "name": "Guinea-Bissau",
+      "kind": "country",
+      "lat": 12.0,
+      "lon": -15.2
+    },
+    {
+      "name": "Guinea",
+      "kind": "country",
+      "lat": 10.9,
+      "lon": -10.9
+    },
+    {
+      "name": "Sierra Leone",
+      "kind": "country",
+      "lat": 8.8,
+      "lon": -11.8
+    },
+    {
+      "name": "Liberia",
+      "kind": "country",
+      "lat": 6.4,
+      "lon": -9.4
+    },
+    {
+      "name": "Côte d'Ivoire",
+      "kind": "country",
+      "lat": 7.5,
+      "lon": -5.5
+    },
+    {
+      "name": "Ghana",
+      "kind": "country",
+      "lat": 7.9,
+      "lon": -1.0
+    },
+    {
+      "name": "Togo",
+      "kind": "country",
+      "lat": 8.6,
+      "lon": 0.8
+    },
+    {
+      "name": "Benin",
+      "kind": "country",
+      "lat": 9.3,
+      "lon": 2.3
+    },
+    {
+      "name": "Burkina Faso",
+      "kind": "country",
+      "lat": 12.2,
+      "lon": -1.6
+    },
+    {
+      "name": "Angola",
+      "kind": "country",
+      "lat": -11.2,
+      "lon": 17.9
+    },
+    {
+      "name": "Zambia",
+      "kind": "country",
+      "lat": -13.1,
+      "lon": 27.8
+    },
+    {
+      "name": "Malawi",
+      "kind": "country",
+      "lat": -13.3,
+      "lon": 34.3
+    },
+    {
+      "name": "Mozambique",
+      "kind": "country",
+      "lat": -18.7,
+      "lon": 35.5
+    },
+    {
+      "name": "Zimbabwe",
+      "kind": "country",
+      "lat": -19.0,
+      "lon": 29.2
+    },
+    {
+      "name": "Botswana",
+      "kind": "country",
+      "lat": -22.3,
+      "lon": 24.7
+    },
+    {
+      "name": "Namibia",
+      "kind": "country",
+      "lat": -22.0,
+      "lon": 17.1
+    },
+    {
+      "name": "South Africa",
+      "kind": "country",
+      "lat": -29.0,
+      "lon": 25.1
+    },
+    {
+      "name": "Lesotho",
+      "kind": "country",
+      "lat": -29.6,
+      "lon": 28.2
+    },
+    {
+      "name": "Eswatini",
+      "kind": "country",
+      "lat": -26.5,
+      "lon": 31.5
+    },
+    {
+      "name": "Madagascar",
+      "kind": "country",
+      "lat": -18.8,
+      "lon": 46.9
+    },
+    {
+      "name": "Mauritius",
+      "kind": "country",
+      "lat": -20.3,
+      "lon": 57.6
+    },
+    {
+      "name": "Cabo Verde",
+      "kind": "country",
+      "lat": 16.0,
+      "lon": -24.0
+    },
+    {
+      "name": "Western Sahara",
+      "kind": "country",
+      "lat": 24.2,
+      "lon": -12.9
+    },
+    {
+      "name": "Turkey",
+      "kind": "country",
+      "lat": 39.0,
+      "lon": 35.2
+    },
+    {
+      "name": "Syria",
+      "kind": "country",
+      "lat": 35.0,
+      "lon": 38.5
+    },
+    {
+      "name": "Iraq",
+      "kind": "country",
+      "lat": 33.2,
+      "lon": 43.7
+    },
+    {
+      "name": "Iran",
+      "kind": "country",
+      "lat": 32.5,
+      "lon": 53.7
+    },
+    {
+      "name": "Saudi Arabia",
+      "kind": "country",
+      "lat": 24.0,
+      "lon": 45.0
+    },
+    {
+      "name": "Yemen",
+      "kind": "country",
+      "lat": 15.6,
+      "lon": 48.5
+    },
+    {
+      "name": "Oman",
+      "kind": "country",
+      "lat": 21.0,
+      "lon": 57.0
+    },
+    {
+      "name": "United Arab Emirates",
+      "kind": "country",
+      "lat": 23.8,
+      "lon": 54.0
+    },
+    {
+      "name": "Qatar",
+      "kind": "country",
+      "lat": 25.3,
+      "lon": 51.2
+    },
+    {
+      "name": "Bahrain",
+      "kind": "country",
+      "lat": 26.0,
+      "lon": 50.6
+    },
+    {
+      "name": "Kuwait",
+      "kind": "country",
+      "lat": 29.3,
+      "lon": 47.6
+    },
+    {
+      "name": "Jordan",
+      "kind": "country",
+      "lat": 31.2,
+      "lon": 36.6
+    },
+    {
+      "name": "Lebanon",
+      "kind": "country",
+      "lat": 33.9,
+      "lon": 35.9
+    },
+    {
+      "name": "Israel",
+      "kind": "country",
+      "lat": 31.0,
+      "lon": 35.0
+    },
+    {
+      "name": "Palestine",
+      "kind": "country",
+      "lat": 31.9,
+      "lon": 35.2
+    },
+    {
+      "name": "Portugal",
+      "kind": "country",
+      "lat": 39.6,
+      "lon": -8.0
+    },
+    {
+      "name": "Spain",
+      "kind": "country",
+      "lat": 40.2,
+      "lon": -3.7
+    },
+    {
+      "name": "France",
+      "kind": "country",
+      "lat": 46.6,
+      "lon": 2.5
+    },
+    {
+      "name": "Belgium",
+      "kind": "country",
+      "lat": 50.6,
+      "lon": 4.7
+    },
+    {
+      "name": "Netherlands",
+      "kind": "country",
+      "lat": 52.2,
+      "lon": 5.3
+    },
+    {
+      "name": "Luxembourg",
+      "kind": "country",
+      "lat": 49.8,
+      "lon": 6.1
+    },
+    {
+      "name": "Germany",
+      "kind": "country",
+      "lat": 51.2,
+      "lon": 10.4
+    },
+    {
+      "name": "Switzerland",
+      "kind": "country",
+      "lat": 46.8,
+      "lon": 8.2
+    },
+    {
+      "name": "Austria",
+      "kind": "country",
+      "lat": 47.6,
+      "lon": 14.1
+    },
+    {
+      "name": "Italy",
+      "kind": "country",
+      "lat": 42.8,
+      "lon": 12.6
+    },
+    {
+      "name": "Malta",
+      "kind": "country",
+      "lat": 35.9,
+      "lon": 14.4
+    },
+    {
+      "name": "Greece",
+      "kind": "country",
+      "lat": 39.1,
+      "lon": 22.0
+    },
+    {
+      "name": "Albania",
+      "kind": "country",
+      "lat": 41.1,
+      "lon": 20.0
+    },
+    {
+      "name": "North Macedonia",
+      "kind": "country",
+      "lat": 41.6,
+      "lon": 21.7
+    },
+    {
+      "name": "Serbia",
+      "kind": "country",
+      "lat": 44.0,
+      "lon": 21.0
+    },
+    {
+      "name": "Montenegro",
+      "kind": "country",
+      "lat": 42.7,
+      "lon": 19.4
+    },
+    {
+      "name": "Bosnia and Herzegovina",
+      "kind": "country",
+      "lat": 44.2,
+      "lon": 17.8
+    },
+    {
+      "name": "Croatia",
+      "kind": "country",
+      "lat": 45.1,
+      "lon": 15.2
+    },
+    {
+      "name": "Slovenia",
+      "kind": "country",
+      "lat": 46.1,
+      "lon": 14.8
+    },
+    {
+      "name": "Hungary",
+      "kind": "country",
+      "lat": 47.2,
+      "lon": 19.5
+    },
+    {
+      "name": "Romania",
+      "kind": "country",
+      "lat": 45.9,
+      "lon": 25.0
+    },
+    {
+      "name": "Bulgaria",
+      "kind": "country",
+      "lat": 42.7,
+      "lon": 25.5
+    },
+    {
+      "name": "Poland",
+      "kind": "country",
+      "lat": 52.1,
+      "lon": 19.4
+    },
+    {
+      "name": "Czechia",
+      "kind": "country",
+      "lat": 49.8,
+      "lon": 15.5
+    },
+    {
+      "name": "Slovakia",
+      "kind": "country",
+      "lat": 48.7,
+      "lon": 19.7
+    },
+    {
+      "name": "Ukraine",
+      "kind": "country",
+      "lat": 49.0,
+      "lon": 32.0
+    },
+    {
+      "name": "Belarus",
+      "kind": "country",
+      "lat": 53.7,
+      "lon": 27.9
+    },
+    {
+      "name": "Moldova",
+      "kind": "country",
+      "lat": 47.2,
+      "lon": 28.5
+    },
+    {
+      "name": "Lithuania",
+      "kind": "country",
+      "lat": 55.2,
+      "lon": 23.9
+    },
+    {
+      "name": "Latvia",
+      "kind": "country",
+      "lat": 56.9,
+      "lon": 24.6
+    },
+    {
+      "name": "Estonia",
+      "kind": "country",
+      "lat": 58.6,
+      "lon": 25.0
+    },
+    {
+      "name": "Finland",
+      "kind": "country",
+      "lat": 64.5,
+      "lon": 26.0
+    },
+    {
+      "name": "Sweden",
+      "kind": "country",
+      "lat": 62.0,
+      "lon": 15.0
+    },
+    {
+      "name": "Norway",
+      "kind": "country",
+      "lat": 61.0,
+      "lon": 9.0
+    },
+    {
+      "name": "Denmark",
+      "kind": "country",
+      "lat": 56.0,
+      "lon": 10.0
+    },
+    {
+      "name": "Iceland",
+      "kind": "country",
+      "lat": 64.9,
+      "lon": -19.0
+    },
+    {
+      "name": "United Kingdom",
+      "kind": "country",
+      "lat": 54.0,
+      "lon": -2.5
+    },
+    {
+      "name": "Ireland",
+      "kind": "country",
+      "lat": 53.4,
+      "lon": -8.2
+    },
+    {
+      "name": "Russia",
+      "kind": "country",
+      "lat": 58.0,
+      "lon": 60.0
+    },
+    {
+      "name": "Cyprus",
+      "kind": "country",
+      "lat": 35.1,
+      "lon": 33.4
     }
   ]
 }; })();

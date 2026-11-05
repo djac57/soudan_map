@@ -491,16 +491,31 @@
   function dispSrc2(src){ return src ? esc(src.name)+" ("+esc(src.date)+") — <a href='"+esc(src.url)+"' target='_blank' rel='noopener'>"+T("dispSrcLink")+"</a>" : ""; }
   buildRefSites();
 
-  // ---- Noms de lieux en anglais : superposition au fond de carte (même police, taille hiérarchisée), sous les données ----
+  // ---- Noms de lieux en anglais : superposition au fond de carte, hiérarchie d'importance selon le zoom ----
+  // pays dès le zoom 4 ; capitales (hors Soudan) dès le zoom 5 ; villes du Soudan dès le zoom 6
   if(!map.getPane("englishNames")){ map.createPane("englishNames"); map.getPane("englishNames").style.zIndex=350; map.getPane("englishNames").style.pointerEvents="none"; }
   var enPlacesLayer = L.layerGroup();
   var PL = (window.SUDAN && window.SUDAN.places) ? window.SUDAN.places : null;
-  function buildEnPlaces(){ enPlacesLayer.clearLayers(); if(!PL) return;
-    (PL.sudan||[]).concat(PL.other||[]).forEach(function(p){
-      var html='<span class="enplace enplace-'+esc(p.kind)+'">'+esc(p.name)+'</span>';
-      enPlacesLayer.addLayer(L.marker([p.lat,p.lon],{pane:"englishNames",interactive:false,keyboard:false,
-        icon:L.divIcon({className:"enplace-wrap",html:html,iconSize:[0,0]})})); });
+  var enPlaceItems = [];
+  function enMinZoom(p){ if(p.kind==="country") return 4; if(p.kind==="capital") return 5; return 6; }
+  function refreshEnPlaces(){
+    enPlacesLayer.clearLayers(); var z=map.getZoom();
+    enPlaceItems.forEach(function(it){ if(z>=it.minz) enPlacesLayer.addLayer(it.marker); });
   }
+  function buildEnPlaces(){ enPlacesLayer.clearLayers(); enPlaceItems=[]; if(!PL) return;
+    var all=(PL.countries||[]).concat(PL.sudan||[], PL.other||[]);
+    all.forEach(function(p){
+      var sudan=(PL.sudan||[]).indexOf(p)>=0;
+      var kind=p.kind==="country"?"country":(p.kind==="capital"?"capital":"town");
+      var html='<span class="enplace enplace-'+kind+'">'+esc(p.name)+'</span>';
+      var m=L.marker([p.lat,p.lon],{pane:"englishNames",interactive:false,keyboard:false,
+        icon:L.divIcon({className:"enplace-wrap",html:html,iconSize:[0,0]})});
+      enPlaceItems.push({marker:m, minz: p.kind==="country"?4:(sudan?6:(p.kind==="capital"?5:6))});
+    });
+    refreshEnPlaces();
+  }
+  map.on("zoomend", function(){ if(map.hasLayer(enPlacesLayer)) refreshEnPlaces(); });
+  map.on("layeradd", function(e){ if(e.layer===enPlacesLayer) refreshEnPlaces(); });
   buildEnPlaces();
 
   // ---- Route vers l'Europe (UNHCR Europe, sept. 2026) : faible en nombre, documenté ; enquête non représentative ----

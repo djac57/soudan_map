@@ -12,7 +12,7 @@ def main():
     if len(sys.argv) != 2:
         sys.exit("usage: build_places.py <soudan_dir>")
     rec = json.load(open(os.path.join(HERE, "places.json"), encoding="utf-8"))
-    for group in ("sudan", "other"):
+    for group in ("countries", "sudan", "other"):
         for p in rec[group]:
             for k in ("name", "kind", "lat", "lon"):
                 if p.get(k) in (None, ""):
