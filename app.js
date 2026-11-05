@@ -186,7 +186,6 @@
   //  MAP
   // =====================================================================
   var map = L.map("map",{zoomControl:true, preferCanvas:true, minZoom:4, maxZoom:12}).setView([14.5,29.8],6);
-  L.control.scale({imperial:false}).addTo(map);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     {subdomains:"abc", maxZoom:19, attribution:'&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>'})
     .addTo(map).bringToBack();
@@ -1631,6 +1630,7 @@
     var tg=document.getElementById("replayToggle");
     var on=false;
     if(tg) tg.addEventListener("click",function(){ on=!on; tg.setAttribute("aria-pressed",String(on)); if(on){ enter(); } else { leave(); } });
+    var rc=document.getElementById("replayClose"); if(rc && tg) rc.addEventListener("click",function(){ if(on) tg.click(); });
     window.__replay={frame:frame, play:play, stop:stop, enter:enter, leave:leave, isOn:function(){return on;}, setGran:function(g){gran=g;reconfig();}, setMetric:function(m){metric=m;reconfig();}, get idx(){return idx;}, get gran(){return gran;}, get periods(){return periodsArr();}}; // test hook
   }
 
