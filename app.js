@@ -408,6 +408,59 @@
   }
   buildIdpState();
 
+  // ---- Mouvements de population (couche « displacement ») : origines, flux internes,
+  //      réfugiés vers les pays voisins, retours. Flux = INDICATIFS (répartition supposée),
+  //      chiffres = bases publiées (stock / arrivées / retours) affichées dans les popups.
+  var displacementLayer = L.layerGroup();
+  var disp = (S.displacement && typeof S.displacement==="object") ? S.displacement : null;
+  function dispSrc(key){ var s=disp&&disp.sources&&disp.sources[key]; return s ? esc(s.name)+" ("+esc(s.date)+") — <a href='"+esc(s.url)+"' target='_blank' rel='noopener'>"+T("dispSrcLink")+"</a>" : ""; }
+  function dispStateCentroids(){ var out=[]; if(!adm1geo||!dispByState.length) return out;
+    try{ L.geoJSON(adm1geo).eachLayer(function(l){ var p=(l.feature&&l.feature.properties)||{}; var d=dispFor(p);
+      if(d && l.getBounds) out.push({d:d, c:l.getBounds().getCenter()}); }); }catch(e){}
+    return out; }
+  function buildDisplacement(){ displacementLayer.clearLayers(); if(!disp) return;
+    var hubs=disp.origin_hubs_idp_2023||[], nb=disp.neighbours||[], rt=disp.returns_to_sudan||null;
+    var east=hubs[0], west=hubs.filter(function(h){return h.name_en==="West Darfur";})[0]||hubs[1]||hubs[0];
+    var amber="#b5651d", green="#2e7d4f";
+    // 1) Déplacés internes : origines → États d'accueil (répartition au prorata du stock actuel)
+    var cents=dispStateCentroids().sort(function(a,b){return (b.d.idp||0)-(a.d.idp||0);}).slice(0,6);
+    var sumTop=cents.reduce(function(s,x){return s+(x.d.idp||0);},0)||1;
+    hubs.forEach(function(h){ var hc=[h.lat,h.lon];
+      cents.forEach(function(x){ var to=[x.c.lat,x.c.lng]; if(haversine(hc,to)<30) return;
+        var w=h.share*((x.d.idp||0)/sumTop);
+        var ln=L.polyline([hc,to],{color:cssv("--accent"),weight:1+10*Math.sqrt(w),opacity:.55,dashArray:"4 5"});
+        ln.bindPopup("<b>"+esc(h.name_fr)+" → "+esc(x.d.state_fr||x.d.state)+"</b><br>"+pnum(x.d.idp||0)+" "+T("idpPop")+"<br><span class='muted'>"+T("dispFlowNote")+"</span>");
+        displacementLayer.addLayer(ln);
+        displacementLayer.addLayer(arrowhead(to, bearing(hc,to), cssv("--accent"))); });
+      var hm=L.circleMarker(hc,{radius:6+18*Math.sqrt(h.share),color:cssv("--accent"),weight:1.5,fillColor:cssv("--accent"),fillOpacity:.35});
+      var tl=(disp.idp_totals_timeline||[]); var last=tl[tl.length-1];
+      hm.bindPopup("<b>"+esc(h.name_fr)+"</b><br>"+T("dispHub")+": "+Math.round(h.share*100)+" %<br><span class='muted'>"+esc(h.basis||"")+"</span>"+
+        (last?"<br><span class='muted'>"+T("dispIdpTotal")+": "+pnum(last.idp)+" ("+fdate(last.date)+")</span>":"")+
+        "<br><span class='muted'>"+dispSrc(h.source)+"</span>");
+      displacementLayer.addLayer(hm); });
+    // 2) Réfugiés : Soudan → pays voisins (origine dominante supposée : Darfour pour l'ouest)
+    var maxS=Math.max.apply(null, nb.map(function(n){return n.refugees_stock||0;}).concat([1]));
+    nb.forEach(function(n){ var c=[n.lat,n.lon]; var o=(["TCD","CAF","LBY"].indexOf(n.iso3)>=0)?west:east; var from=[o.lat,o.lon];
+      var s=(n.refugees_stock||0)/maxS;
+      var ln=L.polyline([from,c],{color:amber,weight:1.5+8*Math.sqrt(s),opacity:.6});
+      ln.bindPopup("<b>"+esc(o.name_fr)+" → "+esc(n.country_fr)+"</b><br><span class='muted'>"+T("dispOriginNote")+"</span>");
+      displacementLayer.addLayer(ln); displacementLayer.addLayer(arrowhead(c, bearing(from,c), amber));
+      var m=L.circleMarker(c,{radius:5+20*Math.sqrt(s),color:amber,weight:1,fillColor:amber,fillOpacity:.45});
+      m.bindPopup("<b>"+esc(n.country_fr)+"</b><br>"+pnum(n.refugees_stock||0)+" "+T("dispRefStock")+" <span class='muted'>("+esc(n.refugees_basis||"")+")</span>"+
+        (n.arrivals?"<br>"+pnum(n.arrivals)+" "+T("dispArrivals")+" <span class='muted'>("+esc(n.arrivals_basis||"")+")</span>":"")+
+        "<br><span class='muted'>"+dispSrc(n.source)+(n.source2?" · "+dispSrc(n.source2):"")+"</span>");
+      displacementLayer.addLayer(m); });
+    // 3) Retours vers le Soudan (DTM, flux mesurés aux points de passage)
+    if(rt && rt.entry_points) rt.entry_points.forEach(function(p){
+      var src=nb.filter(function(n){return n.iso3===p.from;})[0]; if(!src) return;
+      var a=[src.lat,src.lon], b=[p.lat,p.lon]; var share=p.from==="EGY"?rt.share_egypt:rt.share_chad;
+      var ln=L.polyline([a,b],{color:green,weight:2+6*(share||0),opacity:.75,dashArray:"2 6"});
+      ln.bindPopup("<b>"+T("dispReturns")+" → "+esc(p.name_fr)+"</b><br>"+pnum(rt.total)+" "+T("dispReturnsTotal")+" ("+esc(rt.period)+")<br>"+
+        Math.round((share||0)*100)+" % "+T("dispFromCountry")+" "+esc(src.country_fr)+"<br><span class='muted'>"+esc(rt.drivers||"")+"</span><br><span class='muted'>"+esc(p.note||"")+"</span><br><span class='muted'>"+dispSrc(rt.source)+"</span>");
+      displacementLayer.addLayer(ln); displacementLayer.addLayer(arrowhead(b, bearing(a,b), green)); });
+  }
+  buildDisplacement();
+
   // ---- Conflict fires (≤15 km of a recent clash) — distinct, foregrounded ----
   var firesConflictLayer = L.layerGroup();
   function buildFiresConflict(){ firesConflictLayer.clearLayers();
@@ -696,6 +749,7 @@
     // Humanitaire
     {grp:"secHuma",    id:"idpsites", labelKey:"lyrIdpSites",    on:false,  lyr:idpSitesLayer,     sw:"idp",      avail:!!(hum&&idpSites.length)},
     {grp:"secHuma",    id:"idpstate", labelKey:"lyrIdpState",    on:false, lyr:idpStateLayer,     sw:"idpfill",  avail:!!(hum&&dispByState.length&&adm1geo)},
+    {grp:"secHuma",    id:"displacement", labelKey:"lyrDisplacement", on:false, lyr:displacementLayer, sw:"disp", avail:!!disp},
     // Contexte & contrôle
     {grp:"secContexte",id:"ctrlapx", labelKey:"lyrControlApprox",on:true,  lyr:controlApproxLayer,sw:"ctrlfill", avail:!!ctrlApprox},
     {grp:"secContexte",id:"claimsaf",labelKey:"lyrClaimsSaf",    on:false, lyr:claimsSafLayer,    sw:"saf",      avail:!!(claims&&has(claims.saf))},
@@ -753,6 +807,7 @@
     else if(kind==="lang"){ sw.style.background=cssv("--muted"); }
     else if(kind==="pipe"){ sw.style.background="transparent"; sw.style.border="2px solid #b5651d"; sw.style.height="4px"; sw.style.width="16px"; sw.style.borderRadius="1px"; }
     else if(kind==="impact"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,#f6d9b0,#8a1e0e)"; }
+    else if(kind==="disp"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,"+cssv("--accent")+",#b5651d)"; }
   }
   function renderLayerRow(L0, container){
     var row=document.createElement("label"); row.className="row";
@@ -1102,14 +1157,30 @@
     if(adm0Lyr) adm0Lyr.setStyle({color:cssv("--muted")});
     if(adm1Lyr) adm1Lyr.setStyle({color:cssv("--line"),fillColor:cssv("--muted")});
     buildFires(); buildAct(); buildSectors(); buildControl(); buildOsint(); buildClaims(); buildControlApprox();
-    buildNeighbors(); buildIdpSites(); buildIdpState(); buildFiresConflict(); buildArrows();
+    buildNeighbors(); buildIdpSites(); buildIdpState(); buildDisplacement(); buildFiresConflict(); buildArrows();
     buildAcled(); buildWatch(); buildResources(); buildBackers(); buildEthno(); buildInfra(); buildPipelines(); buildImpacts();
     // re-add layers that were on
     LAYERS.forEach(function(L0){ if(L0.lyr && map.hasLayer(L0.lyr)){ map.removeLayer(L0.lyr); L0.lyr.addTo(map);} });
     drawClashes(); updateLegend();
     try{ if(window.__replay && window.__replay.isOn()) window.__replay.frame(window.__replay.idx); }catch(e){}
   }
-  function renderAll(){ buildUI(); drawClashes(); fillStats(); fillHumHero(); fillRefugees(); fillBackers(); buildChartToggle(); drawChart(); drawFiresChart(); fillControlSlot(); updateLegend(); }
+  function fillDispTimeline(){
+    var box=document.getElementById("dispTimeline"); if(!box) return;
+    var tl=(disp&&disp.idp_totals_timeline)||[];
+    if(!tl.length){ box.innerHTML=""; return; }
+    var W=640, H=170, pad={l:8,r:8,t:22,b:58}, bw=(W-pad.l-pad.r)/tl.length, mx=Math.max.apply(null, tl.map(function(p){return p.idp||0;}))||1;
+    var bars="";
+    tl.forEach(function(p,i){ var h=(H-pad.t-pad.b)*((p.idp||0)/mx), x=pad.l+i*bw+bw*0.18, w=bw*0.64, y=H-pad.b-h;
+      bars+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="3" fill="'+cssv("--accent")+'" opacity=".75"/>'+
+        '<text x="'+(x+w/2).toFixed(1)+'" y="'+(y-5).toFixed(1)+'" text-anchor="middle" font-size="12" font-weight="600" fill="'+cssv("--ink")+'">'+esc((p.idp/1e6).toFixed(2).replace(".",(window.SDN_LANG==="ar"?"٫":","))+" M")+'</text>'+
+        '<text x="'+(x+w/2).toFixed(1)+'" y="'+(H-pad.b+16)+'" text-anchor="middle" font-size="11" fill="'+cssv("--muted")+'">'+esc(fdate(p.date))+'</text>'+
+        '<text x="'+(x+w/2).toFixed(1)+'" y="'+(H-pad.b+31)+'" text-anchor="middle" font-size="10" fill="'+cssv("--muted")+'">'+esc(p.label_fr||"")+'</text>';
+    });
+    box.innerHTML='<div class="disptl-ttl">'+T("dispTimelineTitle")+'</div>'+
+      '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(T("dispTimelineTitle"))+'">'+bars+'</svg>'+
+      '<div class="disptl-note">'+T("dispTimelineNote")+' '+dispSrc("idp_dtm")+'</div>';
+  }
+  function renderAll(){ buildUI(); drawClashes(); fillStats(); fillHumHero(); fillDispTimeline(); fillRefugees(); fillBackers(); buildChartToggle(); drawChart(); drawFiresChart(); fillControlSlot(); updateLegend(); }
 
   // =====================================================================
   //  REPLAY — animated backfill of the war (feature-detected; hidden if absent)
