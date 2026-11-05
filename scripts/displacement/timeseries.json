@@ -240,5 +240,29 @@
         "displaced_before_2023_04_15": 2388531
       }
     ]
+  },
+  "since_war_series": {
+    "note": "Personnes déplacées depuis le 15 avril 2023 (IOM DTM : « recently displaced since 15 April 2023 »). Mesure cohérente entre 2023 et 2025 ; ne pas la confondre avec le total IDP (qui inclut les déplacés avant avril 2023).",
+    "points": [
+      {
+        "published": "2023-07-18",
+        "value": 2613036,
+        "source": "https://reliefweb.int/report/sudan/iom-displacement-tracking-matrix-sudan-situation-report-13-18-july-2023",
+        "report": "DTM Situation Report 13"
+      },
+      {
+        "published": "2023-10-03",
+        "value": 4425083,
+        "source": "https://reliefweb.int/report/sudan/iom-displacement-tracking-matrix-sudan-weekly-displacement-snapshot-05-3-october-2023",
+        "report": "DTM Weekly Displacement Snapshot 05"
+      },
+      {
+        "published": "2024-04-02",
+        "value": 6622565,
+        "source": "https://reliefweb.int/report/sudan/iom-displacement-tracking-matrix-sudan-weekly-displacement-snapshot-25-2-april-2024",
+        "report": "DTM Weekly Displacement Snapshot 25"
+      }
+    ],
+    "gap_note": "Entre avril et août 2024 : valeurs « depuis le 15 avril 2023 » des Mobility Updates (voir idp_mobility_rounds)."
   }
 }
