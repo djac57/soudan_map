@@ -616,6 +616,54 @@
       },
       "sites_count": null,
       "sites_note": "Estimation : total national moins les sites localisés."
+    },
+    {
+      "name_fr": "Kenya — total national (localisation non trouvée)",
+      "name_en": "Kenya — national total (location not found)",
+      "country_fr": "Kenya",
+      "country_en": "Kenya",
+      "kind": "national",
+      "location_found": false,
+      "lon": 37.9062,
+      "lat": 0.0236,
+      "coord_source": {
+        "name": "Centre approximatif du pays (référence géographique standard)",
+        "url": "https://www.openstreetmap.org/",
+        "date": "2026-11-05"
+      },
+      "sudanese": 13841,
+      "sudanese_basis": "réfugiés (7 680) et demandeurs d'asile (6 161) soudanais, 30 sept. 2026",
+      "count_source": {
+        "name": "UNHCR Kenya — country page (refugees and asylum-seekers by origin)",
+        "url": "https://data.unhcr.org/en/country/ken",
+        "date": "2026-09-30"
+      },
+      "sites_count": null,
+      "sites_note": "Camps non localisés dans les sources consultées."
+    },
+    {
+      "name_fr": "Jordanie — total national (localisation non trouvée)",
+      "name_en": "Jordan — national total (location not found)",
+      "country_fr": "Jordanie",
+      "country_en": "Jordan",
+      "kind": "national",
+      "location_found": false,
+      "lon": 36.9416,
+      "lat": 31.1667,
+      "coord_source": {
+        "name": "Centre approximatif du pays (référence géographique standard)",
+        "url": "https://www.openstreetmap.org/",
+        "date": "2026-11-05"
+      },
+      "sudanese": 4155,
+      "sudanese_basis": "réfugiés soudanais, 31 oct. 2026",
+      "count_source": {
+        "name": "UNHCR Jordan — country page",
+        "url": "https://data.unhcr.org/en/country/jor",
+        "date": "2026-10-31"
+      },
+      "sites_count": null,
+      "sites_note": "Environ 80 % vivent hors camp ; camps non localisés."
     }
   ]
 }
