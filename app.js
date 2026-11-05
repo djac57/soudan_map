@@ -942,7 +942,20 @@
     if(L0.on){ if(L0.lyr) L0.lyr.addTo(map); } else { if(L0.lyr) map.removeLayer(L0.lyr); }
   }
   var GROUP_ORDER=["secConflit","secHuma","secContexte","secGeo","secSociete","secSat","secOsintGrp"];
+  // tick / untick every layer checkbox inside a container (fires the same change handler as a click)
+  function setLayerTicks(root, on){
+    root.querySelectorAll('input[type=checkbox]').forEach(function(c){
+      if(c.checked!==on){ c.checked=on; c.dispatchEvent(new Event("change")); }
+    });
+  }
+  function bindAllTicks(){
+    var a=document.getElementById("allOn"), b=document.getElementById("allOff");
+    if(!a||!b||a._bound) return; a._bound=true;
+    a.addEventListener("click",function(){ setLayerTicks(document.getElementById("layerGrp"), true); });
+    b.addEventListener("click",function(){ setLayerTicks(document.getElementById("layerGrp"), false); });
+  }
   function buildUI(){
+    bindAllTicks();
     // layers — collapsible sections (open: Conflit/Humanitaire/Contexte; collapsed: the rest)
     var lg=document.getElementById("layerGrp"); lg.innerHTML="";
     GROUP_ORDER.forEach(function(gk,gi){
@@ -951,6 +964,12 @@
       var det=document.createElement("details"); det.className="lgroup";
       var sum=document.createElement("summary"); sum.textContent=T(gk); det.appendChild(sum);
       var box=document.createElement("div"); box.className="lgbox"; det.appendChild(box);
+      // per-group select / deselect (acts on this group's layer ticks only)
+      var gb=document.createElement("div"); gb.className="grpbtns";
+      gb.innerHTML='<button class="linkbtn" type="button">'+T("grpOn")+'</button><button class="linkbtn" type="button">'+T("grpOff")+'</button>';
+      gb.children[0].addEventListener("click",function(){ setLayerTicks(box,true); });
+      gb.children[1].addEventListener("click",function(){ setLayerTicks(box,false); });
+      box.appendChild(gb);
       items.forEach(function(L0){ renderLayerRow(L0, box); });
       lg.appendChild(det);
     });

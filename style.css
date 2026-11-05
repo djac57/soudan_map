@@ -395,3 +395,9 @@ table.states th .sortbtn:focus-visible{outline:2px solid var(--accent); outline-
 .ctl details.ctlsec>summary::before{content:"▸ "; color:var(--faint)}
 .ctl details.ctlsec[open]>summary::before{content:"▾ "}
 .ctl details.ctlsec>.grp{border-bottom:none}
+
+/* select / deselect all (panel and per group) */
+.linkbtn{background:none; border:0; padding:2px 0; font:inherit; font-size:11px; color:var(--accent); cursor:pointer; text-decoration:underline; text-underline-offset:2px}
+.linkbtn:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:3px}
+.ctl .ctl-all{display:flex; gap:14px; padding:6px 12px 2px; border-bottom:1px solid var(--line)}
+.ctl .grpbtns{display:flex; gap:14px; padding:2px 0 6px}
