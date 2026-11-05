@@ -1506,6 +1506,12 @@
     all.sort(function(x,y){ return x.published<y.published?-1:1; });
     var rounds=all.filter(function(r){ return r.published<=d; });
     if(rounds.length){ var r=rounds[rounds.length-1]; out.idp=r.idp; out.idpDate=r.published; out.idpRound=r.round; out.idpPre=r.pre; out.idpSince=r.since; }
+    // « depuis le 15 avril 2023 » : série cohérente 2023–2025 (utilisée avant le premier total)
+    var sPts=(((TS.since_war_series||{}).points)||[]).map(function(p){ return {published:p.published, value:p.value, source:p.source}; })
+      .concat((((TS.idp_mobility_rounds||{}).rounds)||[]).filter(function(r){return r.displaced_since_2023_04_15!=null;}).map(function(r){ return {published:r.published, value:r.displaced_since_2023_04_15, source:r.source}; }));
+    sPts.sort(function(x,y){ return x.published<y.published?-1:1; });
+    var sp=sPts.filter(function(p){ return p.published<=d; });
+    if(sp.length){ var last=sp[sp.length-1]; out.sinceVal=last.value; out.sinceDate=last.published; out.sinceSrc=last.source; }
     // stock annuel : fin de l'année précédente tant que l'année n'est pas close (dernier relevé connu)
     var y=parseInt(P.slice(0,4),10), mo=parseInt(P.slice(5,7),10)||12;
     var sy = (mo===12) ? y : y-1;
@@ -1523,7 +1529,7 @@
     var info=dispAtPeriod(P); var rd=document.getElementById("replayDispRead");
     if(rd){ rd.innerHTML = info ? (
         (info.idp!=null ? "<b>"+num(info.idp)+"</b> "+T("rpIdp")+" <span class='muted'>("+T("rpRound")+" "+info.idpRound+", "+fdate(info.idpDate)+(info.idpSince!=null?"; "+T("tlSince")+" "+num(info.idpSince)+", "+T("tlPre")+" ≈ "+num(info.idpPre):"")+")</span>"
-                        : "<span class='muted'>"+T("rpIdp")+": "+T("rpNoData")+"</span>")+
+                        : (info.sinceVal!=null ? "<b>"+num(info.sinceVal)+"</b> "+T("rpSince")+" <span class='muted'>("+fdate(info.sinceDate)+")</span>" : "<span class='muted'>"+T("rpIdp")+": "+T("rpNoData")+"</span>"))+
         " · "+(info.refYear ? "<b>"+num(info.refTotal)+"</b> "+T("rpRef")+" <span class='muted'>("+T("rpStockEnd")+" "+info.refYear+")</span>"
                             : "<span class='muted'>"+T("rpRef")+": "+T("rpNoData")+"</span>")) : ""; }
     if(!info || !info.refBy.length || !disp || !disp.neighbours) return;
