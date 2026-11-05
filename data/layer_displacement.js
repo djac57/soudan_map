@@ -46,6 +46,11 @@
       "name": "UNHCR Regional Bureau for Europe — Sudanese Movement to Europe: Profiles, Routes and Challenges Along the Way (sept. 2026)",
       "url": "https://www.unhcr.org/",
       "date": "2026-09"
+    },
+    "eurostat_asy": {
+      "name": "Eurostat — migr_asyappctza, demandeurs d'asile par citoyenneté (Soudan), 2025 (tous demandeurs)",
+      "url": "https://ec.europa.eu/eurostat/databrowser/view/migr_asyappctza/default/table",
+      "date": "2026-11-05"
     }
   },
   "origin_hubs_idp_2023": [
@@ -314,7 +319,180 @@
         "lon": 10.0,
         "lat": 50.0
       }
-    }
+    },
+    "eu_total_applications_2025": 17375,
+    "eu_total_source": "eurostat_asy",
+    "by_country_2025": [
+      {
+        "country_fr": "Grèce",
+        "country_en": "Greece",
+        "lon": 23.7275,
+        "lat": 37.9838,
+        "applications": 8180
+      },
+      {
+        "country_fr": "France",
+        "country_en": "France",
+        "lon": 2.3522,
+        "lat": 48.8566,
+        "applications": 6140
+      },
+      {
+        "country_fr": "Pays-Bas",
+        "country_en": "Netherlands",
+        "lon": 4.9041,
+        "lat": 52.3676,
+        "applications": 805
+      },
+      {
+        "country_fr": "Allemagne",
+        "country_en": "Germany",
+        "lon": 13.405,
+        "lat": 52.52,
+        "applications": 780
+      },
+      {
+        "country_fr": "Belgique",
+        "country_en": "Belgium",
+        "lon": 4.3517,
+        "lat": 50.8503,
+        "applications": 110
+      },
+      {
+        "country_fr": "Chypre",
+        "country_en": "Cyprus",
+        "lon": 33.3823,
+        "lat": 35.1856,
+        "applications": 240
+      },
+      {
+        "country_fr": "Irlande",
+        "country_en": "Ireland",
+        "lon": -6.2603,
+        "lat": 53.3498,
+        "applications": 200
+      },
+      {
+        "country_fr": "Italie",
+        "country_en": "Italy",
+        "lon": 12.4964,
+        "lat": 41.9028,
+        "applications": 200
+      },
+      {
+        "country_fr": "Espagne",
+        "country_en": "Spain",
+        "lon": -3.7038,
+        "lat": 40.4168,
+        "applications": 170
+      },
+      {
+        "country_fr": "Suisse",
+        "country_en": "Switzerland",
+        "lon": 7.4474,
+        "lat": 46.948,
+        "applications": 150
+      },
+      {
+        "country_fr": "Suède",
+        "country_en": "Sweden",
+        "lon": 18.0686,
+        "lat": 59.3293,
+        "applications": 100
+      },
+      {
+        "country_fr": "Norvège",
+        "country_en": "Norway",
+        "lon": 10.7522,
+        "lat": 59.9139,
+        "applications": 50
+      },
+      {
+        "country_fr": "Danemark",
+        "country_en": "Denmark",
+        "lon": 12.5683,
+        "lat": 55.6761,
+        "applications": 15
+      },
+      {
+        "country_fr": "Finlande",
+        "country_en": "Finland",
+        "lon": 24.9384,
+        "lat": 60.1699,
+        "applications": 5
+      },
+      {
+        "country_fr": "Autriche",
+        "country_en": "Austria",
+        "lon": 16.3738,
+        "lat": 48.2082,
+        "applications": 60
+      },
+      {
+        "country_fr": "Luxembourg",
+        "country_en": "Luxembourg",
+        "lon": 6.1296,
+        "lat": 49.6116,
+        "applications": 50
+      },
+      {
+        "country_fr": "Malte",
+        "country_en": "Malta",
+        "lon": 14.5146,
+        "lat": 35.8989,
+        "applications": 35
+      },
+      {
+        "country_fr": "Lettonie",
+        "country_en": "Latvia",
+        "lon": 24.1052,
+        "lat": 56.9496,
+        "applications": 80
+      },
+      {
+        "country_fr": "Pologne",
+        "country_en": "Poland",
+        "lon": 21.0122,
+        "lat": 52.2297,
+        "applications": 95
+      },
+      {
+        "country_fr": "Roumanie",
+        "country_en": "Romania",
+        "lon": 26.1025,
+        "lat": 44.4268,
+        "applications": 85
+      },
+      {
+        "country_fr": "Portugal",
+        "country_en": "Portugal",
+        "lon": -9.1393,
+        "lat": 38.7223,
+        "applications": 10
+      },
+      {
+        "country_fr": "Slovénie",
+        "country_en": "Slovenia",
+        "lon": 14.5058,
+        "lat": 46.0569,
+        "applications": 5
+      },
+      {
+        "country_fr": "Bulgarie",
+        "country_en": "Bulgaria",
+        "lon": 23.3219,
+        "lat": 42.6977,
+        "applications": 5
+      },
+      {
+        "country_fr": "Croatie",
+        "country_en": "Croatia",
+        "lon": 15.9819,
+        "lat": 45.815,
+        "applications": 5
+      }
+    ],
+    "by_country_note": "Demandes d'asile (tous demandeurs) par citoyenneté soudanaise, 2025 — capitales comme point approximatif du pays."
   }
 };
 })();

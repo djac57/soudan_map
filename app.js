@@ -507,7 +507,21 @@
       m.bindPopup(pop); europeLayer.addLayer(m); }
     dot('greece',eu.greece_arrivals_2025,"<b>"+esc(P.greece.name_fr)+"</b><br>"+pnum(eu.greece_arrivals_2025)+" "+T("euGreeceArr")+src);
     dot('libya',eu.arrivals_mediterranean_by_year["2025"],"<b>"+esc(P.libya.name_fr)+"</b><br>"+pnum(eu.arrivals_mediterranean_by_year["2025"])+" "+T("euMedTotal")+"<br>"+pct(eu.libya_departure_share_2025)+" "+T("euLibyaDep")+src);
-    dot('europe',eu.asylum_first_time_by_year["2025"],"<b>"+esc(P.europe.name_fr)+"</b><br>"+pnum(eu.asylum_first_time_by_year["2025"])+" "+T("euAsylum")+"<br><span class='muted'>"+T("euNotFound")+"</span>"+src);
+    // European total: one circle; click it to spread the total to the host countries (lines + smaller circles)
+    var EUN=eu.eu_total_applications_2025||0, EUC=eu.by_country_2025||[];
+    var spread=L.layerGroup(); var ec=[P.europe.lat,P.europe.lon];
+    var emax=Math.max.apply(null, EUC.map(function(c){return c.applications||0;}).concat([1]));
+    EUC.forEach(function(c){ if(!c.applications) return; var cc=[c.lat,c.lon];
+      var ln=L.polyline([ec,cc],{color:col,weight:1+4*(c.applications/emax),opacity:.55});
+      ln.bindPopup("<b>"+esc(c.country_fr)+"</b><br>"+pnum(c.applications)+" "+T("euCountryApps")+src);
+      var m=L.circleMarker(cc,{radius:4+14*Math.sqrt(c.applications/emax),color:col,weight:1,fillColor:col,fillOpacity:.45});
+      m.bindTooltip(pnum(c.applications),{permanent:true,direction:"top",className:"eu-count"});
+      m.bindPopup("<b>"+esc(c.country_fr)+"</b><br>"+pnum(c.applications)+" "+T("euCountryApps")+src);
+      spread.addLayer(ln); spread.addLayer(m); });
+    var tot=L.circleMarker(ec,{radius:8+20*Math.sqrt(EUN/17375),color:col,weight:1.5,fillColor:col,fillOpacity:.4});
+    tot.bindPopup("<b>"+esc(P.europe.name_fr)+"</b><br>"+pnum(EUN)+" "+T("euAsylumEU")+"<br><span class='muted'>"+T("euSpreadHint")+"</span>"+src);
+    tot.on("click", function(){ if(europeLayer.hasLayer(spread)) europeLayer.removeLayer(spread); else europeLayer.addLayer(spread); });
+    europeLayer.addLayer(tot);
   }
   buildEurope();
 
