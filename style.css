@@ -87,7 +87,7 @@ header .spacer{flex:1}
 
 /* ---- map shell ---- */
 .app{display:flex; flex-direction:column; min-height:100dvh; max-width:100%; overflow-x:hidden;}
-.main{position:relative; height:86vh; min-height:560px; overflow:hidden; width:100%;}
+.main{position:relative; height:86vh; min-height:560px; overflow:hidden; width:calc(100% - 32px); margin:0 16px; border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow);}
 #map{position:absolute; inset:0; background:var(--panel-2);}
 .leaflet-container{background:var(--panel-2); font-family:inherit;}
 :root[data-theme="dark"] .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.9);}
