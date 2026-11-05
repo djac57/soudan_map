@@ -649,7 +649,8 @@
       if(f.hide_arrow) return;
       var col=f.color;
       var to=[f.lat,f.lon], from=[f.olat,f.olon];
-      var ln=L.polyline([from,to],{color:col,weight:3,opacity:.85});
+      var wgt=f.usd?(2+8*Math.sqrt(f.usd/maxUsd)):2.5;
+      var ln=L.polyline([from,to],{color:col,weight:wgt,opacity:.85});
       var pop="<b>"+esc(f.label_fr)+"</b><br>"+esc(f.amount)+"<br>"+esc(f.value)+(f.share?"<br><span class='muted'>"+esc(f.share)+"</span>":"")+
         "<br><span class='muted'>"+T("expPeriod")+": "+esc(f.period)+" · "+esc(f.status)+"</span>"+
         (f.src?"<br><span class='muted' style='font-size:10px'>"+(f.url?"<a href='"+esc(f.url)+"' target='_blank' rel='noopener'>"+esc(f.src)+"</a>":esc(f.src))+"</span>":"");
@@ -1081,8 +1082,8 @@
     if(map.hasLayer(actLayer)){ sec.push('<div class="legtitle">'+T("legDensAct")+'</div>'+
       '<span class="pill sq" style="background:'+cssv("--c-safrsf")+';opacity:.3"></span>'+T("legLo")+' &nbsp;<span class="pill sq" style="background:'+cssv("--c-safrsf")+'"></span>'+T("legHi")); }
     if(map.hasLayer(exportsLayer)){ sec.push('<div class="legtitle">'+T("lyrExports")+'</div>'+
-      expArrowRow("#c9a227",T("legExpGold"))+expArrowRow("#2b2b2b",T("legExpOil"))+expArrowRow("#7a8b2e",T("legExpGum"))+
-      '<div class="muted" style="margin-top:2px">'+T("legExpNote")+'</div>'); }
+      expArrowRow("#2b2b2b",T("legExpOil"))+expArrowRow("#c9a227",T("legExpGold"))+expArrowRow("#7a8b2e",T("legExpGum"))+
+      '<div class="muted" style="margin-top:2px">'+T("legExpNote")+' '+T("legExpWidth")+'</div>'); }
     if(!sec.length){ leg.style.display="none"; return; }
     leg.style.display="block"; t.style.display="none";
     // each legend section becomes its own collapsible block (title = summary)
