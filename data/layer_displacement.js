@@ -702,6 +702,47 @@
           ]
         }
       }
+    },
+    "idp_mobility_rounds": {
+      "note": "Mobility Updates DTM (2024–2025), même indicateur (IDP total estimé en Sudan, y compris déplacés avant avril 2023). Le numéro de rapport change : Mobility Update puis Displacement and Return Snapshot (2026). Ne pas additionner ; chaque valeur est un stock à la date indiquée.",
+      "rounds": [
+        {
+          "round": "Mobility Update 2",
+          "published": "2024-06-11",
+          "idp": 10095054,
+          "source": "https://reliefweb.int/report/sudan/iom-sudan-displacement-tracking-matrix-dtm-sudan-mobility-update-2-publication-date-11-june-2024",
+          "verified": true
+        },
+        {
+          "round": "Mobility Update 6",
+          "published": "2024-08-20",
+          "idp": 10763116,
+          "source": "https://reliefweb.int/report/sudan/iom-sudan-displacement-tracking-matrix-dtm-sudan-mobility-update-6-publication-date-20-august-2024",
+          "verified": true
+        },
+        {
+          "round": "Mobility Update 15",
+          "published": "2025-02-05",
+          "idp": 11585384,
+          "source": "https://reliefweb.int/report/sudan/iom-sudan-displacement-tracking-matrix-dtm-sudan-mobility-update-15-publication-date-5-february-2025",
+          "verified": true
+        },
+        {
+          "round": "Mobility Update 16",
+          "published": "2025-03-23",
+          "idp": 11301340,
+          "source": "https://reliefweb.int/report/sudan/iom-sudan-displacement-tracking-matrix-dtm-sudan-mobility-update-16-publication-date-23-march-2025",
+          "verified": true
+        },
+        {
+          "round": "Mobility Update 20",
+          "published": "2025-07-29",
+          "idp": 9937444,
+          "source": "https://eastleighvoice.co.ke/darfur/201272/nearly-1-65-million-idps-return-home-as-sudan-displacement-numbers-fall",
+          "verified": false,
+          "note": "Chiffre relayé par un média (Eastleigh Voice) ; page IOM non vérifiée. Date = données au 29 juillet 2025."
+        }
+      ]
     }
   }
 };
