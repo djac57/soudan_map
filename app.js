@@ -806,7 +806,7 @@
     {grp:"secConflit", id:"acled",   labelKey:"lyrAcled",        on:false,  lyr:acledLayer,        sw:"acled",    avail:!!(acled&&adm1geo)},
     {grp:"secConflit", id:"clash",   labelKey:"lyrClash",        on:false, lyr:clashLayer,        sw:"dot",      count:"clashCnt", avail:events.length>0},
     {grp:"secConflit", id:"watch",   labelKey:"lyrWatch",        on:false,  lyr:watchLayer,        sw:"watch",    avail:!!analysis},
-    {grp:"secConflit", id:"arrows",  labelKey:"lyrArrows",       on:true,  lyr:arrowsLayer,       sw:"arrow",    avail:!!claims},
+    {grp:"secConflit", id:"arrows",  labelKey:"lyrArrows",       on:false,  lyr:arrowsLayer,       sw:"arrow",    avail:!!claims},
     {grp:"secConflit", id:"firesC",  labelKey:"lyrFiresConflict",on:false, lyr:firesConflictLayer,sw:"firec",    avail:firesConflict.length>0},
     {grp:"secConflit", id:"firms",   labelKey:"lyrFiresDensity", on:false, lyr:firesLayer,        sw:"fire",     avail:fires.length>0},
     {grp:"secConflit", id:"act",     labelKey:"lyrAct",          on:false, lyr:actLayer,          sw:"sq",       avail:activity.length>0},
@@ -818,11 +818,11 @@
     {grp:"secHuma",    id:"refsites", labelKey:"lyrRefSites", on:false, lyr:refSitesLayer, sw:"refsite", avail:refSites.length>0},
     {grp:"secHuma",    id:"europe", labelKey:"lyrEurope", on:false, lyr:europeLayer, sw:"disp", avail:!!eu},
     // Contexte & contrôle
-    {grp:"secContexte",id:"ctrlapx", labelKey:"lyrControlApprox",on:true,  lyr:controlApproxLayer,sw:"ctrlfill", avail:!!ctrlApprox},
+    {grp:"secContexte",id:"ctrlapx", labelKey:"lyrControlApprox",on:false,  lyr:controlApproxLayer,sw:"ctrlfill", avail:!!ctrlApprox},
     {grp:"secContexte",id:"claimsaf",labelKey:"lyrClaimsSaf",    on:false, lyr:claimsSafLayer,    sw:"saf",      avail:!!(claims&&has(claims.saf))},
     {grp:"secContexte",id:"claimrsf",labelKey:"lyrClaimsRsf",    on:false, lyr:claimsRsfLayer,    sw:"rsf",      avail:!!(claims&&has(claims.rsf))},
-    {grp:"secContexte",id:"adm",     labelKey:"lyrAdm",          on:true,  lyr:admGroup,          sw:"line",     avail:!!(adm0geo||adm1geo)},
-    {grp:"secContexte",id:"neighbors",labelKey:"lyrNeighbors",   on:true,  lyr:neighborsLayer,    sw:"nbr",      avail:true},
+    {grp:"secContexte",id:"adm",     labelKey:"lyrAdm",          on:false,  lyr:admGroup,          sw:"line",     avail:!!(adm0geo||adm1geo)},
+    {grp:"secContexte",id:"neighbors",labelKey:"lyrNeighbors",   on:false,  lyr:neighborsLayer,    sw:"nbr",      avail:true},
     // Géographie
     {grp:"secGeo",     id:"relief",  labelKey:"lyrRelief",       on:false, lyr:reliefLayer,       sw:"relief",   avail:!!reliefLayer},
     {grp:"secGeo",     id:"infra",   labelKey:"lyrInfra",        on:false, lyr:infraLayer,        sw:"infra",    avail:!!geo},
