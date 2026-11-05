@@ -934,7 +934,7 @@
     GROUP_ORDER.forEach(function(gk,gi){
       var items=LAYERS.filter(function(L0){return L0.grp===gk && L0.avail;});
       if(!items.length) return;
-      var det=document.createElement("details"); det.className="lgroup"; if(gi<3) det.open=true;
+      var det=document.createElement("details"); det.className="lgroup";
       var sum=document.createElement("summary"); sum.textContent=T(gk); det.appendChild(sum);
       var box=document.createElement("div"); box.className="lgbox"; det.appendChild(box);
       items.forEach(function(L0){ renderLayerRow(L0, box); });
