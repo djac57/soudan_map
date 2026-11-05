@@ -470,7 +470,7 @@
     var maxN=Math.max.apply(null, refSites.map(function(s){return s.sudanese||0;}).concat([1]));
     refSites.forEach(function(s){ var r=5+16*Math.sqrt((s.sudanese||0)/maxN);
       var nf=(s.location_found===false);
-      var m=L.circleMarker([s.lat,s.lon],{radius:r,color:"#6b2e8a",weight:1.2,fillColor:"#6b2e8a",fillOpacity:nf?.22:.45,dashArray:nf?"3 3":null});
+      var m=L.circleMarker([s.lat,s.lon],{radius:r,color:"#c2185b",weight:1.2,fillColor:"#c2185b",fillOpacity:nf?.22:.45,dashArray:nf?"3 3":null});
       m.bindPopup("<b>"+esc(s.name_fr)+"</b> — "+esc(s.country_fr)+"<br>"+pnum(s.sudanese||0)+" "+T("refSitesSudanese")+
         " <span class='muted'>("+esc(s.sudanese_basis||"")+")</span>"+
         (nf?"<br><span class='muted'>"+T("refSitesNotFound")+"</span>":"")+
@@ -875,10 +875,10 @@
     else if(kind==="pipe"){ sw.style.background="transparent"; sw.style.border="2px solid #b5651d"; sw.style.height="4px"; sw.style.width="16px"; sw.style.borderRadius="1px"; }
     else if(kind==="impact"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,#f6d9b0,#8a1e0e)"; }
     else if(kind==="disp"){ sw.className="sw sq"; sw.style.background="linear-gradient(90deg,"+cssv("--accent")+",#b5651d)"; }
-    else if(kind==="refsite"){ sw.style.background="#6b2e8a"; sw.style.opacity=".6"; }
+    else if(kind==="refsite"){ sw.style.background="#c2185b"; sw.style.opacity=".6"; }
     else if(kind==="dispInt"){ sw.style.background="transparent"; sw.style.border="0"; sw.style.height="3px"; sw.style.width="16px"; sw.style.borderRadius="1px";
       sw.style.backgroundImage="repeating-linear-gradient(90deg,"+cssv("--accent")+" 0 4px,transparent 4px 7px)"; }
-    else if(kind==="dispAbroad"){ sw.style.background="linear-gradient(90deg,#b5651d 0 60%,#2e7d4f 60% 100%)"; sw.style.height="4px"; sw.style.width="16px"; sw.style.borderRadius="2px"; }
+    else if(kind==="dispAbroad"){ sw.style.background="transparent"; sw.style.border="0"; sw.style.width="16px"; sw.style.height="10px"; sw.style.backgroundImage="linear-gradient("+"#b5651d,#b5651d),repeating-linear-gradient(90deg,#2e7d4f 0 3px,transparent 3px 6px)"; sw.style.backgroundSize="100% 2px, 100% 2px"; sw.style.backgroundPosition="0 1px, 0 8px"; sw.style.backgroundRepeat="no-repeat, repeat-x"; }
     else if(kind==="europe"){ sw.style.background="transparent"; sw.style.border="0"; sw.style.height="3px"; sw.style.width="16px"; sw.style.borderRadius="1px";
       sw.style.backgroundImage="repeating-linear-gradient(90deg,#5b2c83 0 2px,transparent 2px 5px)"; }
   }
@@ -1011,6 +1011,7 @@
       '<span class="pill" style="background:'+cssv("--c-neutral")+'"></span>'+T("sideNeutral")); }
     if(map.hasLayer(firesLayer)){ sec.push('<div class="legtitle">'+T("legDensFire")+" ("+firesDays+" j)"+'</div>'+
       '<span class="pill" style="background:'+cssv("--fire-lo")+'"></span>'+T("legLo")+' &nbsp;<span class="pill" style="background:'+cssv("--fire-hi")+'"></span>'+T("legHi")+'<div class="muted" style="margin-top:2px">'+T("legFireNote")+'</div>'); }
+    if(map.hasLayer(refSitesLayer)){ sec.push('<div class="legtitle">'+T("lyrRefSites")+'</div>'+'<span class="pill" style="background:#c2185b"></span>'+T("refSitesLegend")+'<div class="muted" style="margin-top:2px">'+T("refSitesLegendNote")+'</div>'); }
     if(map.hasLayer(actLayer)){ sec.push('<div class="legtitle">'+T("legDensAct")+'</div>'+
       '<span class="pill sq" style="background:'+cssv("--c-safrsf")+';opacity:.3"></span>'+T("legLo")+' &nbsp;<span class="pill sq" style="background:'+cssv("--c-safrsf")+'"></span>'+T("legHi")); }
     if(!sec.length){ leg.style.display="none"; return; }
