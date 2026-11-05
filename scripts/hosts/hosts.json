@@ -1,0 +1,330 @@
+{
+  "generated": "2026-11-05",
+  "note": "Réfugiés soudanais enregistrés par pays d'accueil (UNHCR, dates variables) ; population et PIB : Banque mondiale 2025 (n.d. = non disponible). Les effectifs ne sont pas tous à la même date. Europe exclue (demandes d'asile, pas accueil).",
+  "rows": [
+    {
+      "iso3": "TCD",
+      "name_fr": "Tchad",
+      "name_en": "Chad",
+      "sudanese": 1411904,
+      "sudanese_date": "2026-10-05",
+      "sudanese_basis": "réfugiés et demandeurs d'asile soudanais enregistrés",
+      "total_refugees": 1584253,
+      "total_date": "2026-10-05",
+      "total_basis": "tous réfugiés (toutes nationalités)",
+      "population": 21003705,
+      "gdp": 21472835225,
+      "gdp_ppp": 60968307585,
+      "year": 2025,
+      "src": [
+        {
+          "name": "Banque mondiale — indicateurs WDI (SP.POP.TOTL, NY.GDP.MKTP.CD, NY.GDP.MKTP.PP.CD)",
+          "url": "https://data.worldbank.org/",
+          "date": "2026-10-08"
+        },
+        {
+          "name": "UNHCR — page pays (réfugiés enregistrés)",
+          "url": "https://data.unhcr.org/en/country/tcd",
+          "date": "2026-10-05"
+        }
+      ]
+    },
+    {
+      "iso3": "EGY",
+      "name_fr": "Égypte",
+      "name_en": "Egypt",
+      "sudanese": 843387,
+      "sudanese_date": "2026-10-31",
+      "sudanese_basis": "réfugiés et demandeurs d'asile soudanais enregistrés",
+      "total_refugees": 1080336,
+      "total_date": "2026-10-31",
+      "total_basis": "réfugiés et demandeurs d'asile enregistrés (toutes nationalités)",
+      "population": 118365995,
+      "gdp": 365254630180,
+      "gdp_ppp": 2391468107658,
+      "year": 2025,
+      "src": [
+        {
+          "name": "Banque mondiale — indicateurs WDI (SP.POP.TOTL, NY.GDP.MKTP.CD, NY.GDP.MKTP.PP.CD)",
+          "url": "https://data.worldbank.org/",
+          "date": "2026-10-08"
+        },
+        {
+          "name": "UNHCR — page pays (réfugiés enregistrés)",
+          "url": "https://data.unhcr.org/en/country/egy",
+          "date": "2026-10-31"
+        }
+      ]
+    },
+    {
+      "iso3": "SSD",
+      "name_fr": "Soudan du Sud",
+      "name_en": "South Sudan",
+      "sudanese": 623849,
+      "sudanese_date": "2026-09-30",
+      "sudanese_basis": "réfugiés soudanais enregistrés",
+      "total_refugees": 663951,
+      "total_date": "2026-09-30",
+      "total_basis": "réfugiés enregistrés (659 622) + demandeurs d'asile (4 329), dates de sources proches",
+      "population": null,
+      "gdp": null,
+      "gdp_ppp": null,
+      "year": null,
+      "src": [
+        {
+          "name": "Banque mondiale — indicateurs WDI (SP.POP.TOTL, NY.GDP.MKTP.CD, NY.GDP.MKTP.PP.CD)",
+          "url": "https://data.worldbank.org/",
+          "date": "2026-10-08"
+        },
+        {
+          "name": "UNHCR — page pays (réfugiés enregistrés)",
+          "url": "https://data.unhcr.org/en/country/ssd",
+          "date": "2026-09-30"
+        }
+      ]
+    },
+    {
+      "iso3": "UGA",
+      "name_fr": "Ouganda",
+      "name_en": "Uganda",
+      "sudanese": 97676,
+      "sudanese_date": "2026-10-31",
+      "sudanese_basis": "réfugiés et demandeurs d'asile soudanais (profils de settlements)",
+      "total_refugees": 2061006,
+      "total_date": "2026-10-31",
+      "total_basis": "réfugiés et demandeurs d'asile (toutes nationalités)",
+      "population": 51384894,
+      "gdp": 61985829288,
+      "gdp_ppp": 179214990762,
+      "year": 2025,
+      "src": [
+        {
+          "name": "Banque mondiale — indicateurs WDI (SP.POP.TOTL, NY.GDP.MKTP.CD, NY.GDP.MKTP.PP.CD)",
+          "url": "https://data.worldbank.org/",
+          "date": "2026-10-08"
+        },
+        {
+          "name": "UNHCR — page pays (réfugiés enregistrés)",
+          "url": "https://data.unhcr.org/en/country/uga",
+          "date": "2026-10-31"
+        }
+      ]
+    },
+    {
+      "iso3": "LBY",
+      "name_fr": "Libye",
+      "name_en": "Libya",
+      "sudanese": 93649,
+      "sudanese_date": "2026-11-02",
+      "sudanese_basis": "réfugiés et demandeurs d'asile soudanais enregistrés (carte d'arrivées : 569 703)",
+      "total_refugees": 107538,
+      "total_date": "2026-11-02",
+      "total_basis": "réfugiés et demandeurs d'asile enregistrés (toutes nationalités)",
+      "population": 7458555,
+      "gdp": 48098909614,
+      "gdp_ppp": 123225769199,
+      "year": 2025,
+      "src": [
+        {
+          "name": "Banque mondiale — indicateurs WDI (SP.POP.TOTL, NY.GDP.MKTP.CD, NY.GDP.MKTP.PP.CD)",
+          "url": "https://data.worldbank.org/",
+          "date": "2026-10-08"
+        },
+        {
+          "name": "UNHCR — page pays (réfugiés enregistrés)",
+          "url": "https://data.unhcr.org/en/country/lby",
+          "date": "2026-11-02"
+        }
+      ]
+    },
+    {
+      "iso3": "ETH",
+      "name_fr": "Éthiopie",
+      "name_en": "Ethiopia",
+      "sudanese": 57694,
+      "sudanese_date": "2026-08-31",
+      "sudanese_basis": "ressortissants soudanais enregistrés",
+      "total_refugees": 1023565,
+      "total_date": "2026-08-31",
+      "total_basis": "réfugiés et demandeurs d'asile (toutes nationalités)",
+      "population": 135472051,
+      "gdp": 126358758448,
+      "gdp_ppp": 490635723504,
+      "year": 2025,
+      "src": [
+        {
+          "name": "Banque mondiale — indicateurs WDI (SP.POP.TOTL, NY.GDP.MKTP.CD, NY.GDP.MKTP.PP.CD)",
+          "url": "https://data.worldbank.org/",
+          "date": "2026-10-08"
+        },
+        {
+          "name": "UNHCR — page pays (réfugiés enregistrés)",
+          "url": "https://data.unhcr.org/en/country/eth",
+          "date": "2026-08-31"
+        }
+      ]
+    },
+    {
+      "iso3": "CAF",
+      "name_fr": "Centrafrique",
+      "name_en": "Central African Rep.",
+      "sudanese": 38031,
+      "sudanese_date": "2026-10-05",
+      "sudanese_basis": "réfugiés soudanais",
+      "total_refugees": 62003,
+      "total_date": "2026-10-05",
+      "total_basis": "réfugiés (53 308) + demandeurs d'asile (8 695), dates proches",
+      "population": 5513282,
+      "gdp": 3066109226,
+      "gdp_ppp": 7243772033,
+      "year": 2025,
+      "src": [
+        {
+          "name": "Banque mondiale — indicateurs WDI (SP.POP.TOTL, NY.GDP.MKTP.CD, NY.GDP.MKTP.PP.CD)",
+          "url": "https://data.worldbank.org/",
+          "date": "2026-10-08"
+        },
+        {
+          "name": "UNHCR — page pays (réfugiés enregistrés)",
+          "url": "https://data.unhcr.org/en/country/caf",
+          "date": "2026-10-05"
+        }
+      ]
+    },
+    {
+      "iso3": "KEN",
+      "name_fr": "Kenya",
+      "name_en": "Kenya",
+      "sudanese": 13841,
+      "sudanese_date": "2026-09-30",
+      "sudanese_basis": "réfugiés (7 680) + demandeurs d'asile (6 161) soudanais",
+      "total_refugees": 879452,
+      "total_date": "2026-09-30",
+      "total_basis": "réfugiés (644 468) + demandeurs d'asile (234 984)",
+      "population": 57532493,
+      "gdp": 135941278879,
+      "gdp_ppp": 403644276634,
+      "year": 2025,
+      "src": [
+        {
+          "name": "Banque mondiale — indicateurs WDI (SP.POP.TOTL, NY.GDP.MKTP.CD, NY.GDP.MKTP.PP.CD)",
+          "url": "https://data.worldbank.org/",
+          "date": "2026-10-08"
+        },
+        {
+          "name": "UNHCR — page pays (réfugiés enregistrés)",
+          "url": "https://data.unhcr.org/en/country/ken",
+          "date": "2026-09-30"
+        }
+      ]
+    },
+    {
+      "iso3": "JOR",
+      "name_fr": "Jordanie",
+      "name_en": "Jordan",
+      "sudanese": 4155,
+      "sudanese_date": "2026-10-31",
+      "sudanese_basis": "réfugiés soudanais",
+      "total_refugees": 341598,
+      "total_date": "2026-10-31",
+      "total_basis": "réfugiés enregistrés (toutes nationalités)",
+      "population": 11520684,
+      "gdp": 61610052535,
+      "gdp_ppp": 145525016938,
+      "year": 2025,
+      "src": [
+        {
+          "name": "Banque mondiale — indicateurs WDI (SP.POP.TOTL, NY.GDP.MKTP.CD, NY.GDP.MKTP.PP.CD)",
+          "url": "https://data.worldbank.org/",
+          "date": "2026-10-08"
+        },
+        {
+          "name": "UNHCR — page pays (réfugiés enregistrés)",
+          "url": "https://data.unhcr.org/en/country/jor",
+          "date": "2026-10-31"
+        }
+      ]
+    },
+    {
+      "iso3": "YEM",
+      "name_fr": "Yémen",
+      "name_en": "Yemen",
+      "sudanese": 921,
+      "sudanese_date": "2026-08-31",
+      "sudanese_basis": "réfugiés soudanais",
+      "total_refugees": 65308,
+      "total_date": "2026-08-31",
+      "total_basis": "réfugiés et demandeurs d'asile (toutes nationalités)",
+      "population": 41773878,
+      "gdp": null,
+      "gdp_ppp": null,
+      "year": 2025,
+      "src": [
+        {
+          "name": "Banque mondiale — indicateurs WDI (SP.POP.TOTL, NY.GDP.MKTP.CD, NY.GDP.MKTP.PP.CD)",
+          "url": "https://data.worldbank.org/",
+          "date": "2026-10-08"
+        },
+        {
+          "name": "UNHCR — page pays (réfugiés enregistrés)",
+          "url": "https://data.unhcr.org/en/country/yem",
+          "date": "2026-08-31"
+        }
+      ]
+    },
+    {
+      "iso3": "COD",
+      "name_fr": "RD Congo",
+      "name_en": "DR Congo",
+      "sudanese": 118,
+      "sudanese_date": "2026-09-30",
+      "sudanese_basis": "réfugiés soudanais",
+      "total_refugees": 596407,
+      "total_date": "2026-09-30",
+      "total_basis": "réfugiés et demandeurs d'asile (toutes nationalités)",
+      "population": 112832473,
+      "gdp": 91030531316,
+      "gdp_ppp": 216618320622,
+      "year": 2025,
+      "src": [
+        {
+          "name": "Banque mondiale — indicateurs WDI (SP.POP.TOTL, NY.GDP.MKTP.CD, NY.GDP.MKTP.PP.CD)",
+          "url": "https://data.worldbank.org/",
+          "date": "2026-10-08"
+        },
+        {
+          "name": "UNHCR — page pays (réfugiés enregistrés)",
+          "url": "https://data.unhcr.org/en/country/cod",
+          "date": "2026-09-30"
+        }
+      ]
+    },
+    {
+      "iso3": "SOM",
+      "name_fr": "Somalie",
+      "name_en": "Somalia",
+      "sudanese": 492,
+      "sudanese_date": "2026-09-30",
+      "sudanese_basis": "réfugiés et demandeurs d'asile soudanais",
+      "total_refugees": 34431,
+      "total_date": "2026-09-30",
+      "total_basis": "réfugiés et demandeurs d'asile (toutes nationalités)",
+      "population": 19654739,
+      "gdp": 12995200000,
+      "gdp_ppp": 32288221931,
+      "year": 2025,
+      "src": [
+        {
+          "name": "Banque mondiale — indicateurs WDI (SP.POP.TOTL, NY.GDP.MKTP.CD, NY.GDP.MKTP.PP.CD)",
+          "url": "https://data.worldbank.org/",
+          "date": "2026-10-08"
+        },
+        {
+          "name": "UNHCR — page pays (réfugiés enregistrés)",
+          "url": "https://data.unhcr.org/en/country/som",
+          "date": "2026-09-30"
+        }
+      ]
+    }
+  ]
+}

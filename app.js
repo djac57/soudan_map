@@ -1253,7 +1253,27 @@
       '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(T("dispTimelineTitle"))+'">'+bars+'</svg>'+
       '<div class="disptl-note">'+T("dispTimelineNote")+' '+dispSrc("idp_dtm")+'</div>';
   }
-  function renderAll(){ buildUI(); drawClashes(); fillStats(); fillHumHero(); fillDispTimeline(); fillRefugees(); fillBackers(); buildChartToggle(); drawChart(); drawFiresChart(); fillControlSlot(); updateLegend(); }
+  // ---- Pays d'accueil : tableau sous la carte (réfugiés soudanais, total accueilli, population, PIB) ----
+  function fillHosts(){
+    var H=window.SUDAN&&window.SUDAN.hosts; var tb=document.getElementById("hostsTable"); if(!H||!tb||!H.rows) return;
+    var nd=function(){ return "<span class='muted'>n.d.</span>"; };
+    var bn=function(v){ return v==null?nd():((v/1e9).toFixed(1)); };
+    var rows=H.rows.slice().sort(function(a,b){return (b.sudanese||0)-(a.sudanese||0);});
+    var head="<thead><tr><th>"+T("hostCountry")+"</th><th>"+T("hostSudanese")+"</th><th>"+T("hostTotalRef")+"</th><th>"+T("hostPctPop")+"</th><th>"+T("hostPop")+"</th><th>"+T("hostGdp")+"</th><th>"+T("hostGdpPpp")+"</th></tr></thead>";
+    var body=rows.map(function(r){
+      var pct=(r.population&&r.total_refugees)?(100*r.total_refugees/r.population).toFixed(1)+" %":nd();
+      var u=(r.src&&r.src[1])||{}; var src=u.url?"<a href='"+esc(u.url)+"' target='_blank' rel='noopener'>↗</a>":"";
+      return "<tr title='"+esc(r.sudanese_basis||"")+"'><td><b>"+esc(r.name_fr)+"</b> "+src+"</td>"+
+        "<td>"+pnum(r.sudanese)+"<br><span class='muted'>"+esc(fdate(r.sudanese_date))+"</span></td>"+
+        "<td>"+pnum(r.total_refugees)+"<br><span class='muted'>"+esc(fdate(r.total_date))+"</span></td>"+
+        "<td>"+pct+"</td>"+
+        "<td>"+(r.population==null?nd():pnum(r.population)+(r.year?"<br><span class='muted'>"+r.year+"</span>":""))+"</td>"+
+        "<td>"+bn(r.gdp)+"</td><td>"+bn(r.gdp_ppp)+"</td></tr>";
+    }).join("");
+    tb.innerHTML=head+"<tbody>"+body+"</tbody>";
+    var nt=document.getElementById("hostsNote"); if(nt) nt.textContent=H.note||"";
+  }
+  function renderAll(){ buildUI(); drawClashes(); fillStats(); fillHumHero(); fillDispTimeline(); fillHosts(); fillRefugees(); fillBackers(); buildChartToggle(); drawChart(); drawFiresChart(); fillControlSlot(); updateLegend(); }
 
   // =====================================================================
   //  REPLAY — animated backfill of the war (feature-detected; hidden if absent)
