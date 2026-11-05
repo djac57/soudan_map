@@ -513,10 +513,10 @@
     var emax=Math.max.apply(null, EUC.map(function(c){return c.applications||0;}).concat([1]));
     EUC.forEach(function(c){ if(!c.applications) return; var cc=[c.lat,c.lon];
       var ln=L.polyline([ec,cc],{color:col,weight:1+4*(c.applications/emax),opacity:.55});
-      ln.bindPopup("<b>"+esc(c.country_fr)+"</b><br>"+pnum(c.applications)+" "+T("euCountryApps")+src);
+      ln.bindPopup("<b>"+esc(c.country_fr)+"</b><br>"+pnum(c.applications)+" "+T("euCountryApps")+(c.period?" · "+esc(c.period):"")+src);
       var m=L.circleMarker(cc,{radius:4+14*Math.sqrt(c.applications/emax),color:col,weight:1,fillColor:col,fillOpacity:.45});
       m.bindTooltip(pnum(c.applications),{permanent:true,direction:"top",className:"eu-count"});
-      m.bindPopup("<b>"+esc(c.country_fr)+"</b><br>"+pnum(c.applications)+" "+T("euCountryApps")+src);
+      m.bindPopup("<b>"+esc(c.country_fr)+"</b><br>"+pnum(c.applications)+" "+T("euCountryApps")+(c.period?" · "+esc(c.period):"")+src);
       spread.addLayer(ln); spread.addLayer(m); });
     var tot=L.circleMarker(ec,{radius:8+20*Math.sqrt(EUN/17375),color:col,weight:1.5,fillColor:col,fillOpacity:.4});
     tot.bindPopup("<b>"+esc(P.europe.name_fr)+"</b><br>"+pnum(EUN)+" "+T("euAsylumEU")+"<br><span class='muted'>"+T("euSpreadHint")+"</span>"+src);

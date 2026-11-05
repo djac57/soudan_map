@@ -51,6 +51,11 @@
       "name": "Eurostat — migr_asyappctza, demandeurs d'asile par citoyenneté (Soudan), 2025 (tous demandeurs)",
       "url": "https://ec.europa.eu/eurostat/databrowser/view/migr_asyappctza/default/table",
       "date": "2026-11-05"
+    },
+    "homeoffice_asy": {
+      "name": "Home Office — Asylum summary tables, year ending June 2026 (claims by nationality, Sudan)",
+      "url": "https://www.gov.uk/government/statistical-data-sets/immigration-system-statistics-data-tables",
+      "date": "2026-09"
     }
   },
   "origin_hubs_idp_2023": [
@@ -490,9 +495,19 @@
         "lon": 15.9819,
         "lat": 45.815,
         "applications": 5
+      },
+      {
+        "country_fr": "Royaume-Uni",
+        "country_en": "United Kingdom",
+        "lon": -0.1276,
+        "lat": 51.5072,
+        "applications": 5992,
+        "period": "année se terminant en juin 2026",
+        "source": "homeoffice_asy"
       }
     ],
-    "by_country_note": "Demandes d'asile (tous demandeurs) par citoyenneté soudanaise, 2025 — capitales comme point approximatif du pays."
+    "by_country_note": "Demandes d'asile par citoyenneté soudanaise : Eurostat 2025 (UE + Norvège, Suisse) ; Royaume-Uni : Home Office, année se terminant en juin 2026 (non inclus dans le total UE). Capitales comme point approximatif du pays.",
+    "eu_total_label": "UE (Eurostat 2025, hors Royaume-Uni)"
   }
 };
 })();
