@@ -468,9 +468,14 @@
   function buildRefSites(){ refSitesLayer.clearLayers(); if(!refSites.length) return;
     var maxN=Math.max.apply(null, refSites.map(function(s){return s.sudanese||0;}).concat([1]));
     refSites.forEach(function(s){ var r=5+16*Math.sqrt((s.sudanese||0)/maxN);
-      var m=L.circleMarker([s.lat,s.lon],{radius:r,color:"#6b2e8a",weight:1.2,fillColor:"#6b2e8a",fillOpacity:.45});
+      var nf=(s.location_found===false);
+      var m=L.circleMarker([s.lat,s.lon],{radius:r,color:"#6b2e8a",weight:1.2,fillColor:"#6b2e8a",fillOpacity:nf?.22:.45,dashArray:nf?"3 3":null});
       m.bindPopup("<b>"+esc(s.name_fr)+"</b> — "+esc(s.country_fr)+"<br>"+pnum(s.sudanese||0)+" "+T("refSitesSudanese")+
         " <span class='muted'>("+esc(s.sudanese_basis||"")+")</span>"+
+        (nf?"<br><span class='muted'>"+T("refSitesNotFound")+"</span>":"")+
+        "<br><span class='muted'>"+T("refSitesCountSites")+": "+(s.sites_count==null?T("refSitesUnknown"):pnum(s.sites_count))+"</span>"+
+        (s.sites_note?"<br><span class='muted'>"+esc(s.sites_note)+"</span>":"")+
+        (s.location_note_fr?"<br><span class='muted'>"+esc(s.location_note_fr)+"</span>":"")+
         (s.total_population?"<br><span class='muted'>"+T("refSitesTotal")+": "+pnum(s.total_population)+"</span>":"")+
         "<br><span class='muted'>"+T("refSitesCoord")+": "+dispSrc2(s.coord_source)+"</span>"+
         "<br><span class='muted'>"+T("refSitesCount")+": "+dispSrc2(s.count_source)+"</span>");

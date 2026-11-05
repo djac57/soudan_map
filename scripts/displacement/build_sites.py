@@ -29,7 +29,7 @@ def main():
                 fail("%s: champ %s manquant" % (name, k))
         if not s["coord_source"].get("url") or not s["count_source"].get("url"):
             fail("%s: source sans URL" % name)
-        if s["kind"] not in ("camp", "settlement", "city"):
+        if s["kind"] not in ("camp", "settlement", "city", "national"):
             fail("%s: kind inconnu %r" % (name, s["kind"]))
     out = os.path.join(soudan, "data", "layer_refugee_sites.js")
     body = json.dumps(rec, ensure_ascii=False, indent=2)

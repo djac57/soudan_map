@@ -30,7 +30,9 @@
         "name": "UNHCR Uganda — Settlement Profiles (OPM proGres), totaux par pays d'origine",
         "url": "https://data.unhcr.org/en/country/uga",
         "date": "2026-10-31"
-      }
+      },
+      "location_found": true,
+      "sites_count": 14
     },
     {
       "name_fr": "Rhino Camp (settlement)",
@@ -52,7 +54,9 @@
         "name": "UNHCR Uganda — Settlement Profiles (OPM proGres), totaux par pays d'origine",
         "url": "https://data.unhcr.org/en/country/uga",
         "date": "2026-10-31"
-      }
+      },
+      "location_found": true,
+      "sites_count": 14
     },
     {
       "name_fr": "Bidibidi (settlement)",
@@ -74,7 +78,9 @@
         "name": "UNHCR Uganda — Settlement Profiles (OPM proGres), totaux par pays d'origine",
         "url": "https://data.unhcr.org/en/country/uga",
         "date": "2026-10-31"
-      }
+      },
+      "location_found": true,
+      "sites_count": 14
     },
     {
       "name_fr": "Imvepi (settlement)",
@@ -96,7 +102,9 @@
         "name": "UNHCR Uganda — Settlement Profiles (OPM proGres), totaux par pays d'origine",
         "url": "https://data.unhcr.org/en/country/uga",
         "date": "2026-10-31"
-      }
+      },
+      "location_found": true,
+      "sites_count": 14
     },
     {
       "name_fr": "Palorinya (settlement)",
@@ -118,7 +126,9 @@
         "name": "UNHCR Uganda — Settlement Profiles (OPM proGres), totaux par pays d'origine",
         "url": "https://data.unhcr.org/en/country/uga",
         "date": "2026-10-31"
-      }
+      },
+      "location_found": true,
+      "sites_count": 14
     },
     {
       "name_fr": "Kampala (population urbaine)",
@@ -140,7 +150,9 @@
         "name": "UNHCR Uganda — Settlement Profiles (OPM proGres), totaux par pays d'origine",
         "url": "https://data.unhcr.org/en/country/uga",
         "date": "2026-10-31"
-      }
+      },
+      "location_found": true,
+      "sites_count": 14
     },
     {
       "name_fr": "Adré (camp, Tchad)",
@@ -161,7 +173,9 @@
         "name": "UNHCR Tchad — Mise à jour des arrivées du Soudan, enregistrement individuel par site (02 nov. 2026)",
         "url": "https://data.unhcr.org/en/documents/details/124750",
         "date": "2026-11-02"
-      }
+      },
+      "location_found": true,
+      "sites_count": 31
     },
     {
       "name_fr": "Zabout (camp, Tchad)",
@@ -182,7 +196,9 @@
         "name": "UNHCR Tchad — Mise à jour des arrivées du Soudan, enregistrement individuel par site (02 nov. 2026)",
         "url": "https://data.unhcr.org/en/documents/details/124750",
         "date": "2026-11-02"
-      }
+      },
+      "location_found": true,
+      "sites_count": 31
     },
     {
       "name_fr": "Métché (camp, Tchad)",
@@ -203,7 +219,9 @@
         "name": "UNHCR Tchad — Mise à jour des arrivées du Soudan, enregistrement individuel par site (02 nov. 2026)",
         "url": "https://data.unhcr.org/en/documents/details/124750",
         "date": "2026-11-02"
-      }
+      },
+      "location_found": true,
+      "sites_count": 31
     },
     {
       "name_fr": "Alacha (camp, Tchad)",
@@ -224,7 +242,9 @@
         "name": "UNHCR Tchad — Mise à jour des arrivées du Soudan, enregistrement individuel par site (02 nov. 2026)",
         "url": "https://data.unhcr.org/en/documents/details/124750",
         "date": "2026-11-02"
-      }
+      },
+      "location_found": true,
+      "sites_count": 31
     },
     {
       "name_fr": "Oure Cassoni (camp, Tchad)",
@@ -245,7 +265,9 @@
         "name": "UNHCR Tchad — Mise à jour des arrivées du Soudan, enregistrement individuel par site (02 nov. 2026)",
         "url": "https://data.unhcr.org/en/documents/details/124750",
         "date": "2026-11-02"
-      }
+      },
+      "location_found": true,
+      "sites_count": 31
     },
     {
       "name_fr": "Farchana (camp, Tchad)",
@@ -266,7 +288,9 @@
         "name": "UNHCR Tchad — Mise à jour des arrivées du Soudan, enregistrement individuel par site (02 nov. 2026)",
         "url": "https://data.unhcr.org/en/documents/details/124750",
         "date": "2026-11-02"
-      }
+      },
+      "location_found": true,
+      "sites_count": 31
     },
     {
       "name_fr": "Iridimi (camp, Tchad)",
@@ -287,7 +311,9 @@
         "name": "UNHCR Tchad — Mise à jour des arrivées du Soudan, enregistrement individuel par site (02 nov. 2026)",
         "url": "https://data.unhcr.org/en/documents/details/124750",
         "date": "2026-11-02"
-      }
+      },
+      "location_found": true,
+      "sites_count": 31
     },
     {
       "name_fr": "Kerfi (camp, Tchad)",
@@ -308,7 +334,9 @@
         "name": "UNHCR Tchad — Mise à jour des arrivées du Soudan, enregistrement individuel par site (02 nov. 2026)",
         "url": "https://data.unhcr.org/en/documents/details/124750",
         "date": "2026-11-02"
-      }
+      },
+      "location_found": true,
+      "sites_count": 31
     },
     {
       "name_fr": "Djabal (camp, Tchad)",
@@ -329,7 +357,9 @@
         "name": "UNHCR Tchad — Mise à jour des arrivées du Soudan, enregistrement individuel par site (02 nov. 2026)",
         "url": "https://data.unhcr.org/en/documents/details/124750",
         "date": "2026-11-02"
-      }
+      },
+      "location_found": true,
+      "sites_count": 31
     },
     {
       "name_fr": "Bredjing (camp, Tchad)",
@@ -350,7 +380,9 @@
         "name": "UNHCR Tchad — Mise à jour des arrivées du Soudan, enregistrement individuel par site (02 nov. 2026)",
         "url": "https://data.unhcr.org/en/documents/details/124750",
         "date": "2026-11-02"
-      }
+      },
+      "location_found": true,
+      "sites_count": 31
     },
     {
       "name_fr": "Goz Amir (camp, Tchad)",
@@ -371,7 +403,9 @@
         "name": "UNHCR Tchad — Mise à jour des arrivées du Soudan, enregistrement individuel par site (02 nov. 2026)",
         "url": "https://data.unhcr.org/en/documents/details/124750",
         "date": "2026-11-02"
-      }
+      },
+      "location_found": true,
+      "sites_count": 31
     },
     {
       "name_fr": "Aftit (site, Éthiopie)",
@@ -392,7 +426,203 @@
         "name": "UNHCR Ethiopia — Aftit site profile (février 2026)",
         "url": "https://data.unhcr.org/en/documents/details/121459",
         "date": "2026-02"
-      }
+      },
+      "location_found": true,
+      "sites_count": 1
+    },
+    {
+      "name_fr": "Adjumani (settlement — Nyumanzi)",
+      "name_en": "Adjumani (settlement — Nyumanzi)",
+      "country_fr": "Ouganda",
+      "country_en": "Uganda",
+      "kind": "settlement",
+      "location_found": true,
+      "lon": 31.9433433,
+      "lat": 3.4638467,
+      "coord_source": {
+        "name": "Google Maps — fiche du lieu (coordonnées de l'URL)",
+        "url": "https://www.google.com/maps",
+        "date": "2026-11-05"
+      },
+      "location_note_fr": "Nyumanzi est le principal lieu d'accueil du settlement Adjumani (52 063 personnes) ; limites exactes du settlement non déterminées.",
+      "sudanese": 777,
+      "sudanese_basis": "ressortissants soudanais, 31 oct. 2026",
+      "total_population": 241242,
+      "count_source": {
+        "name": "UNHCR Uganda — Settlement Profiles (OPM proGres)",
+        "url": "https://data.unhcr.org/en/country/uga",
+        "date": "2026-10-31"
+      },
+      "sites_count": 1
+    },
+    {
+      "name_fr": "Palabek (settlement)",
+      "name_en": "Palabek (settlement)",
+      "country_fr": "Ouganda",
+      "country_en": "Uganda",
+      "kind": "settlement",
+      "location_found": true,
+      "lon": 32.4157984,
+      "lat": 3.365054,
+      "coord_source": {
+        "name": "Google Maps — fiche du lieu (coordonnées de l'URL)",
+        "url": "https://www.google.com/maps",
+        "date": "2026-11-05"
+      },
+      "location_note_fr": "Point : Main Reception du settlement Palabek ; limites exactes non déterminées.",
+      "sudanese": 247,
+      "sudanese_basis": "ressortissants soudanais, 31 oct. 2026",
+      "total_population": 102834,
+      "count_source": {
+        "name": "UNHCR Uganda — Settlement Profiles (OPM proGres)",
+        "url": "https://data.unhcr.org/en/country/uga",
+        "date": "2026-10-31"
+      },
+      "sites_count": 1
+    },
+    {
+      "name_fr": "Égypte — total national (localisation non trouvée)",
+      "name_en": "Egypt — national total (location not found)",
+      "country_fr": "Égypte",
+      "country_en": "Egypt — national total (location not found)",
+      "kind": "national",
+      "location_found": false,
+      "lon": 29.2675,
+      "lat": 26.254,
+      "coord_source": {
+        "name": "Centre approximatif du pays (Nominatim / OpenStreetMap)",
+        "url": "https://www.openstreetmap.org/",
+        "date": "2026-11-05"
+      },
+      "sudanese": 843387,
+      "sudanese_basis": "enregistrés auprès de l'UNHCR, 31 oct. 2026",
+      "count_source": {
+        "name": "UNHCR Egypt — country page (registered population)",
+        "url": "https://data.unhcr.org/en/country/egy",
+        "date": "2026-10-31"
+      },
+      "sites_count": 0,
+      "sites_note": "Pas de camp : population urbaine (Le Caire, Alexandrie)."
+    },
+    {
+      "name_fr": "Libye — total national (localisation non trouvée)",
+      "name_en": "Libya — national total (location not found)",
+      "country_fr": "Libye",
+      "country_en": "Libya — national total (location not found)",
+      "kind": "national",
+      "location_found": false,
+      "lon": 18.1237,
+      "lat": 26.8234,
+      "coord_source": {
+        "name": "Centre approximatif du pays (Nominatim / OpenStreetMap)",
+        "url": "https://www.openstreetmap.org/",
+        "date": "2026-11-05"
+      },
+      "sudanese": 569703,
+      "sudanese_basis": "réfugiés soudanais, nouvelles arrivées, carte UNHCR 5 oct. 2026",
+      "count_source": {
+        "name": "UNHCR — Sudan Situation Map Weekly Regional Update, 5 oct. 2026",
+        "url": "https://data.unhcr.org/en/documents/details/124474",
+        "date": "2026-10-05"
+      },
+      "sites_count": 0,
+      "sites_note": "Aucun camp identifié dans les sources consultées."
+    },
+    {
+      "name_fr": "Centrafrique — total national (localisation non trouvée)",
+      "name_en": "Central African Rep. — national total (location not found)",
+      "country_fr": "Centrafrique",
+      "country_en": "Central African Rep. — national total (location not found)",
+      "kind": "national",
+      "location_found": false,
+      "lon": 19.9981,
+      "lat": 7.0324,
+      "coord_source": {
+        "name": "Centre approximatif du pays (Nominatim / OpenStreetMap)",
+        "url": "https://www.openstreetmap.org/",
+        "date": "2026-11-05"
+      },
+      "sudanese": 38031,
+      "sudanese_basis": "réfugiés soudanais, 5 oct. 2026",
+      "count_source": {
+        "name": "UNHCR CAR — country page",
+        "url": "https://data.unhcr.org/en/country/caf",
+        "date": "2026-10-05"
+      },
+      "sites_count": null,
+      "sites_note": "Nombre de sites non identifié dans les sources consultées."
+    },
+    {
+      "name_fr": "Soudan du Sud — total national (localisation non trouvée)",
+      "name_en": "South Sudan — national total (location not found)",
+      "country_fr": "Soudan du Sud",
+      "country_en": "South Sudan — national total (location not found)",
+      "kind": "national",
+      "location_found": false,
+      "lon": 29.6668,
+      "lat": 7.8699,
+      "coord_source": {
+        "name": "Centre approximatif du pays (Nominatim / OpenStreetMap)",
+        "url": "https://www.openstreetmap.org/",
+        "date": "2026-11-05"
+      },
+      "sudanese": 623849,
+      "sudanese_basis": "réfugiés soudanais, 30 sept. 2026",
+      "count_source": {
+        "name": "UNHCR South Sudan — country page",
+        "url": "https://data.unhcr.org/en/country/ssd",
+        "date": "2026-09-30"
+      },
+      "sites_count": 6,
+      "sites_note": "6 sites listés en Haut-Nil (Renk, Doro, Gendrassa, Yusuf Batil, Kaya, Kodok) : tous réfugiés, part soudanaise non publiée par site."
+    },
+    {
+      "name_fr": "Éthiopie — total national (localisation non trouvée ; inclut Aftit)",
+      "name_en": "Ethiopia — national total (location not found; includes Aftit)",
+      "country_fr": "Éthiopie",
+      "country_en": "Ethiopia — national total (location not found; includes Aftit)",
+      "kind": "national",
+      "location_found": false,
+      "lon": 38.6521,
+      "lat": 10.2117,
+      "coord_source": {
+        "name": "Centre approximatif du pays (Nominatim / OpenStreetMap)",
+        "url": "https://www.openstreetmap.org/",
+        "date": "2026-11-05"
+      },
+      "sudanese": 57694,
+      "sudanese_basis": "ressortissants soudanais, 31 août 2026",
+      "count_source": {
+        "name": "UNHCR Ethiopia — country page",
+        "url": "https://data.unhcr.org/en/country/eth",
+        "date": "2026-08-31"
+      },
+      "sites_count": 1,
+      "sites_note": "Aftit identifié et localisé ; les autres lieux ne sont pas localisés. Ne pas additionner à Aftit."
+    },
+    {
+      "name_fr": "Tchad — autres sites non localisés (approximatif)",
+      "name_en": "Chad — other sites not located (approx.)",
+      "country_fr": "Tchad",
+      "country_en": "Chad — other sites not located (approx.)",
+      "kind": "national",
+      "location_found": false,
+      "lon": 19.0156,
+      "lat": 15.6134,
+      "coord_source": {
+        "name": "Centre approximatif du pays (Nominatim / OpenStreetMap)",
+        "url": "https://www.openstreetmap.org/",
+        "date": "2026-11-05"
+      },
+      "sudanese": 938833,
+      "sudanese_basis": "total national UNHCR (5 oct. 2026) moins les sites localisés (2 nov. 2026) : bases différentes, ordre de grandeur",
+      "count_source": {
+        "name": "UNHCR Chad — country page (total national)",
+        "url": "https://data.unhcr.org/en/country/tcd",
+        "date": "2026-10-05"
+      },
+      "sites_count": null,
+      "sites_note": "Estimation : total national moins les sites localisés."
     }
   ]
 };
