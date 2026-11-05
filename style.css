@@ -377,3 +377,8 @@ footer a{color:var(--muted)}
   .humfig b{font-size:17px}
   .ctl{width:92vw; max-width:92vw}
 }
+
+/* count labels in the Europe spread: translucent, like the map panels (no arrow tail) */
+.leaflet-tooltip.eu-count{background:color-mix(in srgb, var(--panel) 72%, transparent); -webkit-backdrop-filter:blur(10px) saturate(1.5); backdrop-filter:blur(10px) saturate(1.5);
+  border:1px solid var(--line); border-radius:6px; box-shadow:none; color:var(--ink); padding:1px 6px; font:600 11px/1.4 system-ui,sans-serif;}
+.leaflet-tooltip.eu-count::before{display:none}
