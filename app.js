@@ -1105,7 +1105,7 @@
     if(map.hasLayer(exportsLayer)){ sec.push('<div class="legtitle">'+T("lyrExports")+'</div>'+
       expArrowRow("#2b2b2b",T("legExpOil"))+expArrowRow("#c9a227",T("legExpGold"))+expArrowRow("#7a8b2e",T("legExpGum"))+
       '<div class="muted" style="margin-top:2px">'+T("legExpNote")+' '+T("legExpWidth")+'</div>'); }
-    if(!sec.length){ leg.style.display="none"; return; }
+    if(!sec.length){ sec.push('<span class="muted">'+T("legEmpty")+'</span>'); }
     leg.style.display="block"; t.style.display="none";
     // each legend section becomes its own collapsible block (title = summary)
     body.innerHTML=sec.map(function(h){
@@ -1719,7 +1719,7 @@
     document.addEventListener("keydown",function(e){ if(e.key==="Escape") close(); });
     // collapsible legend (mobile): toggle shows/hides the legend body
     var lt=document.getElementById("legendToggle"), lg=document.getElementById("legend");
-    if(lt&&lg) lt.addEventListener("click",function(){ var o=lg.classList.toggle("open"); lt.setAttribute("aria-expanded",String(o)); });
+    if(lt&&lg) lt.addEventListener("click",function(){ var hidden=lg.classList.toggle("collapsed"); lt.setAttribute("aria-expanded",String(!hidden)); lt.textContent=T(hidden?"legendShow":"legendHide"); });
     // if resized back to desktop, make sure drawer state is reset (CSS ignores .open on desktop anyway)
   }
 
