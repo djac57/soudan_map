@@ -941,7 +941,7 @@
         return '<span style="display:flex;align-items:center;gap:6px;margin-top:2px"><svg width="22" height="6" viewBox="0 0 22 6" style="flex:none"><line x1="1" y1="3" x2="14" y2="3" style="stroke:'+x[0]+';stroke-width:2"/><polygon points="22,3 13,1 13,5" style="fill:'+x[0]+'"/></svg><span>'+esc(T(x[1]))+'</span></span>'; }).join("");
       lab.style.display="inline-block";
       sw.style.visibility="hidden"; sw.innerHTML="";
-      row.style.alignItems="flex-start"; cb.style.marginTop="2px";
+      row.style.alignItems="flex-start"; cb.style.marginTop="-2px";
     }
     var cnt=document.createElement("span"); cnt.className="cnt"; if(L0.count) cnt.id=L0.count;
     row.appendChild(cb); row.appendChild(sw); row.appendChild(lab); row.appendChild(cnt);
