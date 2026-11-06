@@ -185,7 +185,8 @@
   // =====================================================================
   //  MAP
   // =====================================================================
-  var map = L.map("map",{zoomControl:true, preferCanvas:true, minZoom:4, maxZoom:12}).setView([14.5,29.8],6);
+  var map = L.map("map",{zoomControl:true, preferCanvas:true, minZoom:2, maxZoom:12}).setView([14.5,29.8],6);
+  L.control.scale({position:"bottomright", imperial:false}).addTo(map);
   // fond de carte à noms anglais (Esri World Street Map, sans clé) ; pas de superposition de noms
   L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
     {maxZoom:19, attribution:'Tiles &copy; <a href="https://www.esri.com">Esri</a> — Esri, HERE, Garmin, USGS, NGA, NASA, OpenStreetMap contributors'})
