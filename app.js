@@ -1091,6 +1091,8 @@
     if(map.hasLayer(refSitesLayer)){ sec.push('<div class="legtitle">'+T("lyrRefSites")+'</div>'+'<span class="pill" style="background:#c2185b"></span>'+T("refSitesLegend")+'<div class="muted" style="margin-top:2px">'+T("refSitesLegendNote")+'</div>'); }
     if(map.hasLayer(actLayer)){ sec.push('<div class="legtitle">'+T("legDensAct")+'</div>'+
       '<span class="pill sq" style="background:'+cssv("--c-safrsf")+';opacity:.3"></span>'+T("legLo")+' &nbsp;<span class="pill sq" style="background:'+cssv("--c-safrsf")+'"></span>'+T("legHi")); }
+    if(map.hasLayer(dispIntlLayer)){ sec.push('<div class="legtitle">'+T("lyrDispIntl")+'</div>'+
+      '<div style="margin-top:2px"><span class="pill" style="background:#b5651d"></span>'+T("legDispCircle")+'</div>'); }
     if(map.hasLayer(exportsLayer)){ sec.push('<div class="legtitle">'+T("lyrExports")+'</div>'+
       expArrowRow("#2b2b2b",T("legExpOil"))+expArrowRow("#c9a227",T("legExpGold"))+expArrowRow("#7a8b2e",T("legExpGum"))+
       '<div class="muted" style="margin-top:2px">'+T("legExpNote")+' '+T("legExpWidth")+'</div>'); }
