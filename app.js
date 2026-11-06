@@ -940,7 +940,8 @@
       lab.innerHTML=esc(T("lyrExportsTitle"))+[["#2b2b2b","legExpOil"],["#c9a227","legExpGold"],["#7a8b2e","legExpGum"]].map(function(x){
         return '<span style="display:flex;align-items:center;gap:6px;margin-top:2px"><svg width="22" height="6" viewBox="0 0 22 6" style="flex:none"><line x1="1" y1="3" x2="14" y2="3" style="stroke:'+x[0]+';stroke-width:2"/><polygon points="22,3 13,1 13,5" style="fill:'+x[0]+'"/></svg><span>'+esc(T(x[1]))+'</span></span>'; }).join("");
       lab.style.display="inline-block";
-      sw.style.visibility="hidden"; sw.innerHTML="";
+      sw.style.background="none"; sw.style.border="0"; sw.style.width="22px"; sw.style.height="10px"; sw.style.flex="0 0 auto"; sw.style.marginTop="3px";
+      sw.innerHTML=expArrowSvg("var(--muted)");
       row.style.alignItems="flex-start"; cb.style.marginTop="-2px";
     }
     var cnt=document.createElement("span"); cnt.className="cnt"; if(L0.count) cnt.id=L0.count;
