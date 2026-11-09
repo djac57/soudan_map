@@ -3,11 +3,11 @@
  * as ground truth. Balanced pro-SAF / pro-RSF / neutral channel set. */
 window.SUDAN = window.SUDAN || {};
 window.SUDAN.osint = {
-  "generated": "2026-11-02",
+  "generated": "2026-11-09",
   "window_days": 120,
   "window": [
-    "2026-07-05",
-    "2026-11-02"
+    "2026-07-12",
+    "2026-11-09"
   ],
   "points": [
     {
@@ -15,10 +15,10 @@ window.SUDAN.osint = {
       "lat": 13.183,
       "place": "El Obeid",
       "adm1": "North Kordofan",
-      "count": 53,
-      "last_date": "2026-11-02",
+      "count": 52,
+      "last_date": "2026-11-09",
       "sides": {
-        "saf": 7,
+        "saf": 6,
         "rsf": 3,
         "neutral": 43
       }
@@ -28,25 +28,12 @@ window.SUDAN.osint = {
       "lat": 13.6103,
       "place": "North Kordofan",
       "adm1": "North Kordofan",
-      "count": 23,
-      "last_date": "2026-10-30",
+      "count": 30,
+      "last_date": "2026-11-09",
       "sides": {
-        "saf": 2,
+        "saf": 10,
         "rsf": 2,
-        "neutral": 19
-      }
-    },
-    {
-      "lon": 32.56,
-      "lat": 15.5,
-      "place": "Khartoum",
-      "adm1": "Khartoum",
-      "count": 19,
-      "last_date": "2026-11-02",
-      "sides": {
-        "saf": 8,
-        "rsf": 1,
-        "neutral": 10
+        "neutral": 18
       }
     },
     {
@@ -54,25 +41,12 @@ window.SUDAN.osint = {
       "lat": 12.2695,
       "place": "West Kordofan",
       "adm1": "West Kordofan",
-      "count": 19,
-      "last_date": "2026-11-02",
+      "count": 28,
+      "last_date": "2026-11-09",
       "sides": {
-        "saf": 2,
+        "saf": 10,
         "rsf": 2,
-        "neutral": 15
-      }
-    },
-    {
-      "lon": 24.4613,
-      "lat": 10.2771,
-      "place": "South Darfur",
-      "adm1": "South Darfur",
-      "count": 17,
-      "last_date": "2026-10-30",
-      "sides": {
-        "saf": 0,
-        "rsf": 9,
-        "neutral": 8
+        "neutral": 16
       }
     },
     {
@@ -80,12 +54,25 @@ window.SUDAN.osint = {
       "lat": 13.63,
       "place": "El Fasher",
       "adm1": "North Darfur",
-      "count": 16,
-      "last_date": "2026-11-01",
+      "count": 18,
+      "last_date": "2026-11-09",
       "sides": {
-        "saf": 2,
+        "saf": 4,
         "rsf": 8,
         "neutral": 6
+      }
+    },
+    {
+      "lon": 32.56,
+      "lat": 15.5,
+      "place": "Khartoum",
+      "adm1": "Khartoum",
+      "count": 18,
+      "last_date": "2026-11-09",
+      "sides": {
+        "saf": 6,
+        "rsf": 1,
+        "neutral": 11
       }
     },
     {
@@ -94,11 +81,11 @@ window.SUDAN.osint = {
       "place": "Nyala",
       "adm1": "South Darfur",
       "count": 15,
-      "last_date": "2026-10-28",
+      "last_date": "2026-11-06",
       "sides": {
-        "saf": 0,
+        "saf": 1,
         "rsf": 9,
-        "neutral": 6
+        "neutral": 5
       }
     },
     {
@@ -106,12 +93,25 @@ window.SUDAN.osint = {
       "lat": 11.0087,
       "place": "Blue Nile",
       "adm1": "Blue Nile",
-      "count": 12,
-      "last_date": "2026-11-02",
+      "count": 14,
+      "last_date": "2026-11-09",
       "sides": {
-        "saf": 4,
-        "rsf": 8,
+        "saf": 3,
+        "rsf": 11,
         "neutral": 0
+      }
+    },
+    {
+      "lon": 24.4613,
+      "lat": 10.2771,
+      "place": "South Darfur",
+      "adm1": "South Darfur",
+      "count": 12,
+      "last_date": "2026-11-07",
+      "sides": {
+        "saf": 0,
+        "rsf": 9,
+        "neutral": 3
       }
     },
     {
@@ -119,12 +119,64 @@ window.SUDAN.osint = {
       "lat": 14.0148,
       "place": "North Darfur",
       "adm1": "North Darfur",
+      "count": 10,
+      "last_date": "2026-11-08",
+      "sides": {
+        "saf": 3,
+        "rsf": 4,
+        "neutral": 3
+      }
+    },
+    {
+      "lon": 27.8,
+      "lat": 13.07,
+      "place": "Al Khuwayy",
+      "adm1": "West Kordofan",
       "count": 9,
-      "last_date": "2026-10-31",
+      "last_date": "2026-11-09",
+      "sides": {
+        "saf": 7,
+        "rsf": 0,
+        "neutral": 2
+      }
+    },
+    {
+      "lon": 28.433,
+      "lat": 12.7,
+      "place": "En Nahud",
+      "adm1": "West Kordofan",
+      "count": 8,
+      "last_date": "2026-11-09",
+      "sides": {
+        "saf": 5,
+        "rsf": 0,
+        "neutral": 3
+      }
+    },
+    {
+      "lon": 30.5503,
+      "lat": 11.63,
+      "place": "South Kordofan",
+      "adm1": "South Kordofan",
+      "count": 8,
+      "last_date": "2026-11-08",
+      "sides": {
+        "saf": 3,
+        "rsf": 1,
+        "neutral": 4
+      }
+    },
+    {
+      "lon": 30.367,
+      "lat": 13.7,
+      "place": "Bara",
+      "adm1": "North Kordofan",
+      "count": 7,
+      "last_date": "2026-11-05",
       "sides": {
         "saf": 1,
-        "rsf": 4,
-        "neutral": 4
+        "rsf": 0,
+        "neutral": 6
       }
     },
     {
@@ -132,12 +184,25 @@ window.SUDAN.osint = {
       "lat": 11.4271,
       "place": "East Darfur",
       "adm1": "East Darfur",
-      "count": 8,
+      "count": 7,
       "last_date": "2026-10-30",
       "sides": {
-        "saf": 1,
+        "saf": 0,
         "rsf": 7,
         "neutral": 0
+      }
+    },
+    {
+      "lon": 34.35,
+      "lat": 11.78,
+      "place": "Ed Damazin",
+      "adm1": "Blue Nile",
+      "count": 7,
+      "last_date": "2026-11-08",
+      "sides": {
+        "saf": 1,
+        "rsf": 2,
+        "neutral": 4
       }
     },
     {
@@ -146,50 +211,11 @@ window.SUDAN.osint = {
       "place": "Gedaref",
       "adm1": "Gedaref",
       "count": 7,
-      "last_date": "2026-11-02",
+      "last_date": "2026-11-09",
       "sides": {
-        "saf": 5,
+        "saf": 4,
         "rsf": 0,
-        "neutral": 2
-      }
-    },
-    {
-      "lon": 30.95,
-      "lat": 18.05,
-      "place": "Ad Dabbah",
-      "adm1": "Northern",
-      "count": 6,
-      "last_date": "2026-11-02",
-      "sides": {
-        "saf": 5,
-        "rsf": 0,
-        "neutral": 1
-      }
-    },
-    {
-      "lon": 30.367,
-      "lat": 13.7,
-      "place": "Bara",
-      "adm1": "North Kordofan",
-      "count": 6,
-      "last_date": "2026-09-17",
-      "sides": {
-        "saf": 0,
-        "rsf": 0,
-        "neutral": 6
-      }
-    },
-    {
-      "lon": 36.4,
-      "lat": 15.45,
-      "place": "Kassala",
-      "adm1": "Kassala",
-      "count": 6,
-      "last_date": "2026-11-02",
-      "sides": {
-        "saf": 5,
-        "rsf": 0,
-        "neutral": 1
+        "neutral": 3
       }
     },
     {
@@ -197,10 +223,10 @@ window.SUDAN.osint = {
       "lat": 20.0732,
       "place": "Northern",
       "adm1": "Northern",
-      "count": 6,
-      "last_date": "2026-11-02",
+      "count": 7,
+      "last_date": "2026-11-09",
       "sides": {
-        "saf": 4,
+        "saf": 5,
         "rsf": 0,
         "neutral": 2
       }
@@ -211,33 +237,7 @@ window.SUDAN.osint = {
       "place": "Red Sea",
       "adm1": "Red Sea",
       "count": 6,
-      "last_date": "2026-11-02",
-      "sides": {
-        "saf": 5,
-        "rsf": 0,
-        "neutral": 1
-      }
-    },
-    {
-      "lon": 30.5503,
-      "lat": 11.63,
-      "place": "South Kordofan",
-      "adm1": "South Kordofan",
-      "count": 6,
-      "last_date": "2026-11-02",
-      "sides": {
-        "saf": 2,
-        "rsf": 1,
-        "neutral": 3
-      }
-    },
-    {
-      "lon": 32.4313,
-      "lat": 13.7086,
-      "place": "White Nile",
-      "adm1": "White Nile",
-      "count": 6,
-      "last_date": "2026-11-02",
+      "last_date": "2026-11-09",
       "sides": {
         "saf": 6,
         "rsf": 0,
@@ -249,11 +249,76 @@ window.SUDAN.osint = {
       "lat": 18.9816,
       "place": "River Nile",
       "adm1": "River Nile",
+      "count": 6,
+      "last_date": "2026-11-09",
+      "sides": {
+        "saf": 6,
+        "rsf": 0,
+        "neutral": 0
+      }
+    },
+    {
+      "lon": 22.4766,
+      "lat": 13.2756,
+      "place": "West Darfur",
+      "adm1": "West Darfur",
+      "count": 6,
+      "last_date": "2026-11-05",
+      "sides": {
+        "saf": 0,
+        "rsf": 3,
+        "neutral": 3
+      }
+    },
+    {
+      "lon": 22.45,
+      "lat": 13.45,
+      "place": "El Geneina",
+      "adm1": "West Darfur",
       "count": 5,
-      "last_date": "2026-11-02",
+      "last_date": "2026-11-05",
+      "sides": {
+        "saf": 0,
+        "rsf": 2,
+        "neutral": 3
+      }
+    },
+    {
+      "lon": 36.4,
+      "lat": 15.45,
+      "place": "Kassala",
+      "adm1": "Kassala",
+      "count": 5,
+      "last_date": "2026-11-07",
       "sides": {
         "saf": 4,
         "rsf": 0,
+        "neutral": 1
+      }
+    },
+    {
+      "lon": 32.55,
+      "lat": 15.633,
+      "place": "Khartoum Bahri",
+      "adm1": "Khartoum",
+      "count": 5,
+      "last_date": "2026-11-09",
+      "sides": {
+        "saf": 5,
+        "rsf": 0,
+        "neutral": 0
+      }
+    },
+    {
+      "lon": 37.217,
+      "lat": 19.617,
+      "place": "Port Sudan",
+      "adm1": "Red Sea",
+      "count": 5,
+      "last_date": "2026-11-08",
+      "sides": {
+        "saf": 2,
+        "rsf": 2,
         "neutral": 1
       }
     },
@@ -263,7 +328,7 @@ window.SUDAN.osint = {
       "place": "Sennar",
       "adm1": "Sennar",
       "count": 5,
-      "last_date": "2026-11-02",
+      "last_date": "2026-11-09",
       "sides": {
         "saf": 4,
         "rsf": 0,
@@ -271,29 +336,42 @@ window.SUDAN.osint = {
       }
     },
     {
-      "lon": 22.4766,
-      "lat": 13.2756,
-      "place": "West Darfur",
-      "adm1": "West Darfur",
+      "lon": 32.48,
+      "lat": 15.645,
+      "place": "Omdurman",
+      "adm1": "Khartoum",
       "count": 4,
-      "last_date": "2026-11-02",
+      "last_date": "2026-11-09",
       "sides": {
-        "saf": 1,
-        "rsf": 2,
-        "neutral": 1
+        "saf": 4,
+        "rsf": 0,
+        "neutral": 0
       }
     },
     {
-      "lon": 33.986,
-      "lat": 17.703,
-      "place": "Atbara",
-      "adm1": "River Nile",
-      "count": 3,
-      "last_date": "2026-11-02",
+      "lon": 29.07,
+      "lat": 14.37,
+      "place": "Sodari",
+      "adm1": "North Kordofan",
+      "count": 4,
+      "last_date": "2026-11-05",
       "sides": {
-        "saf": 2,
+        "saf": 1,
         "rsf": 0,
-        "neutral": 1
+        "neutral": 3
+      }
+    },
+    {
+      "lon": 32.4313,
+      "lat": 13.7086,
+      "place": "White Nile",
+      "adm1": "White Nile",
+      "count": 4,
+      "last_date": "2026-11-09",
+      "sides": {
+        "saf": 4,
+        "rsf": 0,
+        "neutral": 0
       }
     },
     {
@@ -302,20 +380,7 @@ window.SUDAN.osint = {
       "place": "Babanusa",
       "adm1": "West Kordofan",
       "count": 3,
-      "last_date": "2026-10-23",
-      "sides": {
-        "saf": 0,
-        "rsf": 1,
-        "neutral": 2
-      }
-    },
-    {
-      "lon": 34.35,
-      "lat": 11.78,
-      "place": "Ed Damazin",
-      "adm1": "Blue Nile",
-      "count": 3,
-      "last_date": "2026-11-01",
+      "last_date": "2026-11-05",
       "sides": {
         "saf": 1,
         "rsf": 1,
@@ -323,28 +388,15 @@ window.SUDAN.osint = {
       }
     },
     {
-      "lon": 22.45,
-      "lat": 13.45,
-      "place": "El Geneina",
-      "adm1": "West Darfur",
+      "lon": 35.88,
+      "lat": 14.93,
+      "place": "Khashm el Girba",
+      "adm1": "Kassala",
       "count": 3,
-      "last_date": "2026-10-18",
+      "last_date": "2026-11-09",
       "sides": {
-        "saf": 0,
-        "rsf": 1,
-        "neutral": 2
-      }
-    },
-    {
-      "lon": 37.217,
-      "lat": 19.617,
-      "place": "Port Sudan",
-      "adm1": "Red Sea",
-      "count": 3,
-      "last_date": "2026-10-29",
-      "sides": {
-        "saf": 0,
-        "rsf": 2,
+        "saf": 2,
+        "rsf": 0,
         "neutral": 1
       }
     },
@@ -354,24 +406,11 @@ window.SUDAN.osint = {
       "place": "Shendi",
       "adm1": "River Nile",
       "count": 3,
-      "last_date": "2026-10-31",
+      "last_date": "2026-11-08",
       "sides": {
         "saf": 2,
         "rsf": 0,
         "neutral": 1
-      }
-    },
-    {
-      "lon": 29.07,
-      "lat": 14.37,
-      "place": "Sodari",
-      "adm1": "North Kordofan",
-      "count": 3,
-      "last_date": "2026-09-25",
-      "sides": {
-        "saf": 0,
-        "rsf": 0,
-        "neutral": 3
       }
     },
     {
@@ -388,29 +427,42 @@ window.SUDAN.osint = {
       }
     },
     {
-      "lon": 33.52,
-      "lat": 14.4,
-      "place": "Wad Madani",
-      "adm1": "Gezira",
-      "count": 3,
-      "last_date": "2026-11-02",
+      "lon": 29.25,
+      "lat": 12.35,
+      "place": "Abu Zabad",
+      "adm1": "West Kordofan",
+      "count": 2,
+      "last_date": "2026-11-05",
       "sides": {
-        "saf": 3,
+        "saf": 1,
         "rsf": 0,
-        "neutral": 0
+        "neutral": 1
       }
     },
     {
-      "lon": 33.33,
-      "lat": 19.53,
-      "place": "Abu Hamad",
-      "adm1": "River Nile",
+      "lon": 30.95,
+      "lat": 18.05,
+      "place": "Ad Dabbah",
+      "adm1": "Northern",
       "count": 2,
-      "last_date": "2026-11-01",
+      "last_date": "2026-11-08",
       "sides": {
-        "saf": 2,
+        "saf": 1,
         "rsf": 0,
-        "neutral": 0
+        "neutral": 1
+      }
+    },
+    {
+      "lon": 31.17,
+      "lat": 12.17,
+      "place": "Al Abbasiya",
+      "adm1": "South Kordofan",
+      "count": 2,
+      "last_date": "2026-11-05",
+      "sides": {
+        "saf": 0,
+        "rsf": 0,
+        "neutral": 2
       }
     },
     {
@@ -419,24 +471,11 @@ window.SUDAN.osint = {
       "place": "Al Faw",
       "adm1": "Gedaref",
       "count": 2,
-      "last_date": "2026-10-29",
+      "last_date": "2026-11-05",
       "sides": {
         "saf": 1,
         "rsf": 0,
         "neutral": 1
-      }
-    },
-    {
-      "lon": 36.13,
-      "lat": 15.82,
-      "place": "Aroma",
-      "adm1": "Kassala",
-      "count": 2,
-      "last_date": "2026-11-02",
-      "sides": {
-        "saf": 2,
-        "rsf": 0,
-        "neutral": 0
       }
     },
     {
@@ -449,6 +488,19 @@ window.SUDAN.osint = {
       "sides": {
         "saf": 0,
         "rsf": 2,
+        "neutral": 0
+      }
+    },
+    {
+      "lon": 30.483,
+      "lat": 19.167,
+      "place": "Dongola",
+      "adm1": "Northern",
+      "count": 2,
+      "last_date": "2026-11-09",
+      "sides": {
+        "saf": 2,
+        "rsf": 0,
         "neutral": 0
       }
     },
@@ -466,25 +518,12 @@ window.SUDAN.osint = {
       }
     },
     {
-      "lon": 28.433,
-      "lat": 12.7,
-      "place": "En Nahud",
-      "adm1": "West Kordofan",
-      "count": 2,
-      "last_date": "2026-08-19",
-      "sides": {
-        "saf": 0,
-        "rsf": 0,
-        "neutral": 2
-      }
-    },
-    {
       "lon": 30.648,
       "lat": 12.717,
       "place": "Er Rahad",
       "adm1": "North Kordofan",
       "count": 2,
-      "last_date": "2026-11-02",
+      "last_date": "2026-11-09",
       "sides": {
         "saf": 1,
         "rsf": 0,
@@ -497,7 +536,7 @@ window.SUDAN.osint = {
       "place": "Kas",
       "adm1": "South Darfur",
       "count": 2,
-      "last_date": "2026-10-30",
+      "last_date": "2026-11-07",
       "sides": {
         "saf": 1,
         "rsf": 0,
@@ -505,12 +544,12 @@ window.SUDAN.osint = {
       }
     },
     {
-      "lon": 32.48,
-      "lat": 15.645,
-      "place": "Omdurman",
-      "adm1": "Khartoum",
+      "lon": 37.33,
+      "lat": 19.1,
+      "place": "Suakin",
+      "adm1": "Red Sea",
       "count": 2,
-      "last_date": "2026-11-01",
+      "last_date": "2026-11-09",
       "sides": {
         "saf": 2,
         "rsf": 0,
@@ -518,16 +557,16 @@ window.SUDAN.osint = {
       }
     },
     {
-      "lon": 33.93,
-      "lat": 13.15,
-      "place": "Singa",
-      "adm1": "Sennar",
+      "lon": 27.95,
+      "lat": 13.13,
+      "place": "Wad Banda",
+      "adm1": "West Kordofan",
       "count": 2,
-      "last_date": "2026-10-29",
+      "last_date": "2026-11-09",
       "sides": {
-        "saf": 1,
+        "saf": 2,
         "rsf": 0,
-        "neutral": 1
+        "neutral": 0
       }
     },
     {
@@ -544,12 +583,25 @@ window.SUDAN.osint = {
       }
     },
     {
-      "lon": 29.25,
-      "lat": 12.35,
-      "place": "Abu Zabad",
-      "adm1": "West Kordofan",
+      "lon": 36.13,
+      "lat": 15.82,
+      "place": "Aroma",
+      "adm1": "Kassala",
       "count": 1,
-      "last_date": "2026-10-21",
+      "last_date": "2026-11-08",
+      "sides": {
+        "saf": 1,
+        "rsf": 0,
+        "neutral": 0
+      }
+    },
+    {
+      "lon": 33.986,
+      "lat": 17.703,
+      "place": "Atbara",
+      "adm1": "River Nile",
+      "count": 1,
+      "last_date": "2026-10-19",
       "sides": {
         "saf": 0,
         "rsf": 0,
@@ -557,16 +609,16 @@ window.SUDAN.osint = {
       }
     },
     {
-      "lon": 27.8,
-      "lat": 13.07,
-      "place": "Al Khuwayy",
-      "adm1": "West Kordofan",
+      "lon": 33.98,
+      "lat": 18.02,
+      "place": "Berber",
+      "adm1": "River Nile",
       "count": 1,
-      "last_date": "2026-08-19",
+      "last_date": "2026-11-06",
       "sides": {
-        "saf": 0,
+        "saf": 1,
         "rsf": 0,
-        "neutral": 1
+        "neutral": 0
       }
     },
     {
@@ -583,12 +635,25 @@ window.SUDAN.osint = {
       }
     },
     {
-      "lon": 34.38,
-      "lat": 11.85,
-      "place": "Er Roseires",
-      "adm1": "Blue Nile",
+      "lon": 29.65,
+      "lat": 12.05,
+      "place": "Dilling",
+      "adm1": "South Kordofan",
       "count": 1,
-      "last_date": "2026-10-18",
+      "last_date": "2026-11-05",
+      "sides": {
+        "saf": 1,
+        "rsf": 0,
+        "neutral": 0
+      }
+    },
+    {
+      "lon": 32.333,
+      "lat": 14.0,
+      "place": "Ed Dueim",
+      "adm1": "White Nile",
+      "count": 1,
+      "last_date": "2026-11-04",
       "sides": {
         "saf": 0,
         "rsf": 0,
@@ -635,12 +700,12 @@ window.SUDAN.osint = {
       }
     },
     {
-      "lon": 29.717,
-      "lat": 11.01,
-      "place": "Kadugli",
-      "adm1": "South Kordofan",
+      "lon": 32.663,
+      "lat": 13.167,
+      "place": "Kosti",
+      "adm1": "White Nile",
       "count": 1,
-      "last_date": "2026-10-29",
+      "last_date": "2026-11-08",
       "sides": {
         "saf": 1,
         "rsf": 0,
@@ -648,81 +713,68 @@ window.SUDAN.osint = {
       }
     },
     {
-      "lon": 31.85,
-      "lat": 18.55,
-      "place": "Karima",
-      "adm1": "Northern",
+      "lon": 34.28,
+      "lat": 10.55,
+      "place": "Kurmuk",
+      "adm1": "Blue Nile",
       "count": 1,
-      "last_date": "2026-10-29",
+      "last_date": "2026-11-07",
       "sides": {
-        "saf": 1,
+        "saf": 0,
         "rsf": 0,
-        "neutral": 0
+        "neutral": 1
       }
     },
     {
-      "lon": 22.25,
-      "lat": 15.0,
-      "place": "Karnoi",
+      "lon": 24.667,
+      "lat": 14.2,
+      "place": "Kutum",
       "adm1": "North Darfur",
       "count": 1,
-      "last_date": "2026-10-18",
+      "last_date": "2026-11-05",
+      "sides": {
+        "saf": 1,
+        "rsf": 0,
+        "neutral": 0
+      }
+    },
+    {
+      "lon": 27.733,
+      "lat": 11.04,
+      "place": "Muglad",
+      "adm1": "West Kordofan",
+      "count": 1,
+      "last_date": "2026-11-05",
+      "sides": {
+        "saf": 1,
+        "rsf": 0,
+        "neutral": 0
+      }
+    },
+    {
+      "lon": 24.05,
+      "lat": 12.9,
+      "place": "Nertiti",
+      "adm1": "Central Darfur",
+      "count": 1,
+      "last_date": "2026-11-08",
+      "sides": {
+        "saf": 0,
+        "rsf": 1,
+        "neutral": 0
+      }
+    },
+    {
+      "lon": 33.93,
+      "lat": 13.15,
+      "place": "Singa",
+      "adm1": "Sennar",
+      "count": 1,
+      "last_date": "2026-10-26",
       "sides": {
         "saf": 0,
         "rsf": 0,
         "neutral": 1
-      }
-    },
-    {
-      "lon": 32.55,
-      "lat": 15.633,
-      "place": "Khartoum Bahri",
-      "adm1": "Khartoum",
-      "count": 1,
-      "last_date": "2026-10-30",
-      "sides": {
-        "saf": 1,
-        "rsf": 0,
-        "neutral": 0
-      }
-    },
-    {
-      "lon": 35.88,
-      "lat": 14.93,
-      "place": "Khashm el Girba",
-      "adm1": "Kassala",
-      "count": 1,
-      "last_date": "2026-10-19",
-      "sides": {
-        "saf": 0,
-        "rsf": 0,
-        "neutral": 1
-      }
-    },
-    {
-      "lon": 32.97,
-      "lat": 14.25,
-      "place": "Managil",
-      "adm1": "Gezira",
-      "count": 1,
-      "last_date": "2026-10-29",
-      "sides": {
-        "saf": 1,
-        "rsf": 0,
-        "neutral": 0
-      }
-    },
-    {
-      "lon": 31.82,
-      "lat": 18.47,
-      "place": "Merowe",
-      "adm1": "Northern",
-      "count": 1,
-      "last_date": "2026-11-02",
-      "sides": {
-        "saf": 1,
-        "rsf": 0,
-        "neutral": 0
       }
     },
     {
@@ -765,19 +817,6 @@ window.SUDAN.osint = {
       }
     },
     {
-      "lon": 27.95,
-      "lat": 13.13,
-      "place": "Wad Banda",
-      "adm1": "West Kordofan",
-      "count": 1,
-      "last_date": "2026-10-18",
-      "sides": {
-        "saf": 0,
-        "rsf": 0,
-        "neutral": 1
-      }
-    },
-    {
       "lon": 31.8,
       "lat": 21.8,
       "place": "Wadi Halfa",
@@ -799,11 +838,11 @@ window.SUDAN.osint = {
       "label": "Rapid Support Forces (official account)",
       "coverage": {
         "days": [
-          "2026-08-30",
-          "2026-11-02"
+          "2026-09-03",
+          "2026-11-08"
         ],
-        "conflict_msgs": 73,
-        "geo_mentions": 68
+        "conflict_msgs": 86,
+        "geo_mentions": 75
       }
     },
     {
@@ -838,11 +877,11 @@ window.SUDAN.osint = {
       "label": "Al-Sudan (active pro-government / pro-SAF-leaning general news; high volume, shallow time depth)",
       "coverage": {
         "days": [
-          "2026-10-29",
-          "2026-11-02"
+          "2026-11-04",
+          "2026-11-09"
         ],
-        "conflict_msgs": 38,
-        "geo_mentions": 91
+        "conflict_msgs": 48,
+        "geo_mentions": 127
       }
     },
     {
@@ -866,11 +905,11 @@ window.SUDAN.osint = {
       "label": "News from Sudan (independent human-rights documentation, since 2024)",
       "coverage": {
         "days": [
-          "2026-10-10",
-          "2026-11-01"
+          "2026-10-18",
+          "2026-11-08"
         ],
-        "conflict_msgs": 64,
-        "geo_mentions": 81
+        "conflict_msgs": 65,
+        "geo_mentions": 82
       }
     },
     {
@@ -894,10 +933,10 @@ window.SUDAN.osint = {
       "label": "Our Wars, Today (global war OSINT aggregator; some Sudan coverage)",
       "coverage": {
         "days": [
-          "2026-10-16",
-          "2026-11-02"
+          "2026-10-29",
+          "2026-11-09"
         ],
-        "conflict_msgs": 27,
+        "conflict_msgs": 21,
         "geo_mentions": 0
       }
     },
@@ -908,21 +947,21 @@ window.SUDAN.osint = {
       "label": "OSINTWarfare (global conflict OSINT aggregator; some Sudan coverage)",
       "coverage": {
         "days": [
-          "2026-10-24",
-          "2026-11-02"
+          "2026-11-02",
+          "2026-11-09"
         ],
-        "conflict_msgs": 27,
-        "geo_mentions": 0
+        "conflict_msgs": 22,
+        "geo_mentions": 1
       }
     }
   ],
   "counts": {
-    "messages_scanned": 631,
-    "messages_in_window": 584,
-    "messages_conflict": 277,
-    "messages_geolocated": 166,
-    "places": 60,
-    "mentions": 322
+    "messages_scanned": 648,
+    "messages_in_window": 601,
+    "messages_conflict": 290,
+    "messages_geolocated": 184,
+    "places": 63,
+    "mentions": 367
   },
   "note": "Signalements OSINT NON VERIFIES, purement INDICATIFS. Agreges a partir d'apercus web PUBLICS de canaux Telegram (pro-SAF, pro-RSF et neutres) : ni API, ni cle, ni login. La geolocalisation est faite par simple detection de noms de lieux dans le texte (arabe + latin) : c'est BRUITE (homonymes, lieux cites de loin, negations, reprises d'anciens evenements). 'sides' = repartition par BORD EDITORIAL du canal, pas une verite terrain. Granularite minimale = localite/Etat ; aucun contenu nominatif, aucun suivi d'unites, aucun camp de deplaces (garde-fou Darfour). A croiser avec UCDP/FIRMS. BIAIS DE VOLUME : les comptes 'sides' sont domines par l'ACTIVITE des canaux, pas par la realite terrain. Cf. channels[].coverage : canaux de volumes et de profondeurs temporelles tres inegaux (un canal de news prolixe type sudaaan n'eclaire que quelques jours ; un canal officiel ou regional couvre une plage plus large mais plus clairsemee). La fenetre d'agregation a ete allongee pour gagner en profondeur, mais chaque canal ne la remplit qu'a hauteur de ses propres posts (voir coverage par canal). La presence PRO-RSF publique et geolocalisable sur les apercus /s/ est STRUCTURELLEMENT MINCE au-dela du compte officiel (la plupart des handles desactivent l'apercu web ou sont inactifs), et la presence PRO-SAF active sur Telegram est elle aussi faible (ecosysteme SAF surtout Facebook/X/YouTube/TV, cf. IFRI 2026) : l'equilibre affiche des canaux ne corrige pas ces biais de plateforme. Lire la PRESENCE/RECENCE par camp et par localite, jamais les totaux absolus.",
   "license_note": "Apercus publics t.me/s/<canal> uniquement (pages servies a tout visiteur, sans compte). Aucune rediffusion de contenu ; seuls des comptes agreges de mentions de lieux sont conserves. Respect des CGU Telegram (consultation publique).",
