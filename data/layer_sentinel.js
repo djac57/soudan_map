@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------------------------
  * data/layer_sentinel.js  —  COUCHE SENTINEL (imagerie satellite) pour la carte Soudan
  *
- * GENERE par scripts/sentinel/fetch_dated.py le 2026-11-09 — ne pas editer a la main.
+ * GENERE par scripts/sentinel/fetch_dated.py le 2026-11-16 — ne pas editer a la main.
  * Charge APRES data/bundle.js. N'ecrase rien : il ajoute window.SUDAN.sentinel.
  *
  * Sentinel-2 DATE (par defaut)  : acquisitions L2A reelles, peu nuageuses, DATEES, affichees
@@ -56,7 +56,7 @@
   {
     "sector": "kordofan",
     "label": "Kordofan — axe El-Obeid / Bara",
-    "date": "2026-11-05",
+    "date": "2026-11-15",
     "bbox": [
       29.92,
       12.98,
@@ -67,18 +67,18 @@
       30.2,
       13.18
     ],
-    "cloud": 0.0,
-    "item": "S2B_MSIL2A_20261105T082129_R121_T35PRQ_20261105T122013",
+    "cloud": 0.1,
+    "item": "S2B_MSIL2A_20261115T082119_R121_T35PRQ_20261115T124043",
     "tile": "T35PRQ",
-    "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2B_MSIL2A_20261105T082129_R121_T35PRQ_20261105T122013&assets=visual&asset_bidx=visual%7C1,2,3&format=png",
-    "imageUrl": "data/raw/sentinel/s2_kordofan_2026-11-05.png",
+    "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2B_MSIL2A_20261115T082119_R121_T35PRQ_20261115T124043&assets=visual&asset_bidx=visual%7C1,2,3&format=png",
+    "imageUrl": "data/raw/sentinel/s2_kordofan_2026-11-15.png",
     "source": "Copernicus Sentinel-2 L2A via Planetary Computer (keyless)"
   }
 ];
   var CHANGE_PAIRS = [
   {
     "key": "el_fasher_dated",
-    "label": "El-Fasher (Darfour Nord) — 2025-12-23 -> 2026-11-06",
+    "label": "El-Fasher (Darfour Nord) — 2025-12-26 -> 2026-11-06",
     "sector": "el_fasher",
     "bbox": [
       25.15,
@@ -91,11 +91,11 @@
       13.63
     ],
     "before": {
-      "date": "2025-12-23",
-      "cloud": 6.2,
-      "item": "S2A_MSIL2A_20251223T085541_R064_T35PLR_20251223T122010",
-      "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2A_MSIL2A_20251223T085541_R064_T35PLR_20251223T122010&assets=visual&asset_bidx=visual%7C1,2,3&format=png",
-      "imageUrl": "data/raw/sentinel/s2_el_fasher_2025-12-23.png"
+      "date": "2025-12-26",
+      "cloud": 0.0,
+      "item": "S2B_MSIL2A_20251226T084259_R064_T35PLR_20251226T111203",
+      "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2B_MSIL2A_20251226T084259_R064_T35PLR_20251226T111203&assets=visual&asset_bidx=visual%7C1,2,3&format=png",
+      "imageUrl": "data/raw/sentinel/s2_el_fasher_2025-12-26.png"
     },
     "after": {
       "date": "2026-11-06",
@@ -108,7 +108,7 @@
   },
   {
     "key": "kordofan_dated",
-    "label": "Kordofan — axe El-Obeid / Bara — 2025-12-20 -> 2026-11-05",
+    "label": "Kordofan — axe El-Obeid / Bara — 2025-12-30 -> 2026-11-15",
     "sector": "kordofan",
     "bbox": [
       29.92,
@@ -121,18 +121,18 @@
       13.18
     ],
     "before": {
-      "date": "2025-12-20",
-      "cloud": 0.0,
-      "item": "S2B_MSIL2A_20251220T082249_R121_T35PRQ_20251220T101510",
-      "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2B_MSIL2A_20251220T082249_R121_T35PRQ_20251220T101510&assets=visual&asset_bidx=visual%7C1,2,3&format=png",
-      "imageUrl": "data/raw/sentinel/s2_kordofan_2025-12-20.png"
+      "date": "2025-12-30",
+      "cloud": 3.5,
+      "item": "S2B_MSIL2A_20251230T082249_R121_T35PRQ_20251230T110046",
+      "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2B_MSIL2A_20251230T082249_R121_T35PRQ_20251230T110046&assets=visual&asset_bidx=visual%7C1,2,3&format=png",
+      "imageUrl": "data/raw/sentinel/s2_kordofan_2025-12-30.png"
     },
     "after": {
-      "date": "2026-11-05",
-      "cloud": 0.0,
-      "item": "S2B_MSIL2A_20261105T082129_R121_T35PRQ_20261105T122013",
-      "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2B_MSIL2A_20261105T082129_R121_T35PRQ_20261105T122013&assets=visual&asset_bidx=visual%7C1,2,3&format=png",
-      "imageUrl": "data/raw/sentinel/s2_kordofan_2026-11-05.png"
+      "date": "2026-11-15",
+      "cloud": 0.1,
+      "item": "S2B_MSIL2A_20261115T082119_R121_T35PRQ_20261115T124043",
+      "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2B_MSIL2A_20261115T082119_R121_T35PRQ_20261115T124043&assets=visual&asset_bidx=visual%7C1,2,3&format=png",
+      "imageUrl": "data/raw/sentinel/s2_kordofan_2026-11-15.png"
     },
     "note": "Comparatif visuel de DEUX acquisitions S2 DATEES et peu nuageuses, meme tuile MGRS T35PRQ (grille de pixels identique), memes conditions saisonnieres (saison seche). INDICATIF : aucun indice (NBR/NDVI) n'est calcule ici — simple bascule avant/apres pour l'oeil."
   }
@@ -140,7 +140,7 @@
   var RADAR = {
   "sector": "el_fasher",
   "label": "El-Fasher (Darfour Nord) — Sentinel-1 RTC (VV)",
-  "date": "2026-11-01",
+  "date": "2026-11-13",
   "bbox": [
     25.15,
     13.48,
@@ -151,10 +151,10 @@
     25.35,
     13.63
   ],
-  "item": "S1C_IW_GRDH_1SDV_20261101T040451_20261101T040516_010138_0143C3_rtc",
+  "item": "S1C_IW_GRDH_1SDV_20261113T040450_20261113T040515_010313_01498D_rtc",
   "orbit": "descending",
-  "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-1-rtc&item=S1C_IW_GRDH_1SDV_20261101T040451_20261101T040516_010138_0143C3_rtc&assets=vv&colormap_name=gray&rescale=0,0.4&format=png",
-  "imageUrl": "data/raw/sentinel/s1_el_fasher_2026-11-01.png",
+  "tilesUrl": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-1-rtc&item=S1C_IW_GRDH_1SDV_20261113T040450_20261113T040515_010313_01498D_rtc&assets=vv&colormap_name=gray&rescale=0,0.4&format=png",
+  "imageUrl": "data/raw/sentinel/s1_el_fasher_2026-11-13.png",
   "source": "Copernicus Sentinel-1 RTC (gamma0) via Planetary Computer (keyless)",
   "note": "Backscatter radar VV (gamma0 terrain-corrige), niveaux de gris. Le radar traverse poussiere et nuages (cle a El-Fasher). C'est une mesure de retrodiffusion, PAS une interpretation de positions/fortifications. Chemin alternatif ASF/HyP3 (jeton NASA Earthdata) documente dans le README, NON utilise ici (keyless)."
 };
@@ -239,6 +239,6 @@
       "chemin radar alternatif ASF/HyP3 (jeton NASA Earthdata) documente dans le README, NON " +
       "utilise ici (le jeton n'est jamais ecrit dans ce depot).",
 
-    generated: "2026-11-09",
+    generated: "2026-11-16",
   };
 })();
