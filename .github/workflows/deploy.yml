@@ -23,12 +23,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      # On ne publie que ce que le site charge (pas scripts/, screenshots/, les .md ni data/raw).
+      - name: Assembler le site (_site)
+        run: |
+          mkdir -p _site
+          cp index.html methode.html app.js chrome.js i18n.js style.css logo.svg _site/
+          cp -r vendor _site/
+          rsync -a --exclude 'raw/' --exclude '*.md' data/ _site/data/
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact (site statique)
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: '_site'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

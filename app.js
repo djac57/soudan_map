@@ -9,7 +9,7 @@
   var T = function(k){ return window.SDN_T ? window.SDN_T(k) : k; };
   var root = document.documentElement;
   function cssv(n){ return getComputedStyle(root).getPropertyValue(n).trim(); }
-  function esc(s){ return String(s==null?"":s).replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];}); }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
   function num(n){ try{ return Number(n).toLocaleString(window.SDN_LANG==="ar"?"ar":(window.SDN_LANG||"fr")); }catch(e){ return String(n); } }
 
   // =====================================================================
@@ -1652,7 +1652,7 @@
         if(!isFinite(c.lat)||!isFinite(c.lon)) return;
         var cur=(cp===mk), col=sideColor(c.actor);
         var m=L.circleMarker([c.lat,c.lon],{pane:"replayPane",radius:cur?7:4,color:col,weight:cur?2.4:1.2,fillColor:col,fillOpacity:cur?.5:.2,opacity:cur?.95:.6});
-        m.bindPopup("<b>"+esc(c.place||"?")+"</b> — "+String(c.actor||"").toUpperCase()+"<br><span class='muted'>"+fdate(c.date||cp)+" · "+T("claimTag")+"</span>");
+        m.bindPopup("<b>"+esc(c.place||"?")+"</b> — "+esc(String(c.actor||"").toUpperCase())+"<br><span class='muted'>"+fdate(c.date||cp)+" · "+T("claimTag")+"</span>");
         if(cur && c.place) m.bindTooltip(esc(c.place),{permanent:true,direction:"top",className:"replaylbl"});
         marks.addLayer(m);
       });

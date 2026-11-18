@@ -186,17 +186,25 @@ jobs:
             git commit -m "data: auto-update ${MODE} ($(date -u +%F))
 
           Co-Authored-By: Claude <noreply@anthropic.com>"
-            git push
+            # 3 essais : un push entre-temps (code, autre robot) ne doit pas faire perdre la mise à jour.
+            POUSSE=false
+            for i in 1 2 3; do
+              if git pull --rebase -X theirs origin main && git push; then POUSSE=true; break; fi
+              echo "Envoi refusé, nouvel essai ($i)…"; sleep $((i * 5))
+            done
+            if [ "$POUSSE" != "true" ]; then echo "::error::Données non poussées après 3 essais"; exit 1; fi
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
       # ---------------- DÉPLOIEMENT Pages (fait par CE workflow) -----------------
-      # data/raw/ (gitignoré mais présent sur disque) est écarté de l'artefact
-      # Pages pour ne pas publier des dizaines de Mo de brut ; remis ensuite pour
-      # que le cache de fin de job le repersiste.
-      - name: Écarter data/raw de l'artefact Pages
+      # On ne publie que ce que le site charge (pas scripts/, screenshots/, les .md ni data/raw).
+      - name: Assembler le site (_site)
         if: steps.commit.outputs.changed == 'true'
-        run: '[ -d data/raw ] && mv data/raw "$RUNNER_TEMP/raw" || true'
+        run: |
+          mkdir -p _site
+          cp index.html methode.html app.js chrome.js i18n.js style.css logo.svg _site/
+          cp -r vendor _site/
+          rsync -a --exclude 'raw/' --exclude '*.md' data/ _site/data/
 
       - name: Configure Pages
         if: steps.commit.outputs.changed == 'true'
@@ -206,13 +214,9 @@ jobs:
         if: steps.commit.outputs.changed == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: '_site'
 
       - name: Deploy to GitHub Pages
         id: deployment
         if: steps.commit.outputs.changed == 'true'
         uses: actions/deploy-pages@v4
-
-      - name: Restaurer data/raw (pour le cache)
-        if: always()
-        run: '[ -d "$RUNNER_TEMP/raw" ] && mv "$RUNNER_TEMP/raw" data/raw || true'

@@ -107,7 +107,7 @@
 <script>
 /* Render the reference-maps table from window.SUDAN.known_maps.references (dates via Intl). */
 (function(){
-  function esc(s){ return String(s==null?"":s).replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];}); }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
   function render(){
     var tbl=document.getElementById("refTable"); if(!tbl) return;
     var km=(window.SUDAN&&window.SUDAN.known_maps)||{}; var refs=km.references||[];
